@@ -13,6 +13,10 @@
 
 #define FILTER_A 0.01
 
+#define motor1 2
+
+#define motor2 3
+
 int Filter(float a);
 
 byte DOUTS[4] = {DOUT1, DOUT2, DOUT3, DOUT4};
@@ -113,6 +117,8 @@ void reset() {
 }
 void loop() {
   
+  int x,y;
+  
   sendRawData(); //this is for sending raw data, for where everything else is done in processing
   Serial.println("重心：");
   Serial.print("x:,Y:");
@@ -127,5 +133,11 @@ void loop() {
     }
     tare();
   }
+  //轉換PWM訊號給馬達
+  x = map(fblocation,0,10000,0,1023);
+  y = map(rllocation,0,10000,0,1023);
+  
+  analogWrite(motor1,x);
+  analogWrite(motor2,y);
   reset();
 }
