@@ -3,13 +3,13 @@
 // Pins to the load cell amp
 #define CLK A0      // clock pin to the load cell amp
 #define DOUT1 A1    // data pin to the first lca
-/*#define DOUT2 A2    // data pin to the second lca
+#define DOUT2 A2    // data pin to the second lca
 #define DOUT3 A3    // data pin to the third lca
-#define DOUT4 A4    // data pin to the third lca*/
+#define DOUT4 A4    // data pin to the third lca
 
 #define BOOT_MESSAGE "MIT_ML_SCALE V0.8"
 
-#define TARE_TIMEOUT_SECONDS 1
+#define TARE_TIMEOUT_SECONDS 4
 
 #define FILTER_A 0.01
 
@@ -19,7 +19,7 @@
 
 int Filter(float a);
 
-byte DOUTS[1] = {DOUT1};///////////
+byte DOUTS[1] = {DOUT1, DOUT2, DOUT3, DOUT4};///////////
 
 #define CHANNEL_COUNT sizeof(DOUTS)/sizeof(byte)
 
@@ -134,7 +134,7 @@ void sendRawData() {
     if(results[i] < -10000)
      results[i] = -10000;
 
-    //results[i] = map(results[i],-10000,0,-1023,0);
+    results[i] = map(results[i],-10000,0,-1023,0);
 
     //Serial.println(-results[i]);
     
