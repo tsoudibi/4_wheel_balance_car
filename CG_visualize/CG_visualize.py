@@ -1,22 +1,21 @@
-import serial  # 引用pySerial模組
+import serial 
 import numpy as np
 import matplotlib.pyplot as pyplot
 
-COM_PORT = 'COM11'    # 指定通訊埠名稱
-BAUD_RATES = 115200    # 設定傳輸速率
-ser = serial.Serial(COM_PORT, BAUD_RATES)   # 初始化序列通訊埠
+#define connection port, baud rates
+COM_PORT = 'COM11'  
+BAUD_RATES = 115200    
+ser = serial.Serial(COM_PORT, BAUD_RATES)  
 
 x = []
 y = [] 
 fig=pyplot.figure()
 ax = fig.add_subplot(111)   
-line1, = ax.plot(x, y, 'o-', lw=10, markersize=20)  #改變線條1樣式
+line1, = ax.plot(x, y, 'o-', lw=10, markersize=20) 
 
-pyplot.xlabel('number')      #改變x軸標題
-
-pyplot.ylabel('AnalogRead')  #改變y軸標題       
-
-pyplot.title('Title')        #改變圖表標題   
+pyplot.xlabel('X')      
+pyplot.ylabel('Y')       
+pyplot.title('Center of mass')        #改變圖表標題   
 pyplot.axis([-2000, 2000, -2000, 2000])
 pyplot.grid(axis = 'y')       
 pyplot.ion()                   
@@ -47,29 +46,24 @@ class ReadLine:
 
 try:
     while True:
-        while ser.in_waiting:          # 若收到序列資料…
+        while ser.in_waiting:          
             
             i+=1
-            #data_raw = ser.readline()  # 讀取一行
-            #data=ser.readline().strip().decode('ascii')
             test=ReadLine(ser)
             data=test.readline()
-
-            data = data.decode()   # 用預設的UTF-8解碼
-            #print(i)
-            #print(data)
-            data=data.split(',')      #將csv格式資料拆到容器cmd的四個位置 
-            x.append(int(data[0]))        #插新點在x容器的最後方
-            y.append(int(data[1]))  #插新點在y1容器的最後方
-            if i > 3 :        #可以保持畫面由左到右共100點，取消掉這一串後圖形可以累加數值
-                x.pop(0)        #刪掉x容器的第一個數值           
-                y.pop(0)       #刪掉y1容器的第一個數值
+            data = data.decode()   
+            data=data.split(',')      
+            x.append(int(data[0]))        
+            y.append(int(data[1]))  
+            if i > 3 :        
+                x.pop(0)              
+                y.pop(0)       
             line1.set_data(x, y)  
             ax.autoscale_view(True,True,True)   
             fig.canvas.draw()
             pyplot.pause(0.00001)
 
 except KeyboardInterrupt:
-    ser.close()    # 清除序列通訊物件
-    print('再見！')
+    ser.close()   
+    print('goodbye')
 
