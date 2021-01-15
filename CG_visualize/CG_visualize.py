@@ -15,7 +15,7 @@ line1, = ax.plot(x, y, 'o-', lw=10, markersize=20)
 
 pyplot.xlabel('X')      
 pyplot.ylabel('Y')       
-pyplot.title('Center of mass')        #改變圖表標題   
+pyplot.title('Center of mass')       
 pyplot.axis([-2000, 2000, -2000, 2000])
 pyplot.grid(axis = 'y')       
 pyplot.ion()                   
