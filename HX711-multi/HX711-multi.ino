@@ -7,10 +7,7 @@
 #define DOUT3 A3    // data pin to the third lca
 #define DOUT4 A4    // data pin to the third lca
 
-#define BOOT_MESSAGE "MIT_ML_SCALE V0.8"
-
 #define TARE_TIMEOUT_SECONDS 4
-
 #define FILTER_A 0.01
 
 //#define motor1 2
@@ -19,8 +16,7 @@
 
 int Filter(float a);
 
-byte DOUTS[1] = {DOUT1, DOUT2, DOUT3, DOUT4};///////////
-
+byte DOUTS[1] = {DOUT1, DOUT2, DOUT3, DOUT4};
 #define CHANNEL_COUNT sizeof(DOUTS)/sizeof(byte)
 
 long int results[CHANNEL_COUNT];
@@ -112,9 +108,8 @@ void motor() {
     }   
   return mode;    
 }
-   
 
-  unsigned long tareStartTime = millis();
+unsigned long tareStartTime = millis();
 void tare() {
   bool tareSuccessful = false;
   while (!tareSuccessful && millis()<(tareStartTime+TARE_TIMEOUT_SECONDS*1000)) {
@@ -126,21 +121,15 @@ void sendRawData() {
   scales.read(results);
   for (int i=0; i<scales.get_count(); ++i) {
     results[i] = results[i]/100;
-    
     results[i] = Filter[results[i]];
-
-    if(results[i] > 0)
-     results[i] = 0;
-    if(results[i] < -10000)
-     results[i] = -10000;
-
+    if(results[i] > 0){
+      results[i] = 0;
+    }else if(results[i] < -10000){
+      results[i] = -10000;
+    }
     results[i] = map(results[i],-10000,0,-1023,0);
-
-    //Serial.println(-results[i]);
-    
-    
     weight(i);
-    delay(10);
+    delay(50);
   }  
   delay(10);
 }
@@ -169,7 +158,6 @@ void weight(int i) {
    rllocation = map(rllocation,-20000,20000,-1023,1023);*/
 }
 
-// 濾波
 int Filter(float a) {
   int NewValue;
   NewValue = a;
@@ -202,10 +190,8 @@ void loop() {
   int x,y;
   
   sendRawData(); //this is for sending raw data, for where everything else is done in processing
-  Serial.println("重心：");
-  Serial.print("x:,Y:");
   Serial.print(rllocation);
-  Serial.print("    ");
+  Serial.print(",");
   Serial.println(fblocation);
 
   //on serial data (any data) re-tare
