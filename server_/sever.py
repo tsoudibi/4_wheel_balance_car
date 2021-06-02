@@ -10,9 +10,14 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def home():
-
+def controller():
     return render_template("index.html")
+
+
+@app.route('/sensor', methods=['GET', 'POST'])
+def sensor():
+    scatter = create_plot()
+    return render_template('sensor_plot.html', plot=scatter)
 
 
 @app.route('/mode1_button_click')
@@ -28,12 +33,6 @@ def direction_instructions():
         print('stop')
     elif btn == 'backward':
         print('backward')
-    elif btn == 'controller':
-        print('controller')
-    elif btn == 'sensor':
-        print('sensor')
-    elif btn == 'camera':
-        print('camera')
     else:
         print('btn error')
 
@@ -44,22 +43,16 @@ def direction_instructions():
 def plot_trigger():
     btn = request.args.get('a')
     if btn == '1':
-        scatter = create_plot()
         print('action')
     else:
         print('end')
 
 
-@app.route('/fresh')
+@app.route('/fresh', methods=['GET', 'POST'])
 def fresh():
     scatter = create_plot()
-    return jsonify({"scatter": scatter})
-
-
-@app.route('/sensor', methods=['GET', 'POST'])
-def index():
-    scatter = create_plot()
-    return render_template('sensor_plot.html', plot=scatter)
+    print(scatter)
+    return scatter
 
 
 def create_plot():
