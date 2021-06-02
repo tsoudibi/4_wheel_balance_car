@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 class stat:
     def __init__(self):
-        self.movement="NAN"
+        self.movement="NAN123"
         self.control_mode="1"
 
         self.speedL=0
