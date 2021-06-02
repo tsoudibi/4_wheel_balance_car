@@ -10,8 +10,8 @@
   <h2>模式切換</h2>
   <div class="mode">
       <CENTER>
-          <a href=# id=mode1 ><input type="button" name="mode_1" value="controller" style="width:150px;height:30px;"></a>
-          <a href=# id=mode2 ><input type="button" name="mode_2" value="sensor" style="width:150px;height:30px;"></a>
+          <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller" style="width:150px;height:30px;"></a>
+          <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor" style="width:150px;height:30px;"></a>
           <a href=# id=mode3 ><input type="button" name="mode_3" value="camera" style="width:150px;height:30px;"></a><BR>
       </CENTER>
   </div>
@@ -60,42 +60,6 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
-
-<script type=text/javascript>
-        $(function() {
-          $('a#mode1').bind('click', function() {
-            $.getJSON('/mode1_button_click',{
-                a : this.id
-            },function(data) {
-            });
-        return false;
-      });
-    });
-</script>
-
-<script type=text/javascript>
-        $(function() {
-          $('a#mode2').bind('click', function() {
-            $.getJSON('/mode1_button_click',{
-                a : this.id
-            },function(data) {
-            });
-        return false;
-      });
-    });
-</script>
-
-<script type=text/javascript>
-        $(function() {
-          $('a#mode3').bind('click', function() {
-            $.getJSON('/mode1_button_click',{
-                a : this.id
-            },function(data) {
-            });
-        return false;
-      });
-    });
-</script>
 
 <script type=text/javascript>
         $(function() {

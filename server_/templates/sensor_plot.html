@@ -7,14 +7,29 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
+<h1><CENTER>馬桶車</CENTER></h1>
+<h2>模式切換</h2>
+<div class="mode">
+      <CENTER>
+          <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller" style="width:150px;height:30px;"></a>
+          <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor" style="width:150px;height:30px;"></a>
+          <a href=# id=mode3 ><input type="button" name="mode_3" value="camera" style="width:150px;height:30px;"></a><BR>
+      </CENTER>
+</div>
+<h2>狀態顯示</h2>
 <div class="container">
     <div class="chart" id="scatter">
         <script>
-            var graphs = {{plot | safe}};
-            Plotly.plot('scatter',graphs,{});
+            var int = setInterval(function(){getDynamicData()}, 1000); // refreshing frequency (ms)
 
-            $( function () { setInterval(getDynamicData, 2000); } );
-
+            function getDynamicData() {
+            $.ajax({
+                url: '/fresh',
+                dataType: 'json',
+                success: function(data) { // if server response data
+                Plotly.newPlot('scatter',data); } // new plot
+                });
+            }
         </script>
     </div>
 </div>
@@ -24,18 +39,6 @@
         <a href=# id=stop><button type="button" name="stop" style="width:150px;height:50px;">停止</button></a>
     </CENTER>
 </div>
-
-<script>
-function getDynamicData() {
-$.ajax({ type: "GET",
-          url: ""{{ url_for('fresh') }}"",
-          dataType: "json",
-          success: function (result) { plot.push([result.scatter]);
-          graphs.setOption({ series: [{data: plot}] });
-          }
-    });
-}
-</script>
 
 </body>
 </html>
