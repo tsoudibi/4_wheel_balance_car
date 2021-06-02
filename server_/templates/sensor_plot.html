@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>馬桶車:SensorPlot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sensor_plot.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="chart" id="scatter">
+        <script>
+            var graphs = {{plot | safe}};
+            Plotly.plot('scatter',graphs,{});
+
+            $( function () { setInterval(getDynamicData, 2000); } );
+
+        </script>
+    </div>
+</div>
+<div>
+    <CENTER>
+        <a href=# id=action><button type="button" name="action" style="width:150px;height:50px;">開始</button></a>
+        <a href=# id=stop><button type="button" name="stop" style="width:150px;height:50px;">停止</button></a>
+    </CENTER>
+</div>
+
+<script>
+function getDynamicData() {
+$.ajax({ type: "GET",
+          url: ""{{ url_for('fresh') }}"",
+          dataType: "json",
+          success: function (result) { plot.push([result.scatter]);
+          graphs.setOption({ series: [{data: plot}] });
+          }
+    });
+}
+</script>
+
+</body>
+</html>
+
+<!--load jQuery-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#action').bind('click', function() {
+            $.getJSON('/mode2_button_click',{
+                a : '1'
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#stop').bind('click', function() {
+            $.getJSON('/mode2_button_click',{
+                a: '2'
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>

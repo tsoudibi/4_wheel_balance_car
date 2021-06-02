@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>馬桶車:Controller</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/template.css') }}">
+</head>
+<body>
+  <h1><CENTER>馬桶車</CENTER></h1>
+  <h2>模式切換</h2>
+  <div class="mode">
+      <CENTER>
+          <a href=# id=mode1 ><input type="button" name="mode_1" value="controller" style="width:150px;height:30px;"></a>
+          <a href=# id=mode2 ><input type="button" name="mode_2" value="sensor" style="width:150px;height:30px;"></a>
+          <a href=# id=mode3 ><input type="button" name="mode_3" value="camera" style="width:150px;height:30px;"></a><BR>
+      </CENTER>
+  </div>
+  <h2>狀態顯示</h2>
+  <div class=status>
+    <CENTER>
+    <table>
+      <tr align=center>
+        <th align=center></th>
+        <th>left motor</th>
+        <th>right motor</th>
+      </tr>
+      <tr align=center>
+        <td>velocity</td>
+        <td>左速</td>
+        <td>右速</td>
+      </tr>
+      <tr align=center>
+        <td>status</td>
+        <td>左狀態</td>
+        <td>右狀態</td>
+      </tr>
+    </table>
+    </CENTER>
+  </div>
+
+  <h2>方向控制</h2>
+  <div class="direction">
+      <CENTER>
+          <a href=# id=forward><button type="button" name="forward" style="width:150px;height:100px;">^</button></a><BR>
+      </CENTER>
+      <CENTER>
+          <a href=# id=left><button type="button" name="left" style="width:150px;height:100px;"><</button></a>
+          <a href=# id=stop><button type="button" name="stop" style="width:150px;height:100px;">stop</button></a>
+          <a href=# id=right><button type="button" name="right" style="width:150px;height:100px;">></button></a>
+      </CENTER>
+      <CENTER>
+          <a href=# id=backward><button type="button" name="backward" style="width:150px;height:100px;">倒車檔</button></a>
+      </CENTER>
+      </a>
+  </div>
+</body>
+</html>
+
+<!--load jQuery-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#mode1').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#mode2').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#mode3').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#test').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#forward').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#left').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#stop').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#right').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>
+
+<script type=text/javascript>
+        $(function() {
+          $('a#backward').bind('click', function() {
+            $.getJSON('/mode1_button_click',{
+                a : this.id
+            },function(data) {
+            });
+        return false;
+      });
+    });
+</script>

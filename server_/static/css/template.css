@@ -1,0 +1,50 @@
+.mode input{
+  border:0;
+  margin-bottom:0.4rem;
+  background-color:#ffbf69;
+  color:#fff;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.mode input:hover{
+  color:#ee6c4d;
+  background-color:#fff;
+  border:2px #ee6c4d solid;
+}
+
+.status table {
+  font-family: 微軟正黑體;
+  font-size:15px;
+  width:300px;
+  text-align:center;
+  border-radius:5px;
+}
+.status th {
+  background-color: #3d5a80;
+  padding:10px;
+  color:#fff;
+  border-radius:5px;
+}
+.status td {
+  background-color: #e0fbfc;
+  padding:5px;
+  border-radius:5px;
+}
+
+.direction button{
+  font-size:18px;
+  border:0;
+  margin-bottom:0.4rem;
+  background-color:#293241;
+  color:#fff;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.direction button:hover{
+  color:#293241;
+  font-size:18px;
+  background-color:#fff;
+  border:2px #ee6c4d solid;
+}
