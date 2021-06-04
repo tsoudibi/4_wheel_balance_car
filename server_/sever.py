@@ -1,6 +1,5 @@
 import json
 from flask import Flask, render_template, Response, request, redirect, url_for, flash, jsonify
-from pyecharts.charts import Line
 import plotly as py
 import numpy as np
 import pandas as pd
@@ -8,34 +7,100 @@ from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import simplejson
 import plotly.graph_objs as go
 
+
 app = Flask(__name__)
+
+
+# car status
+class stat:
+    def __init__(self):
+        self.new=0
+
+        self.movement="NAN132"
+        self.control_mode="1"
+
+        self.speedL=0
+        self.speedR=0
+        self.sensor_x=0
+        self.sensor_y=0
+
+        self.cam_x=0
+        self.cam_y=0
+        self.cam_width=0
+        self.cam_height=0
+        self.cam_depth=0
+        self.cam_Analog_x=0
+        self.cam_Analog_y=0
+
+
+car_stat = stat()
 
 
 @app.route("/")
 def controller():
+    car_stat.control_mode="button"
     return render_template("index.html")
+
+
+@app.route("/esp32",methods=['GET', 'POST'])
+def esp32():
+    # return wanted data to esp32
+    if request.method == "GET":
+        which = request.args.get('which')
+        if which=='movement':
+            car_stat.new=0
+            return car_stat.movement
+        elif which=='control_mode':
+            return str(car_stat.control_mode)
+        elif which=='speed':
+            return str(car_stat.speedL)+","+str(car_stat.speedR)
+        elif which=='sensor':
+            return str(car_stat.sensor_x)+","+str(car_stat.sensor_y)
+        elif which=='new':
+            return str(car_stat.new)
+    # get data from esp32
+    if request.method == "POST":
+        data = request.get_json()
+        print(data)
+        car_stat.speedL=data["speed"][0]
+        car_stat.speedR=data["speed"][1]
+        car_stat.sensor_x=data["sensor"][0]
+        car_stat.sensor_y=data["sensor"][1]
+        return jsonify({"state": "ok"})
 
 
 @app.route('/sensor', methods=['GET', 'POST'])
 def sensor():
+    car_stat.control_mode="sensor"
     return render_template('sensor_plot.html')
 
 
-@app.route('/mode1_button_click')
+@app.route("/mode1_button_click",methods=['GET', 'POST'])
 def direction_instructions():
-    btn = request.args.get('a')
-    if btn == 'forward':
-        print('forward')
-    elif btn == 'left':
-        print('left')
-    elif btn == 'right':
-        print('right')
-    elif btn == 'stop':
-        print('stop')
-    elif btn == 'backward':
-        print('backward')
-    else:
-        print('btn error')
+    if request.method == "GET":
+        btn = request.args.get('a')
+        if btn == 'forward':
+            print('forward')
+            car_stat.new=1
+            car_stat.movement="forward"
+        elif btn == 'left':
+            print('left')
+            car_stat.new=1
+            car_stat.movement="left"
+        elif btn == 'right':
+            print('right')
+            car_stat.new=1
+            car_stat.movement="right"
+        elif btn == 'stop':
+            print('stop')
+            car_stat.new=1
+            car_stat.movement="stop"
+        elif btn == 'backward':
+            print('backward')
+            car_stat.new=1
+            car_stat.movement="backward"
+        else:
+            print('btn error')
 
     return "nothing"
 
@@ -79,4 +144,4 @@ def create_plot():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0',debug=True)
