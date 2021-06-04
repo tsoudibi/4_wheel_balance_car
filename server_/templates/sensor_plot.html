@@ -21,13 +21,22 @@
     <div class="chart" id="scatter">
         <script>
             var int = setInterval(function(){getDynamicData()}, 1000); // refreshing frequency (ms)
-
+            var layout = {
+                xaxis: {
+                    title: 'x-direction',
+                    range: [-2000, 2000],
+                },
+                yaxis: {
+                    title: 'y-direction',
+                    range: [-2000, 2000],
+                }
+                };
             function getDynamicData() {
             $.ajax({
                 url: '/fresh',
                 dataType: 'json',
                 success: function(data) { // if server response data
-                Plotly.newPlot('scatter',data); } // new plot
+                Plotly.newPlot('scatter', data, layout); } // new plot
                 });
             }
         </script>
@@ -35,8 +44,7 @@
 </div>
 <div>
     <CENTER>
-        <a href=# id=action><button type="button" name="action" style="width:150px;height:50px;">開始</button></a>
-        <a href=# id=stop><button type="button" name="stop" style="width:150px;height:50px;">停止</button></a>
+        <a href=# id=stop><button id="stop_btn" type="button" name="stop" style="width:150px;height:50px;">停止</button></a>
     </CENTER>
 </div>
 
@@ -50,24 +58,12 @@
 
 <script type=text/javascript>
         $(function() {
-          $('a#action').bind('click', function() {
-            $.getJSON('/mode2_button_click',{
-                a : '1'
-            },function(data) {
-            });
-        return false;
-      });
-    });
-</script>
-
-<script type=text/javascript>
-        $(function() {
           $('a#stop').bind('click', function() {
-            $.getJSON('/mode2_button_click',{
-                a: '2'
-            },function(data) {
-            });
-        return false;
+          $("#stop_btn").html('sss');
+          $.getJSON('/mode2_button_click',{
+            a: this
+          },function(data) {
+          });
       });
     });
 </script>

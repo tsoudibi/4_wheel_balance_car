@@ -1,3 +1,18 @@
+.mode input{
+  border:0;
+  margin-bottom:0.4rem;
+  background-color:#ffbf69;
+  color:#fff;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.mode input:hover{
+  color:#ee6c4d;
+  background-color:#fff;
+  border:2px #ee6c4d solid;
+}
+
 button{
   font-size:18px;
   border:0;
