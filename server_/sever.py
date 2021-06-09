@@ -33,6 +33,8 @@ class status:
         self.cam_Analog_x = 0
         self.cam_Analog_y = 0
 
+        self.SSID = 'NAN'
+
 
 car_stat = status()
 
@@ -40,7 +42,18 @@ car_stat = status()
 @app.route("/")
 def controller():
     car_stat.control_mode = "button"
-    return render_template("index.html", data=None)
+
+    # 狀態初始化
+    data = {'speedL': 'Getting...',
+            'speedR': 'Getting...',
+            'statusL': 'Getting...',
+            'statusR': 'Getting...',
+            'control_L': 'Getting...',
+            'control_R': 'Getting...',
+            'WiFi_SSID': '偵測中'
+            }
+
+    return render_template("index.html", data=data)
 
 
 @app.route('/sensor', methods=['GET', 'POST'])
@@ -63,7 +76,8 @@ def camera():
             'statusL': 'Getting...',
             'statusR': 'Getting...',
             'control_L': 'Getting...',
-            'control_R': 'Getting...'
+            'control_R': 'Getting...',
+            'WiFi_SSID': '偵測中'
             }
 
     return render_template('camera.html', data=data)
@@ -147,12 +161,13 @@ def newPlot():
 
 @app.route('/newStatus', methods=['GET', 'POST'])
 def newStatus():
+
     data = {'speedL': random.randrange(100),
             'speedR': random.randrange(100),
             'statusL': random.randrange(100),
             'statusR': random.randrange(100),
             'control_L': random.randrange(100),
-            'control_R': random.randrange(100)
+            'control_R': random.randrange(100),
             }
 
     return data
@@ -169,8 +184,7 @@ def create_plot():
         x=random_x,
         y=random_y,
         mode='lines+markers',  # lines+dots
-        # marker_color='rgba(152, 0, 0, .8)',
-        marker=dict(size=30, color='LightSkyBlue')
+        marker=dict(size=30, color='rgba(255, 109, 0, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)

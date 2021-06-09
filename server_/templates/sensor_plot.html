@@ -26,19 +26,19 @@
             <th>Right motor</th>
         </tr>
         <tr align=center>
-            <td>Velocity</td>
+            <td>RPM</td>
             <td id="speedL">{{ data.speedL }}</td>
             <td id="speedR">{{ data.speedR }}</td>
+        </tr>
+        <tr align=center>
+            <td>Signal Control</td>
+            <td id="control_L">{{ data.control_L }}</td>
+            <td id="control_R">{{ data.control_R }}</td>
         </tr>
         <tr align=center>
             <td>Status</td>
             <td id="statusL">{{ data.statusL }}</td>
             <td id="statusR">{{ data.statusR }}</td>
-        </tr>
-        <tr align=center>
-            <td>Connection with esp32</td>
-            <td id="control_L">{{ data.control_L }}</td>
-            <td id="control_R">{{ data.control_R }}</td>
         </tr>
     </table>
         <script>

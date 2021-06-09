@@ -55,6 +55,18 @@ h2{
   border-radius:5px;
 }
 
+#scatter{
+  background-color: #E0FBFC;
+  margin-bottom:0rem;
+  margin-top:0rem;
+  border:4px #48cae4 solid;
+  padding:0px;
+}
+#wifi{
+  font-size: 20px;
+  text-align:left;
+}
+
 .direction button{
   height:300px;
   width:32%;
@@ -71,6 +83,6 @@ h2{
   color:#fff;
   font-size:70px;
   margin-bottom:0.4rem;
-  background-color:#efea5a;
+  background-color:#98C1D9;
   border:0px #00b4d8 solid;
 }
