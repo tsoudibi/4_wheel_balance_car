@@ -1,50 +1,76 @@
+h1{
+  color:#fff; /* 字體:顏色 */
+  font-size:50px; /* 字體:大小 */
+  font-weight:bold;
+  background-color:#ff6d00; /* 背景:顏色 */
+  padding:0px; /* 內距:寬度 */
+}
+
+h2{
+  color: #293241;
+  font-size: 40px;
+  font-weight: bold;
+  background-color: #fff;
+  border-left: 7px solid #642100; /* 左邊框:寬度 樣式 顏色 */
+  padding:10px;
+}
+
 .mode input{
+  width:30%;
+  font-size:40px;
   border:0;
   margin-bottom:0.4rem;
-  background-color:#ffbf69;
+  background-color:#ffba08;
   color:#fff;
   border-radius:5px;
   cursor:pointer;
 }
 
 .mode input:hover{
-  color:#ee6c4d;
+  color:#ffba08;
   background-color:#fff;
-  border:2px #ee6c4d solid;
+  border:4px #ffba08 solid;
 }
 
 .status table {
   font-family: 微軟正黑體;
-  font-size:15px;
-  width:300px;
+  font-size:40px;
+  width:100%;
   text-align:center;
   border-radius:5px;
 }
+
 .status th {
-  background-color: #3d5a80;
-  padding:10px;
   color:#fff;
+  background-color: #48cae4;
+  border:2px solid #fff;
+  padding:10px;
   border-radius:5px;
 }
+
 .status td {
   background-color: #e0fbfc;
-  padding:5px;
+  border:2px solid #fff;
+  padding:10px;
   border-radius:5px;
 }
 
 .direction button{
-  font-size:18px;
+  height:300px;
+  width:32%;
+  font-size:70px;
   border:0;
   margin-bottom:0.4rem;
-  background-color:#293241;
+  background-color:#3D5A80;
   color:#fff;
   border-radius:10px;
   cursor:pointer;
 }
 
 .direction button:hover{
-  color:#293241;
-  font-size:18px;
-  background-color:#fff;
-  border:2px #ee6c4d solid;
+  color:#fff;
+  font-size:70px;
+  margin-bottom:0.4rem;
+  background-color:#efea5a;
+  border:0px #00b4d8 solid;
 }
