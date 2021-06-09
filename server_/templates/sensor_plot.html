@@ -101,11 +101,11 @@
                     btn:$("#stop_btn").html()
                     },function(data) {
                         $("#stop_btn").html(data.stopBtn);
-                        if(data.stopBtn="continue"){ //執行暫停
+                        if(data.stopBtn=="continue"){ //執行暫停
                             console.log('Stopped');
                             clearInterval(plot);
                             plot = null;
-                        }else if(data.stopBtn="stop"){ //執行重啟
+                        }else{ //執行重啟
                             console.log('continuing');
                             plot = setInterval(function(){getDynamicData()}, 1000);
                         }
