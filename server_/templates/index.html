@@ -4,52 +4,94 @@
     <meta charset="UTF-8">
     <title>馬桶車:Controller</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/template.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
   <h1><CENTER>馬桶車</CENTER></h1>
   <h2>模式切換</h2>
   <div class="mode">
       <CENTER>
-          <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller" style="width:150px;height:30px;"></a>
-          <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor" style="width:150px;height:30px;"></a>
-          <a href=# id=mode3 ><input type="button" name="mode_3" value="camera" style="width:150px;height:30px;"></a><BR>
+          <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller"></a>
+          <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
+          <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
       </CENTER>
   </div>
   <h2>狀態顯示</h2>
   <div class=status>
     <CENTER>
     <table>
-      <tr align=center>
-        <th align=center></th>
-        <th>left motor</th>
-        <th>right motor</th>
-      </tr>
-      <tr align=center>
-        <td>velocity</td>
-        <td>左速</td>
-        <td>右速</td>
-      </tr>
-      <tr align=center>
-        <td>status</td>
-        <td>左狀態</td>
-        <td>右狀態</td>
-      </tr>
+        <tr align=center>
+            <th align=center></th>
+            <th>Left motor</th>
+            <th>Right motor</th>
+            <th id="scatter" rowspan="4"></th>
+        </tr>
+        <tr align=center>
+            <td>Velocity</td>
+            <td id="speedL">{{ data.speedL }}</td>
+            <td id="speedR">{{ data.speedR }}</td>
+        </tr>
+        <tr align=center>
+            <td>Status</td>
+            <td id="statusL">{{ data.statusL }}</td>
+            <td id="statusR">{{ data.statusR }}</td>
+        </tr>
+        <tr align=center>
+            <td>Connection with esp32</td>
+            <td id="control_L">{{ data.control_L }}</td>
+            <td id="control_R">{{ data.control_R }}</td>
+        </tr>
     </table>
+        <script>
+            setInterval(function(){getDynamicData()}, 1000); // refreshing frequency (ms)
+            var config = {displayModeBar: false}; // 工具列不顯示
+            var layout = {
+                autosize: false,
+                height: 375,
+                width: 350,
+                xaxis: {
+                    range: [-2000, 2000],
+                },
+                yaxis: {
+                    range: [-2000, 2000],
+                }
+            };
+
+            function getDynamicData() {
+            $.ajax({
+                url: '/newStatus',
+                dataType: 'json',
+                success: function(data) { // if server response data
+                    $("#speedL").html(data.speedL);
+                    $("#speedR").html(data.speedR);
+                    $("#statusL").html(data.statusL);
+                    $("#statusR").html(data.statusR);
+                    $("#control_L").html(data.control_L);
+                    $("#control_R").html(data.control_R);
+                }
+                });
+            $.ajax({
+                url: '/newPlot',
+                dataType: 'json',
+                success: function(data) { // if server response data
+                Plotly.newPlot('scatter', data, layout, config); } // new plot
+                });
+            }
+        </script>
     </CENTER>
   </div>
-
   <h2>方向控制</h2>
   <div class="direction">
       <CENTER>
-          <a href=# id=forward><button type="button" name="forward" style="width:150px;height:100px;">^</button></a><BR>
+          <a href=# id=forward><button type="button" name="forward">^</button></a><BR>
       </CENTER>
       <CENTER>
-          <a href=# id=left><button type="button" name="left" style="width:150px;height:100px;"><</button></a>
-          <a href=# id=stop><button type="button" name="stop" style="width:150px;height:100px;">stop</button></a>
-          <a href=# id=right><button type="button" name="right" style="width:150px;height:100px;">></button></a>
+          <a href=# id=left><button type="button" name="left"><</button></a>
+          <a href=# id=stop><button type="button" name="stop">stop</button></a>
+          <a href=# id=right><button type="button" name="right">></button></a>
       </CENTER>
       <CENTER>
-          <a href=# id=backward><button type="button" name="backward" style="width:150px;height:100px;">倒車檔</button></a>
+          <a href=# id=backward><button type="button" name="backward">倒車檔</button></a>
       </CENTER>
       </a>
   </div>
@@ -60,18 +102,6 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
-
-<script type=text/javascript>
-        $(function() {
-          $('a#test').bind('click', function() {
-            $.getJSON('/mode1_button_click',{
-                a : this.id
-            },function(data) {
-            });
-        return false;
-      });
-    });
-</script>
 
 <script type=text/javascript>
         $(function() {
