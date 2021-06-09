@@ -50,7 +50,7 @@ def controller():
             'statusR': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'WiFi_SSID': '偵測中'
+            'SSID': '偵測中'
             }
 
     return render_template("index.html", data=data)
@@ -77,7 +77,7 @@ def camera():
             'statusR': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'WiFi_SSID': '偵測中'
+            'SSID': '偵測中'
             }
 
     return render_template('camera.html', data=data)
@@ -94,16 +94,16 @@ def esp32():
         elif which == 'control_mode':
             return str(car_stat.control_mode)
         elif which == 'speed':
-            return str(car_stat.speedL)+","+str(car_stat.speedR)
+            return str(car_stat.speedL) + "," + str(car_stat.speedR)
         elif which == 'sensor':
-            return str(car_stat.sensor_x)+","+str(car_stat.sensor_y)
+            return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
         elif which == 'new':
             return str(car_stat.new)
         SSID = request.args.get('SSID')
-        if SSID != None:
+        if SSID is not None:
             car_stat.SSID = SSID
             return car_stat.SSID
-        
+
     # get data from esp32
     if request.method == "POST":
         data = request.get_json()
@@ -168,21 +168,19 @@ def newPlot():
 
 @app.route('/newStatus', methods=['GET', 'POST'])
 def newStatus():
-
     data = {'speedL': car_stat.speedL,
             'speedR': car_stat.speedR,
             'statusL': random.randrange(100),
             'statusR': random.randrange(100),
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
-            'WiFi_SSID':car_stat.SSID
+            'WiFi_SSID': car_stat.SSID
             }
 
     return data
 
 
 def create_plot():
-
     N = 5
     random_x = np.random.randint(-2000, 2000, N, dtype='int32')
     random_y = np.random.randint(-2000, 2000, N, dtype='int32')
