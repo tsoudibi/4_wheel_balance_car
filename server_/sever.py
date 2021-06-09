@@ -15,7 +15,7 @@ class status:
         self.new = 0
 
         self.movement = "NAN132"
-        self.control_mode = "1"
+        self.control_mode = "button"
 
         self.speedL = 0
         self.speedR = 0
@@ -99,10 +99,17 @@ def esp32():
             return str(car_stat.sensor_x)+","+str(car_stat.sensor_y)
         elif which == 'new':
             return str(car_stat.new)
+        SSID = request.args.get('SSID')
+        if SSID != None:
+            car_stat.SSID = SSID
+            return car_stat.SSID
+        
     # get data from esp32
     if request.method == "POST":
         data = request.get_json()
         print(data)
+        car_stat.control_L = data["control"][0]
+        car_stat.control_R = data["control"][1]
         car_stat.speedL = data["speed"][0]
         car_stat.speedR = data["speed"][1]
         car_stat.sensor_x = data["sensor"][0]
@@ -162,12 +169,13 @@ def newPlot():
 @app.route('/newStatus', methods=['GET', 'POST'])
 def newStatus():
 
-    data = {'speedL': random.randrange(100),
-            'speedR': random.randrange(100),
+    data = {'speedL': car_stat.speedL,
+            'speedR': car_stat.speedR,
             'statusL': random.randrange(100),
             'statusR': random.randrange(100),
-            'control_L': random.randrange(100),
-            'control_R': random.randrange(100),
+            'control_L': car_stat.control_L,
+            'control_R': car_stat.control_R
+            'WiFi_SSID':car_stat.SSID
             }
 
     return data
