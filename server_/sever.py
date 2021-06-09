@@ -174,7 +174,7 @@ def newStatus():
             'statusL': random.randrange(100),
             'statusR': random.randrange(100),
             'control_L': car_stat.control_L,
-            'control_R': car_stat.control_R
+            'control_R': car_stat.control_R,
             'WiFi_SSID':car_stat.SSID
             }
 
