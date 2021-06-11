@@ -161,7 +161,7 @@ def plot_trigger():
 
 @app.route('/newPlot', methods=['GET', 'POST'])
 def newPlot():
-    scatter = create_plot()
+    scatter = create_plot_real()
     # print(scatter)
     return scatter
 
@@ -174,13 +174,40 @@ def newStatus():
             'statusR': random.randrange(100),
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
-            'WiFi_SSID': car_stat.SSID
+            'SSID': car_stat.SSID
             }
 
     return data
 
 
-def create_plot():
+def create_plot_real():
+
+    x = []
+    y = []
+
+    if len(x) == 5:
+        del x[0]
+        del y[0]
+        x.append(car_stat.sensor_x)
+        y.append(car_stat.sensor_y)
+    else:
+        x.append(car_stat.sensor_x)
+        y.append(car_stat.sensor_y)
+
+    # Create a trace
+    data = [go.Scatter(
+        x=x,
+        y=y,
+        mode='lines+markers',  # lines+dots
+        marker=dict(size=30, color='rgba(255, 109, 0, 1)')
+    )]
+
+    graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+
+def create_plot_random():
     N = 5
     random_x = np.random.randint(-2000, 2000, N, dtype='int32')
     random_y = np.random.randint(-2000, 2000, N, dtype='int32')

@@ -40,6 +40,10 @@
             <td id="statusL">{{ data.statusL }}</td>
             <td id="statusR">{{ data.statusR }}</td>
         </tr>
+        <tr>
+            <td>Wifi</td>
+            <td id="wifi" colspan="2">{{ data.WiFi_SSID }}</td>
+        </tr>
     </table>
         <script>
             var plot = setInterval(function(){getDynamicData()}, 1000); // refreshing frequency (ms)
@@ -66,6 +70,7 @@
                     $("#statusR").html(data.statusR);
                     $("#control_L").html(data.control_L);
                     $("#control_R").html(data.control_R);
+                    $("#wifi").html(data.SSID);
                 }
                 });
             $.ajax({

@@ -31,23 +31,48 @@ h2{
   background-color:#fff;
   border:4px #ffba08 solid;
 }
+
 .status table {
   font-family: 微軟正黑體;
-  font-size:15px;
-  width:300px;
+  font-size:40px;
+  width:100%;
   text-align:center;
   border-radius:5px;
 }
-.status th {
-  background-color: #3d5a80;
-  padding:10px;
-  color:#fff;
+
+.status table {
+  font-family: 微軟正黑體;
+  font-size:40px;
+  width:100%;
+  text-align:center;
   border-radius:5px;
 }
+
+.status th {
+  color:#fff;
+  background-color: #48cae4;
+  border:2px solid #fff;
+  padding:6px;
+  border-radius:5px;
+}
+
 .status td {
   background-color: #e0fbfc;
-  padding:5px;
+  border:2px solid #fff;
+  padding:6px;
   border-radius:5px;
+}
+
+#scatter{
+  background-color: #E0FBFC;
+  margin-bottom:0rem;
+  margin-top:0rem;
+  border:4px #48cae4 solid;
+  padding:0px;
+}
+#wifi{
+  font-size: 40px;
+  text-align:center;
 }
 
 .direction button{

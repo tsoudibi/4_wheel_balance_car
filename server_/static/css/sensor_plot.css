@@ -44,15 +44,20 @@ h2{
   color:#fff;
   background-color: #48cae4;
   border:2px solid #fff;
-  padding:10px;
+  padding:6px;
   border-radius:5px;
 }
 
 .status td {
   background-color: #e0fbfc;
   border:2px solid #fff;
-  padding:10px;
+  padding:6px;
   border-radius:5px;
+}
+
+#wifi{
+  font-size: 40px;
+  text-align:center;
 }
 
 button{
