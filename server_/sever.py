@@ -17,10 +17,12 @@ class status:
         self.movement = "NAN132"
         self.control_mode = "button"
 
-        self.speedL = 0
-        self.speedR = 0
+        self.RPM_L = 0
+        self.RPM_R = 0
         self.sensor_x = 0
         self.sensor_y = 0
+        self.queue_sensor_x = []
+        self.queue_sensor_y = []
 
         self.control_L = 0
         self.control_R = 0
@@ -36,6 +38,7 @@ class status:
         self.SSID = 'NAN'
 
 
+
 car_stat = status()
 
 
@@ -44,13 +47,13 @@ def controller():
     car_stat.control_mode = "button"
 
     # 狀態初始化
-    data = {'speedL': 'Getting...',
-            'speedR': 'Getting...',
-            'statusL': 'Getting...',
-            'statusR': 'Getting...',
+    data = {'RPM_L': 'Getting...',
+            'RPM_R': 'Getting...',
+            'status_L': 'Getting...',
+            'status_R': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'SSID': '偵測中'
+            'SSID': 'Getting...'
             }
 
     return render_template("index.html", data=data)
@@ -60,7 +63,7 @@ def controller():
 def sensor():
     car_stat.control_mode = "sensor"
 
-    # 狀態初始化
+    # 按鈕初始化
     data = {'stopBtn': 'stop'}
 
     return render_template('sensor_plot.html', data=data)
@@ -71,13 +74,13 @@ def camera():
     car_stat.control_mode = "camera"
 
     # 狀態初始化
-    data = {'speedL': 'Getting...',
-            'speedR': 'Getting...',
-            'statusL': 'Getting...',
-            'statusR': 'Getting...',
+    data = {'RPM_L': 'Getting...',
+            'RPM_R': 'Getting...',
+            'status_L': 'Getting...',
+            'status_R': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'SSID': '偵測中'
+            'SSID': 'Getting...'
             }
 
     return render_template('camera.html', data=data)
@@ -93,8 +96,8 @@ def esp32():
             return car_stat.movement
         elif which == 'control_mode':
             return str(car_stat.control_mode)
-        elif which == 'speed':
-            return str(car_stat.speedL) + "," + str(car_stat.speedR)
+        elif which == 'RPM':
+            return str(car_stat.RPM_L) + "," + str(car_stat.RPM_R)
         elif which == 'sensor':
             return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
         elif which == 'new':
@@ -110,11 +113,11 @@ def esp32():
         print(data)
         car_stat.control_L = data["control"][0]
         car_stat.control_R = data["control"][1]
-        car_stat.speedL = data["speed"][0]
-        car_stat.speedR = data["speed"][1]
+        car_stat.rpm_L = data["RPM"][0]
+        car_stat.rpm_R = data["RPM"][1]
         car_stat.sensor_x = data["sensor"][0]
         car_stat.sensor_y = data["sensor"][1]
-        234567890()
+        newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
         return jsonify({"state": "ok"})
 
 
@@ -160,6 +163,12 @@ def plot_trigger():
         return data
 
 
+@app.route('/RPM_newPlot', methods=['GET', 'POST'])
+def RPM_newPlot():
+    scatter = create_RPM_plot_real()
+    return scatter
+
+
 @app.route('/newPlot', methods=['GET', 'POST'])
 def newPlot():
     scatter = create_plot_real()
@@ -169,10 +178,10 @@ def newPlot():
 
 @app.route('/newStatus', methods=['GET', 'POST'])
 def newStatus():
-    data = {'speedL': car_stat.speedL,
-            'speedR': car_stat.speedR,
-            'statusL': 'NONE',
-            'statusR': 'NONE',
+    data = {'RPM_L': car_stat.RPM_L,
+            'RPM_R': car_stat.RPM_R,
+            'status_L': 'NONE',
+            'status_R': 'NONE',
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID
@@ -181,26 +190,44 @@ def newStatus():
     return data
 
 
-def create_plot_real():
+def create_RPM_plot_real():
 
-    x = []
-    y = []
+    N = 5
+    random_x1 = np.random.randint(-200, 200, N, dtype='int32')
+    random_y1 = np.random.randint(-200, 200, N, dtype='int32')
 
-    if len(x) == 5:
-        del x[0]
-        del y[0]
-        x.append(car_stat.sensor_x)
-        y.append(car_stat.sensor_y)
-    else:
-        x.append(car_stat.sensor_x)
-        y.append(car_stat.sensor_y)
+    con_x = [-128, 128]
+    con_y = [car_stat.control_L, car_stat.control_R]
 
     # Create a trace
     data = [go.Scatter(
-        x=x,
-        y=y,
+        name='RPM',
+        x=random_x1,
+        y=random_y1,
         mode='lines+markers',  # lines+dots
         marker=dict(size=30, color='rgba(255, 109, 0, 1)')
+    ), go.Scatter(
+        name='Control',
+        x=con_x,
+        y=con_y,
+        mode='lines+markers',  # lines+dots
+        line_width=10,
+        marker=dict(size=50, color='rgba(61, 90, 128, 0.8)')
+    )]
+
+    graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+
+def create_plot_real():
+
+    # Create a trace
+    data = [go.Scatter(
+        x=car_stat.queue_sensor_x,
+        y=car_stat.queue_sensor_y,
+        mode='lines+markers',  # lines+dots
+        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
@@ -210,20 +237,30 @@ def create_plot_real():
 
 def create_plot_random():
     N = 5
-    random_x = np.random.randint(-2000, 2000, N, dtype='int32')
-    random_y = np.random.randint(-2000, 2000, N, dtype='int32')
+    random_x = np.random.randint(-500, 500, N, dtype='int32')
+    random_y = np.random.randint(-500, 500, N, dtype='int32')
 
     # Create a trace
     data = [go.Scatter(
         x=random_x,
         y=random_y,
         mode='lines+markers',  # lines+dots
-        marker=dict(size=30, color='rgba(255, 109, 0, 1)')
+        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
 
     return graphJSON
+
+
+def newQueue(queue_x, queue_y, new_x, new_y):
+
+    if len(queue_x) == 5:
+        del queue_x[0]  # pop x
+        del queue_y[0]  # pop y
+
+    queue_x.append(new_x)  # push new x to queue
+    queue_y.append(new_y)  # push new y to queue
 
 
 if __name__ == "__main__":

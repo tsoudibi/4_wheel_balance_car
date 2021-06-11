@@ -28,8 +28,8 @@
         </tr>
         <tr align=center>
             <td>RPM</td>
-            <td id="speedL">{{ data.speedL }}</td>
-            <td id="speedR">{{ data.speedR }}</td>
+            <td id="RPM_L">{{ data.RPM_L }}</td>
+            <td id="RPM_R">{{ data.RPM_R }}</td>
         </tr>
         <tr align=center>
             <td>Signal Control</td>
@@ -38,8 +38,8 @@
         </tr>
         <tr align=center>
             <td>Status</td>
-            <td id="statusL">{{ data.statusL }}</td>
-            <td id="statusR">{{ data.statusR }}</td>
+            <td id="status_L">{{ data.status_L }}</td>
+            <td id="status_R">{{ data.status_R }}</td>
         </tr>
         <tr>
             <td>WiFi</td>
@@ -48,7 +48,7 @@
     </table>
         <script>
             setInterval(function(){getDynamicData()}, 1000); // refreshing frequency (ms)
-            var config = {displayModeBar: false}; // 工具列不顯示
+            var config = {displayModeBar: true}; // 工具列不顯示
             var layout = {
                 autoresize: false,
                 height: 600,
@@ -57,11 +57,11 @@
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0.05)',
                 xaxis: {
-                    range: [-2000, 2000],
+                    range: [-256, 256],
                     showticklabels: false,
                 },
                 yaxis: {
-                    range: [-2000, 2000],
+                    range: [-130, 256],
                     showticklabels: false,
                 }
             };
@@ -71,17 +71,17 @@
                 url: '/newStatus',
                 dataType: 'json',
                 success: function(data) { // if server response data
-                    $("#speedL").html(data.speedL);
-                    $("#speedR").html(data.speedR);
-                    $("#statusL").html(data.statusL);
-                    $("#statusR").html(data.statusR);
+                    $("#RPM_L").html(data.RPM_L);
+                    $("#RPM_R").html(data.RPM_R);
+                    $("#status_L").html(data.status_L);
+                    $("#status_R").html(data.status_R);
                     $("#control_L").html(data.control_L);
                     $("#control_R").html(data.control_R);
                     $("#wifi").html(data.SSID);
                 }
                 });
             $.ajax({
-                url: '/newPlot',
+                url: '/RPM_newPlot',
                 dataType: 'json',
                 success: function(data) { // if server response data
                 Plotly.newPlot('scatter', data, layout, config); } // new plot
