@@ -114,6 +114,7 @@ def esp32():
         car_stat.speedR = data["speed"][1]
         car_stat.sensor_x = data["sensor"][0]
         car_stat.sensor_y = data["sensor"][1]
+        234567890()
         return jsonify({"state": "ok"})
 
 
