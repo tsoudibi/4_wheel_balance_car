@@ -170,8 +170,8 @@ def newPlot():
 def newStatus():
     data = {'speedL': car_stat.speedL,
             'speedR': car_stat.speedR,
-            'statusL': random.randrange(100),
-            'statusR': random.randrange(100),
+            'statusL': 'NONE',
+            'statusR': 'NONE',
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID
