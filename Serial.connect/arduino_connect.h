@@ -6,7 +6,7 @@
 #define ARDUINO_CONNECT_H
 
 HardwareSerial Serialbyarduino(1);
-HardwareSerial Serialbyardunio_2(2);
+HardwareSerial Serialbyarduino_2(2);
 
 String get_string;
 String get_string_2;
@@ -17,9 +17,11 @@ char store_string_2[50] ;
 int valuebyHX711[] = {0};//data return by HX711 
 
 // control signal from arduino
-int signal_L = 50;
-int signal_R = 50;
+int signal_1 = 0;
+int signal_2 = 0;
 
+int signal_3 = 0;
+int signal_4 = 0;
 
 /*[HTTP]debug*/
 unsigned long int time_now;
@@ -48,25 +50,48 @@ void strtochar(){
 }
 
 void scan(){
+  ////////////////////Serial_1//////////////////////////
   char *arr;
   arr = strtok(store_string, ",");
   int i = 0;
   int value[3];
-  while (arr != NULL){
-        value[++i] = atoi(arr); 
-        arr = strtok(NULL, ",");
-    }
+  while (arr != NULL)
+  {
+    value[++i] = atoi(arr); 
+    arr = strtok(NULL, ",");
+  }
+
+  signal_1 = value[1];
+  signal_2 = value[2];
+  ////////////////////Serial_2//////////////////////////
   char *arr_2;
   arr_2 = strtok(store_string_2, ",");
   int j = 0;
-  int value[3];
-  while (arr != NULL){
-        value[++j] = atoi(arr); 
-        arr_2 = strtok(NULL, ",");
-    }
+  int value_2[3];
+  while (arr_2 != NULL)
+  {
+    value_2[++j] = atoi(arr_2); 
+    arr_2 = strtok(NULL, ",");
+  }
+
+  signal_3 = value_2[1];
+  signal_4 = value_2[2];
+  
 }
 
-
-
+int returnvalue(int n)
+{
+  if(n == 1)
+    return signal_1;
+  if(n == 2)
+    return signal_2;  
+}
+int returnvalue_2(int n)
+{
+  if(n == 1)
+    return signal_3;
+  if(n == 2)
+    return signal_4;  
+}
 
 #endif /* ARDUINO_CONNECT_H */
