@@ -63,8 +63,16 @@ def controller():
 def sensor():
     car_stat.control_mode = "sensor"
 
-    # 按鈕初始化
-    data = {'stopBtn': 'stop'}
+    # 狀態初始化
+    data = {'RPM_L': 'Getting...',
+            'RPM_R': 'Getting...',
+            'status_L': 'Getting...',
+            'status_R': 'Getting...',
+            'control_L': 'Getting...',
+            'control_R': 'Getting...',
+            'SSID': 'Getting...',
+            'stopBtn': 'stop'
+            }
 
     return render_template('sensor_plot.html', data=data)
 
@@ -80,7 +88,8 @@ def camera():
             'status_R': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'SSID': 'Getting...'
+            'SSID': 'Getting...',
+            'stopBtn': 'start'
             }
 
     return render_template('camera.html', data=data)
@@ -162,6 +171,17 @@ def plot_trigger():
         data = {'stopBtn': 'stop'}
         return data
 
+
+@app.route('/mode3_button_click')
+def camera_plot():
+    btn = request.args.get('btn')
+    print(btn)
+    if btn == 'stop':  # when "stop" clicked
+        data = {'stopBtn': 'continue'}
+        return data
+    else:              # when "start" clicked
+        data = {'stopBtn': 'stop'}
+        return data
 
 @app.route('/RPM_newPlot', methods=['GET', 'POST'])
 def RPM_newPlot():

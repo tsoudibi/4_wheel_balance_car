@@ -75,19 +75,22 @@ h2{
   text-align:center;
 }
 
-.direction button{
-  font-size:18px;
+button{
+  font-size:30px;
   border:0;
+  width:30%;
+  height:60px;
   margin-bottom:0.4rem;
-  background-color:#293241;
+  background-color:#3D5A80;
   color:#fff;
   border-radius:10px;
   cursor:pointer;
 }
 
-.direction button:hover{
-  color:#293241;
-  font-size:18px;
-  background-color:#fff;
-  border:2px #ee6c4d solid;
+button:hover{
+  color:#fff;
+  font-size:30px;
+  width:30%;
+  background-color:#023e8a;
+  border:0px #efea5a solid;
 }

@@ -28,8 +28,8 @@
         </tr>
         <tr align=center>
             <td>RPM</td>
-            <td id="speedL">{{ data.speedL }}</td>
-            <td id="speedR">{{ data.speedR }}</td>
+            <td id="RPM_L">{{ data.RPM_L }}</td>
+            <td id="RPM_R">{{ data.RPM_R }}</td>
         </tr>
         <tr align=center>
             <td>Signal Control</td>
@@ -38,8 +38,8 @@
         </tr>
         <tr align=center>
             <td>Status</td>
-            <td id="statusL">{{ data.statusL }}</td>
-            <td id="statusR">{{ data.statusR }}</td>
+            <td id="status_L">{{ data.status_L }}</td>
+            <td id="status_R">{{ data.status_R }}</td>
         </tr>
         <tr>
             <td>WiFi</td>
@@ -57,11 +57,11 @@
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0.05)',
                 xaxis: {
-                    range: [-2000, 2000],
+                    range: [-256, 256],
                     showticklabels: false,
                 },
                 yaxis: {
-                    range: [-2000, 2000],
+                    range: [-130, 256],
                     showticklabels: false,
                 }
             };
@@ -81,13 +81,18 @@
                 }
                 });
             $.ajax({
-                url: '/newPlot',
+                url: '/RPM_newPlot',
                 dataType: 'json',
                 success: function(data) { // if server response data
                 Plotly.newPlot('scatter', data, layout, config); } // new plot
                 });
             }
         </script>
+    </CENTER>
+  </div>
+  <div>
+    <CENTER>
+        <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{ data.stopBtn }}</button></a>
     </CENTER>
   </div>
 
@@ -98,3 +103,24 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        $(function() {
+            $('a#stop').bind('click', function() {
+                $.getJSON('/mode2_button_click',{
+                    btn:$("#stop_btn").html()
+                    },function(data) {
+                        $("#stop_btn").html(data.stopBtn);
+                        if(data.stopBtn=="continue"){ //執行暫停
+                            console.log('Stopped');
+                            clearInterval(plot);
+                            plot = null;
+                        }else{ //執行重啟
+                            console.log('continuing');
+                            plot = setInterval(function(){getDynamicData()}, 1000);
+                        }
+                });
+            });
+        });
+</script>
