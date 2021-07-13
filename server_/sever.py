@@ -1,13 +1,17 @@
 import json
 import random
+import time
+from PIL import Image
+import io
 
 import numpy as np
 import plotly as py
 import plotly.graph_objs as go
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
+import HOGcascade
+import thread
 
 app = Flask(__name__)
-
 
 # car status
 class status:
@@ -36,7 +40,6 @@ class status:
         self.cam_Analog_y = 0
 
         self.SSID = 'NAN'
-
 
 
 car_stat = status()
@@ -71,7 +74,7 @@ def sensor():
             'control_L': 'Getting...',
             'control_R': 'Getting...',
             'SSID': 'Getting...',
-            'stopBtn': 'stop'
+            'stopBtn': 'STOP'
             }
 
     return render_template('sensor_plot.html', data=data)
@@ -89,7 +92,7 @@ def camera():
             'control_L': 'Getting...',
             'control_R': 'Getting...',
             'SSID': 'Getting...',
-            'stopBtn': 'start'
+            'stopBtn': 'START'
             }
 
     return render_template('camera.html', data=data)
@@ -164,24 +167,29 @@ def direction_instructions():
 def plot_trigger():
     btn = request.args.get('btn')
     print(btn)
-    if btn == 'stop':
-        data = {'stopBtn': 'continue'}
+    if btn == 'STOP':
+        data = {'stopBtn': 'CONTINUE'}
         return data
     else:
-        data = {'stopBtn': 'stop'}
+        data = {'stopBtn': 'STOP'}
         return data
 
 
 @app.route('/mode3_button_click')
 def camera_plot():
-    btn = request.args.get('btn')
+    btn = request.args.get('btn')  # get button name
     print(btn)
-    if btn == 'stop':  # when "stop" clicked
-        data = {'stopBtn': 'continue'}
+    if btn == 'STOP':  # when "STOP" clicked
+        global t
+        t.kill()
+        data = {'stopBtn': 'CONTINUE'}
         return data
-    else:              # when "start" clicked
-        data = {'stopBtn': 'stop'}
+    else:              # when "START" or "CONTINUE" clicked
+        t = thread.thread_with_trace(target=HOGcascade.HOG)
+        t.start()
+        data = {'stopBtn': 'STOP'}
         return data
+
 
 @app.route('/RPM_newPlot', methods=['GET', 'POST'])
 def RPM_newPlot():
@@ -194,6 +202,26 @@ def newPlot():
     scatter = create_plot_real()
     # print(scatter)
     return scatter
+
+
+@app.route('/CAM_newIMG', methods=['GET'])
+def CAM_newIMG():
+    if HOGcascade.queue is None:
+        return None
+    else:
+        # convert numpy array to PIL Image
+        img = Image.fromarray(HOGcascade.queue[0].astype('uint8'))
+
+        # create file-object in memory
+        file_object = io.BytesIO()
+
+        # write PNG in file-object
+        img.save(file_object, 'jpeg')
+
+        # move to beginning of file so `send_file()` it will read from start
+        file_object.seek(0)
+
+        return send_file(file_object, mimetype='image/jpeg')
 
 
 @app.route('/newStatus', methods=['GET', 'POST'])

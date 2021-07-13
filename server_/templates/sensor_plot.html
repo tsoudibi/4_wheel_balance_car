@@ -19,68 +19,32 @@
 <h2>狀態顯示</h2>
 <div class=status>
     <CENTER>
-    <table>
-        <tr align=center>
-            <th align=center></th>
-            <th>Left motor</th>
-            <th>Right motor</th>
-        </tr>
-        <tr align=center>
-            <td>RPM</td>
-            <td id="speedL">{{ data.speedL }}</td>
-            <td id="speedR">{{ data.speedR }}</td>
-        </tr>
-        <tr align=center>
-            <td>Signal Control</td>
-            <td id="control_L">{{ data.control_L }}</td>
-            <td id="control_R">{{ data.control_R }}</td>
-        </tr>
-        <tr align=center>
-            <td>Status</td>
-            <td id="statusL">{{ data.statusL }}</td>
-            <td id="statusR">{{ data.statusR }}</td>
-        </tr>
-        <tr>
-            <td>Wifi</td>
-            <td id="wifi" colspan="2">{{ data.WiFi_SSID }}</td>
-        </tr>
-    </table>
-        <script>
-            var plot = setInterval(function(){getDynamicData()}, 30); // refreshing frequency (ms)
-            var layout = {
-                height: 1000,
-                xaxis: {
-                    title: 'x-direction',
-                    range: [-500, 500],
-                },
-                yaxis: {
-                    title: 'y-direction',
-                    range: [-500, 500],
-                }
-            };
-
-            function getDynamicData() {
-            $.ajax({
-                url: '/newStatus',
-                dataType: 'json',
-                success: function(data) { // if server response data
-                    $("#speedL").html(data.speedL);
-                    $("#speedR").html(data.speedR);
-                    $("#statusL").html(data.statusL);
-                    $("#statusR").html(data.statusR);
-                    $("#control_L").html(data.control_L);
-                    $("#control_R").html(data.control_R);
-                    $("#wifi").html(data.SSID);
-                }
-                });
-            $.ajax({
-                url: '/newPlot',
-                dataType: 'json',
-                success: function(data) { // if server response data
-                Plotly.newPlot('scatter', data, layout); } // new plot
-                });
-            }
-        </script>
+        <table>
+            <tr align=center>
+                <th align=center></th>
+                <th>Left motor</th>
+                <th>Right motor</th>
+            </tr>
+            <tr align=center>
+                <td>RPM</td>
+                <td id="speedL">{{ data.speedL }}</td>
+                <td id="speedR">{{ data.speedR }}</td>
+            </tr>
+            <tr align=center>
+                <td>Signal Control</td>
+                <td id="control_L">{{ data.control_L }}</td>
+                <td id="control_R">{{ data.control_R }}</td>
+            </tr>
+            <tr align=center>
+                <td>Status</td>
+                <td id="statusL">{{ data.statusL }}</td>
+                <td id="statusR">{{ data.statusR }}</td>
+            </tr>
+            <tr>
+                <td>Wifi</td>
+                <td id="wifi" colspan="2">{{ data.WiFi_SSID }}</td>
+            </tr>
+        </table>
     </CENTER>
 </div>
 <div class="chart" id="scatter"></div>
@@ -89,7 +53,6 @@
         <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{ data.stopBtn }}</button></a>
     </CENTER>
 </div>
-
 </body>
 </html>
 
@@ -99,22 +62,63 @@
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
 <script type=text/javascript>
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        $(function() {
-            $('a#stop').bind('click', function() {
-                $.getJSON('/mode2_button_click',{
-                    btn:$("#stop_btn").html()
-                    },function(data) {
-                        $("#stop_btn").html(data.stopBtn);
-                        if(data.stopBtn=="continue"){ //執行暫停
-                            console.log('Stopped');
-                            clearInterval(plot);
-                            plot = null;
-                        }else{ //執行重啟
-                            console.log('continuing');
-                            plot = setInterval(function(){getDynamicData()}, 1000);
-                        }
-                });
-            });
+var plot = setInterval(function() {
+    getDynamicData()
+}, 30); // refreshing frequency (ms)
+var layout = {
+    height: 1000,
+    xaxis: {
+        title: 'x-direction',
+        range: [-500, 500],
+    },
+    yaxis: {
+        title: 'y-direction',
+        range: [-500, 500],
+    }
+};
+
+function getDynamicData() {
+    $.ajax({
+        url: '/newStatus',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            $("#speedL").html(data.speedL);
+            $("#speedR").html(data.speedR);
+            $("#statusL").html(data.statusL);
+            $("#statusR").html(data.statusR);
+            $("#control_L").html(data.control_L);
+            $("#control_R").html(data.control_R);
+            $("#wifi").html(data.SSID);
+        }
+    });
+    $.ajax({
+        url: '/newPlot',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            Plotly.newPlot('scatter', data, layout);
+        } // new plot
+    });
+}
+
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+$(function() {
+    $('a#stop').bind('click', function() {
+        $.getJSON('/mode2_button_click', {
+            btn: $("#stop_btn").html()
+        }, function(data) {
+            $("#stop_btn").html(data.stopBtn);
+            if (data.stopBtn == "CONTINUE") { //執行暫停
+                console.log('Stopped');
+                clearInterval(plot);
+                plot = null;
+            } else { //執行重啟
+                console.log('continuing');
+                plot = setInterval(function() {
+                    getDynamicData()
+                }, 1000);
+            }
         });
+    });
+});
 </script>
