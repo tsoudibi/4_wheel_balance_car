@@ -88,30 +88,48 @@ h3{
 #frame_control{
     max-width: 100%;
     max-height: 100%;
-    float:left;
 }
-#frame_control p{
-    color: #293241;
-    font-size:20px;
-    width:25%;
-    font-weight: bold;
-    background-color: #fff;
-    margin-bottom:0.4rem;
-    border: 2px solid #293241;
-    border-radius:10px;
+
+.slidecontainer {
+    width: 100%;
     padding:10px;
+
 }
-#frame_control button{
-    font-size:20px;
-    width:30%;
-    height:60px;
-    margin-bottom:0.4rem;
-    background-color:#3D5A80;
-    color:#fff;
-    border-radius:10px;
-    padding:10px;
-    cursor:pointer;
+
+.slider {
+    -webkit-appearance: none;
+    width: 25%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
 }
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
 img {
     max-width: 100%;
     max-height: 100%;

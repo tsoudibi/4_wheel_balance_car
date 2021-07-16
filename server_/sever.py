@@ -114,6 +114,8 @@ def esp32():
             return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
         elif which == 'new':
             return str(car_stat.new)
+        elif which == 'cam':
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_y) + "," + str(car_stat.cam_width) + "," + str(car_stat.cam_height) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_Analog_x) + "," + str(car_stat.cam_Analog_y)
         SSID = request.args.get('SSID')
         if SSID is not None:
             car_stat.SSID = SSID
@@ -179,12 +181,18 @@ def plot_trigger():
 def camera_plot():
     btn = request.args.get('btn')  # get button name
     print(btn)
-    if btn == 'STOP':  # when "STOP" clicked
+    if btn == 'STOP':       # when "STOP" clicked
         global t
         t.kill()
         data = {'stopBtn': 'CONTINUE'}
         return data
-    else:              # when "START" or "CONTINUE" clicked
+    elif btn == 'START':    # when "START"  clicked
+        HOGcascade.camera_start(device = 'ipcam')
+        t = thread.thread_with_trace(target=HOGcascade.HOG)
+        t.start()
+        data = {'stopBtn': 'STOP'}
+        return data
+    else:                   # when "CONTINUE" clicked
         t = thread.thread_with_trace(target=HOGcascade.HOG)
         t.start()
         data = {'stopBtn': 'STOP'}
