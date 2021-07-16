@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>馬桶車:Camera</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/camera.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<h1><CENTER>馬桶車</CENTER></h1>
+<h2>模式切換</h2>
+<div class="mode">
+    <CENTER>
+        <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller"></a>
+        <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
+        <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
+    </CENTER>
+</div>
+<h2>狀態顯示</h2>
+<div class=status>
+    <CENTER>
+        <table>
+            <tr align=center>
+                <th align=center></th>
+                <th>Left motor</th>
+                <th>Right motor</th>
+                <th id="scatter" rowspan="5"></th>
+            </tr>
+            <tr align=center>
+                <td>RPM</td>
+                <td id="RPM_L">{{ data.RPM_L }}</td>
+                <td id="RPM_R">{{ data.RPM_R }}</td>
+            </tr>
+            <tr align=center>
+                <td>Signal Control</td>
+                <td id="control_L">{{ data.control_L }}</td>
+                <td id="control_R">{{ data.control_R }}</td>
+            </tr>
+            <tr align=center>
+                <td>Status</td>
+                <td id="status_L">{{ data.status_L }}</td>
+                <td id="status_R">{{ data.status_R }}</td>
+            </tr>
+            <tr>
+                <td>WiFi</td>
+                <td id="wifi" colspan="2">{{ data.WiFi_SSID }}</td>
+            </tr>
+        </table>
+    </CENTER>
+</div>
+<div id="camera_img">
+    <CENTER>
+        <img id="img" src="/static/img/img_default.jpeg" alt="影像辨識圖片"/>
+    </CENTER>
+</div>
+<div id="frame_control">
+    <CENTER>
+        <h3>Frames on Web</h3>
+    </CENTER>
+    <CENTER>
+        <a href=# id=add><button id="add_btn" type="button" name="ADD">△</button></a>
+    </CENTER>
+    <CENTER>
+        <p id="frame">frames</p>
+    </CENTER>
+    <CENTER>
+        <a href=# id=sub><button id="sub_btn" type="button" name="SUB">▽</button></a>
+    </CENTER>
+</div>
+<div>
+    <CENTER>
+        <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{data.stopBtn}}</button></a>
+    </CENTER>
+</div>
+</body>
+</html>
+
+<!--load jQuery-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+setInterval(function() {
+    getDynamicData()
+}, 1000); // refreshing frequency (ms)
+var config = {
+    displayModeBar: false
+}; // 工具列不顯示
+var layout = {
+    autoresize: false,
+    height: 600,
+    width: 500,
+
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0.05)',
+    xaxis: {
+        range: [-256, 256],
+        showticklabels: false,
+    },
+    yaxis: {
+        range: [-130, 256],
+        showticklabels: false,
+    }
+};
+
+function getDynamicData() {
+    $.ajax({
+        url: '/newStatus',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            $("#speedL").html(data.speedL);
+            $("#speedR").html(data.speedR);
+            $("#statusL").html(data.statusL);
+            $("#statusR").html(data.statusR);
+            $("#control_L").html(data.control_L);
+            $("#control_R").html(data.control_R);
+            $("#wifi").html(data.SSID);
+        }
+    });
+    $.ajax({
+        url: '/RPM_newPlot',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            Plotly.newPlot('scatter', data, layout, config);
+        } // new plot
+    });
+}
+
+function getDynamicIMG() {
+    $.ajax({
+        url: '/CAM_newIMG',
+        Type: 'GET',
+        contentType: "image/jpeg",
+        complete: function(data) { // complete只要請求完成，無論返回成功還是失敗
+            // upload new img
+            //dt = new Date();
+            //$('img').attr('src',+"?"+new Date());
+            $('img').attr('src', '/CAM_newIMG');
+        }
+    });
+}
+
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+$(function() {
+    $('a#stop').bind('click', function() {
+        $.getJSON('/mode3_button_click', {
+            btn: $("#stop_btn").html()
+        }, function(data) {
+            $("#stop_btn").html(data.stopBtn);
+            if (data.stopBtn == "CONTINUE") { //執行暫停
+                console.log('Stopped');
+                clearInterval(IMG);
+                IMG = null;
+            } else { //執行重啟
+                console.log('continuing');
+                var IMG = setInterval(function() {
+                    getDynamicIMG()
+                }, 150);
+            }
+        });
+    });
+});
+</script>
