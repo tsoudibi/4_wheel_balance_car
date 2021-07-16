@@ -14,7 +14,13 @@ h2{
   border-left: 7px solid #642100; /* 左邊框:寬度 樣式 顏色 */
   padding:10px;
 }
-
+h3{
+  color: #293241;
+  font-size: 30px;
+  font-weight: bold;
+  background-color: #fff;
+  padding:10px;
+}
 .mode input{
   width:30%;
   font-size:40px;
@@ -75,6 +81,37 @@ h2{
   text-align:center;
 }
 
+#camera_img{
+    margin-right:10px;
+    float:left;
+}
+#frame_control{
+    max-width: 100%;
+    max-height: 100%;
+    float:left;
+}
+#frame_control p{
+    color: #293241;
+    font-size:20px;
+    width:25%;
+    font-weight: bold;
+    background-color: #fff;
+    margin-bottom:0.4rem;
+    border: 2px solid #293241;
+    border-radius:10px;
+    padding:10px;
+}
+#frame_control button{
+    font-size:20px;
+    width:30%;
+    height:60px;
+    margin-bottom:0.4rem;
+    background-color:#3D5A80;
+    color:#fff;
+    border-radius:10px;
+    padding:10px;
+    cursor:pointer;
+}
 img {
     max-width: 100%;
     max-height: 100%;
