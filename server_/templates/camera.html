@@ -55,16 +55,13 @@
 </div>
 <div id="frame_control">
     <CENTER>
-        <h3>Frames on Web</h3>
+        <h3>網頁圖片更新頻率(ms)</h3>
     </CENTER>
     <CENTER>
-        <a href=# id=add><button id="add_btn" type="button" name="ADD">△</button></a>
-    </CENTER>
-    <CENTER>
-        <p id="frame">frames</p>
-    </CENTER>
-    <CENTER>
-        <a href=# id=sub><button id="sub_btn" type="button" name="SUB">▽</button></a>
+        <div class="slidecontainer">
+            <input type="range" min="30" max="150" value="150" class="slider" id="myRange">
+            <p>Value: <span id="demo"></span></p>
+        </div>
     </CENTER>
 </div>
 <div>
@@ -81,6 +78,15 @@
   url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
 <script type=text/javascript>
+
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+
 setInterval(function() {
     getDynamicData()
 }, 1000); // refreshing frequency (ms)
@@ -157,7 +163,9 @@ $(function() {
                 console.log('continuing');
                 var IMG = setInterval(function() {
                     getDynamicIMG()
-                }, 150);
+                }, output.innerHTML);  // 以Bar的值作為更新頻率
+                console.log(output.innerHTML);
+
             }
         });
     });
