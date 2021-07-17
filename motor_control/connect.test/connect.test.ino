@@ -23,25 +23,24 @@ void ToGetValueFromSerial()
     {
       HZ_l=returnvalue(i);
       Serial.print(HZ_l);
-      Serial.print(",");
+      Serial.print(" ");
     }
     else if(i==2)
     {
       HZ_r=returnvalue(i);
       Serial.print(HZ_r);
-      Serial.print(",");
     }
     else if(i==3)
     {
       speed_X=returnvalue(i);
-      Serial.print(speed_X);
-      Serial.print(",");
+      /*Serial.print(speed_X);
+      Serial.print(",");*/
     }
     else if(i==4)
     {
       speed_Y=returnvalue(i);
-      Serial.print(speed_Y);
-      Serial.print(",");
+      /*Serial.print(speed_Y);
+      Serial.print(",");*/
     }
   }
   Serial.println("");
@@ -66,7 +65,7 @@ void loop() {
   scan();
   ToGetValueFromSerial();
  /////PID control for motor///// 
-  speedtoHZ(115,115);
+  CommandHZ(7,7);
   EncodingHZ (HZ_l,HZ_r);
   pidcontrol_left();
   pidcontrol_right();
