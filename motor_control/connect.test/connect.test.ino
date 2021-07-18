@@ -22,13 +22,12 @@ void ToGetValueFromSerial()
     if(i==1)
     {
       HZ_l=returnvalue(i);
-      Serial.print(HZ_l);
-      Serial.print(" ");
+      
     }
     else if(i==2)
     {
       HZ_r=returnvalue(i);
-      Serial.print(HZ_r);
+    
     }
     else if(i==3)
     {
@@ -42,8 +41,8 @@ void ToGetValueFromSerial()
       /*Serial.print(speed_Y);
       Serial.print(",");*/
     }
+    Serial.println(String(HZ_l)+","+String(HZ_r));
   }
-  Serial.println("");
 }
 
 void setup() 
@@ -54,8 +53,8 @@ void setup()
  setup_hard_serial();
  SetPID();
  ////test////
- dacWrite(motor_l,110);
- dacWrite(motor_l,110);
+ 
+ delay(500);
 }
 
 void loop() {

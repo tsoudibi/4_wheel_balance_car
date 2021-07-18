@@ -17,8 +17,8 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 
-double kp_l=0.8,ki_l=1.5,kd_l=0;
-double kp_r=1,ki_r=0.8,kd_r=0;
+double kp_l=1.2,ki_l=2,kd_l=0.3;
+double kp_r=1.2,ki_r=0.9,kd_r=0.3;
 
 double input ,output, setpoint;
 PID mypid_left(&input, &output, &setpoint, kp_l, ki_l, kd_l, DIRECT); 
@@ -52,7 +52,8 @@ void pidcontrol_left()
   input = Encoding_HZ_l;
   Output_l = output;
   setpoint = command_HZ_l;
-  
+  /*Serial.print(Output_l);
+  Serial.print(",");*/
   mypid_left.Compute();
 }
 
@@ -61,6 +62,8 @@ void pidcontrol_right()
 {
   input = Encoding_HZ_r;
   Output_r = output;
+  /*Serial.print(Output_r);
+  Serial.print(",");*/
   setpoint = command_HZ_r;
 
   mypid_right.Compute();
