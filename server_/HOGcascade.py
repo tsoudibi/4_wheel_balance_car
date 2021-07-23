@@ -22,7 +22,7 @@ class ipcamCapture:
 	# 記得要設計停止無限迴圈的開關。
         self.isstop = True
         print('ipcam stopped!')
-   
+    
     def getframe(self):
 	# 當有需要影像時，再回傳最新的影像。
         return self.Frame
@@ -115,7 +115,7 @@ def HOG():
             (rects, weights) = HOGCascade.detectMultiScale(gray, winStride=(4, 4), padding=(16, 16), scale=1.5,
                                                            finalThreshold=2.0)
         # Stop if escape key is pressed
-        elif cv2.waitKey(1) & 0xFF == ord('q'):
+        elif cv2.waitKey(1) & 0xFF == 27:
             if mode == 'ipcam':
                 cap.stop()
             break
