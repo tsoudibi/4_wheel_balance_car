@@ -13,6 +13,8 @@ cap = cv2.VideoCapture(0)
 width = 1280 // 2
 height = 960 //2
 depth = 0
+x_center = 0
+y_center = 0
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
@@ -65,15 +67,26 @@ with mp_pose.Pose(
                 if idx == 12 :
                     depth = abs(landmark.z * width)
                     print(landmark.z)
-            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2) 
-            scale = (y_max - y_min) / 160      
+                if idx == 24 :
+                    x_right_hip = landmark.x
+                    y_right_hip = landmark.y
+                if idx == 23 :
+                    x_left_hip = landmark.x
+                    y_left_hip = landmark.y
+            x_center = (x_right_hip + x_left_hip) / 2 - 0.5
+            y_center = (y_right_hip + y_left_hip) / 2 - 0.5
+            body_height = y_max - y_min
+            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)  
+            cv2.circle(image, ((x_center + 0.5) ** width, (y_center + 0.5) ** height),  1, (0, 0, 255), 1)   
+            print("fuck")
             # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
         time2 = time.time()
         fps = 1 / (time2 - time1)
         # print fps 
         cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
         # print depth
-        cv2.putText(image, str(round((y_max - y_min), 2)), (width-150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+        cv2.putText(image, str(round(body_height, 2)), (width-150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+        cv2.putText(image, str(round(x_center, 2)), (width-150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
         cv2.imshow('MediaPipe Pose', image)
         if cv2.waitKey(5) & 0xFF == 27:
             break
