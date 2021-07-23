@@ -10,8 +10,8 @@ cap = cv2.VideoCapture(0)
 # camera Info:
 # max size: 1280*960
 # max fps: 30
-width = 1280 // 2
-height = 960 //2
+width = 1280 // 1
+height = 720 // 1
 depth = 0
 x_center = 0
 y_center = 0
@@ -77,8 +77,7 @@ with mp_pose.Pose(
             y_center = (y_right_hip + y_left_hip) / 2 - 0.5
             body_height = y_max - y_min
             cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)  
-            cv2.circle(image, ((x_center + 0.5) ** width, (y_center + 0.5) ** height),  1, (0, 0, 255), 1)   
-            print("fuck")
+            cv2.circle(image, (round((x_center + 0.5) * width), round((y_center + 0.5) * height)), body_height // 30, (255, 255, 255), -1)   
             # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
         time2 = time.time()
         fps = 1 / (time2 - time1)
