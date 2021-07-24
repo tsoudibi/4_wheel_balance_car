@@ -103,8 +103,8 @@ def mediapipe_pose():
             # Draw the pose annotation on the image.
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            mp_drawing.draw_landmarks( 
-                image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            #mp_drawing.draw_landmarks( image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            draw_pose(image,results.pose_landmarks,mp_pose.POSE_CONNECTIONS)
             # draw rectangle
             x_max = 0
             y_max = 0
@@ -135,7 +135,7 @@ def mediapipe_pose():
                 body_height = y_max - y_min
                 cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)  
                 # draw cneter point of body
-                cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)), body_height // 30, (255, 255, 255), -1)   
+                cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)), body_height // 30, (224, 220, 164), -1)   
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
             time2 = time.time()
             fps = 1 / (time2 - time1)
@@ -161,5 +161,50 @@ def mediapipe_pose():
     cv2.destroyAllWindows()
     # https://google.github.io/mediapipe/solutions/pose#static_image_mode
 
-camera_start( device = 'ipcam')
+
+PRESENCE_THRESHOLD = 0.5
+RGB_CHANNELS = 3
+VISIBILITY_THRESHOLD = 0.5
+
+def draw_pose(image, landmark_list, connections):
+    if not landmark_list:
+        return
+    if image.shape[2] != RGB_CHANNELS:
+        raise ValueError('Input image must contain three channel rgb data.')
+    image_rows, image_cols, _ = image.shape
+    idx_to_coordinates = {}
+    for idx, landmark in enumerate(landmark_list.landmark):
+        # filtering not seen landmarks
+        if ((landmark.HasField('visibility') and
+            landmark.visibility < VISIBILITY_THRESHOLD) or
+            (landmark.HasField('presence') and
+            landmark.presence < PRESENCE_THRESHOLD)):
+            continue
+        landmark_px = round( landmark.x * image_cols) , round (landmark.y * image_rows)
+        if landmark_px:
+            # saving coordinates as index
+            idx_to_coordinates[idx] = landmark_px
+
+    if connections:
+        num_landmarks = len(landmark_list.landmark)
+        # Draws the connections if the start and end landmarks are both visible.
+        for connection in connections:
+            start_idx = connection[0]
+            end_idx = connection[1]
+            if start_idx % 2 == 1 and end_idx % 2 == 1:
+                color = (135,255,245)
+            elif start_idx % 2 == 0 and end_idx % 2 == 0 and start_idx != 0:
+                color = (255,196,148)
+            else:
+                color = (255,255,255)
+            if not (0 <= start_idx < num_landmarks and 0 <= end_idx < num_landmarks):
+                raise ValueError(f'Landmark index is out of range. Invalid connection 'f'from landmark #{start_idx} to landmark #{end_idx}.')
+            if start_idx in idx_to_coordinates and end_idx in idx_to_coordinates:
+                cv2.line(image, idx_to_coordinates[start_idx], idx_to_coordinates[end_idx], color, 3)
+        # Draws landmark points after finishing the connection lines, which is
+        # aesthetically better.
+        for landmark_px in idx_to_coordinates.values():
+            cv2.circle(image, landmark_px, 5, (93,73,237), -1)
+
+camera_start( device = 'webcam')
 mediapipe_pose()
