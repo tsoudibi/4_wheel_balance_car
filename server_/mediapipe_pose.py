@@ -152,7 +152,7 @@ def mediapipe_pose():
                         (255, 255, 255), 2, cv2.LINE_AA)
             cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),
                         2, cv2.LINE_AA)
-            cv2.imshow('MediaPipe Pose', image)
+            # cv2.imshow('MediaPipe Pose', image)
             # convert back to RGB
             im_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             # save image in queue
@@ -218,5 +218,5 @@ def draw_pose(image, landmark_list, connections):
             cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
 
-camera_start(device='webcam')
-mediapipe_pose()
+# camera_start(device='webcam')
+# mediapipe_pose()
