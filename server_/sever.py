@@ -8,7 +8,7 @@ import numpy as np
 import plotly as py
 import plotly.graph_objs as go
 from flask import Flask, render_template, request, jsonify, send_file
-import HOGcascade
+import mediapipe_pose as mp
 import thread
 
 app = Flask(__name__)
@@ -187,13 +187,13 @@ def camera_plot():
         data = {'stopBtn': 'CONTINUE'}
         return data
     elif btn == 'START':    # when "START"  clicked
-        HOGcascade.camera_start(device = 'ipcam')
-        t = thread.thread_with_trace(target=HOGcascade.HOG)
+        mp.camera_start(device='webcam')
+        t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
         data = {'stopBtn': 'STOP'}
         return data
     else:                   # when "CONTINUE" clicked
-        t = thread.thread_with_trace(target=HOGcascade.HOG)
+        t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
         data = {'stopBtn': 'STOP'}
         return data
@@ -214,11 +214,11 @@ def newPlot():
 
 @app.route('/CAM_newIMG', methods=['GET'])
 def CAM_newIMG():
-    if HOGcascade.queue is None:
+    if mp.queue is None:
         return None
     else:
         # convert numpy array to PIL Image
-        img = Image.fromarray(HOGcascade.queue[0].astype('uint8'))
+        img = Image.fromarray(mp.queue[0].astype('uint8'))
 
         # create file-object in memory
         file_object = io.BytesIO()

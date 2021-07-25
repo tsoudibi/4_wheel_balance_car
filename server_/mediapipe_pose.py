@@ -3,6 +3,7 @@ import mediapipe as mp
 import threading
 import time
 
+
 # using multiple thread to avoid delay or overflow
 class ipcamCapture:
     def __init__(self, URL):
@@ -19,17 +20,18 @@ class ipcamCapture:
     def stop(self):
         self.isstop = True
         print("ipcamera: stop ")
-    
+
     # return newesst frame
     def getframe(self):
         return self.Frame
-        
+
     # get image from ipcamera
     def queryframe(self):
         while (not self.isstop):
             self.status, self.Frame = self.capture.read()
-        
+
         self.capture.release()
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -39,14 +41,13 @@ ip_camera_url = 'http://admin:admin@192.168.137.49:8080/video'
 # camera Info:
 # max size: 1280*720
 # max fps: 30
-width = 960 // 1
-height = 960 // 1
+width = 1280 // 1
+height = 720 // 1
 
 depth = 0
 x_center = 0
 y_center = 0
 body_height = 0
-
 
 # fps
 time1 = time.time()
@@ -55,17 +56,18 @@ fps = 0
 queue = {}
 
 cap = None
-mode = None 
+mode = None
 
-def camera_start( device = 'webcam'):
-    global cap, width, height, mode 
+
+def camera_start(device='webcam'):
+    global cap, width, height, mode
     mode = device
     if mode == 'webcam':
         print("webcam start")
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    elif mode == 'ipcam': 
+    elif mode == 'ipcam':
         print("ipcam start")
         cap = ipcamCapture(ip_camera_url)
         cap.start()
@@ -74,11 +76,12 @@ def camera_start( device = 'webcam'):
     else:
         print("mode error, please check parameter 'mode'")
 
+
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, body_height
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, body_height, width, height
     with mp_pose.Pose(
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5) as pose:
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5) as pose:
         while True:
             # start timer
             time1 = time.time()
@@ -87,13 +90,16 @@ def mediapipe_pose():
                 _, image = cap.read()
             elif mode == 'ipcam':
                 image = cap.getframe()
-            else :
+            else:
                 print("mode error, please check parameter 'mode'")
                 break
-            img_height, img_width, img_channel = image.shape
-            
+            # img_height, img_width, img_channel = image.shape
+            img_height = height
+            img_width = width
+
             # Flip the image horizontally for a later selfie-view display, and convert
             # the BGR image to RGB.
+            # image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.
@@ -103,8 +109,8 @@ def mediapipe_pose():
             # Draw the pose annotation on the image.
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            #mp_drawing.draw_landmarks( image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-            draw_pose(image,results.pose_landmarks,mp_pose.POSE_CONNECTIONS)
+            # mp_drawing.draw_landmarks( image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            draw_pose(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
             # draw rectangle
             x_max = 0
             y_max = 0
@@ -121,29 +127,32 @@ def mediapipe_pose():
                         y_max = y
                     if y < y_min:
                         y_min = y
-                    if idx == 12 :
+                    if idx == 12:
                         depth = abs(landmark.z * img_width)
                         print(landmark.z)
-                    if idx == 24 :
+                    if idx == 24:
                         x_right_hip = landmark.x
                         y_right_hip = landmark.y
-                    if idx == 23 :
+                    if idx == 23:
                         x_left_hip = landmark.x
                         y_left_hip = landmark.y
                 x_center = (x_right_hip + x_left_hip) / 2 - 0.5
                 y_center = (y_right_hip + y_left_hip) / 2 - 0.5
                 body_height = y_max - y_min
-                cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)  
+                cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
                 # draw cneter point of body
-                cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)), body_height // 30, (224, 220, 164), -1)   
+                cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)),
+                           body_height // 30, (224, 220, 164), -1)
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
             time2 = time.time()
             fps = 1 / (time2 - time1)
             # print fps, depth, x_center
             cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(body_height, 2)), (img_width-150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(x_center, 2)), (img_width-150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.imshow('MediaPipe Pose', image)
+            cv2.putText(image, str(round(body_height, 2)), (img_width - 150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                        (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255),
+                        2, cv2.LINE_AA)
+            # cv2.imshow('MediaPipe Pose', image)
             # convert back to RGB
             im_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             # save image in queue
@@ -166,6 +175,7 @@ PRESENCE_THRESHOLD = 0.5
 RGB_CHANNELS = 3
 VISIBILITY_THRESHOLD = 0.5
 
+
 def draw_pose(image, landmark_list, connections):
     if not landmark_list:
         return
@@ -176,11 +186,11 @@ def draw_pose(image, landmark_list, connections):
     for idx, landmark in enumerate(landmark_list.landmark):
         # filtering not seen landmarks
         if ((landmark.HasField('visibility') and
-            landmark.visibility < VISIBILITY_THRESHOLD) or
-            (landmark.HasField('presence') and
-            landmark.presence < PRESENCE_THRESHOLD)):
+             landmark.visibility < VISIBILITY_THRESHOLD) or
+                (landmark.HasField('presence') and
+                 landmark.presence < PRESENCE_THRESHOLD)):
             continue
-        landmark_px = round( landmark.x * image_cols) , round (landmark.y * image_rows)
+        landmark_px = round(landmark.x * image_cols), round(landmark.y * image_rows)
         if landmark_px:
             # saving coordinates as index
             idx_to_coordinates[idx] = landmark_px
@@ -192,19 +202,21 @@ def draw_pose(image, landmark_list, connections):
             start_idx = connection[0]
             end_idx = connection[1]
             if start_idx % 2 == 1 and end_idx % 2 == 1:
-                color = (135,255,245)
+                color = (135, 255, 245)
             elif start_idx % 2 == 0 and end_idx % 2 == 0 and start_idx != 0:
-                color = (255,196,148)
+                color = (255, 196, 148)
             else:
-                color = (255,255,255)
+                color = (255, 255, 255)
             if not (0 <= start_idx < num_landmarks and 0 <= end_idx < num_landmarks):
-                raise ValueError(f'Landmark index is out of range. Invalid connection 'f'from landmark #{start_idx} to landmark #{end_idx}.')
+                raise ValueError(
+                    f'Landmark index is out of range. Invalid connection 'f'from landmark #{start_idx} to landmark #{end_idx}.')
             if start_idx in idx_to_coordinates and end_idx in idx_to_coordinates:
                 cv2.line(image, idx_to_coordinates[start_idx], idx_to_coordinates[end_idx], color, 3)
         # Draws landmark points after finishing the connection lines, which is
         # aesthetically better.
         for landmark_px in idx_to_coordinates.values():
-            cv2.circle(image, landmark_px, 5, (93,73,237), -1)
+            cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
-camera_start( device = 'webcam')
-mediapipe_pose()
+
+# camera_start(device='webcam')
+# mediapipe_pose()
