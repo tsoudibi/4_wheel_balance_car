@@ -55,17 +55,17 @@ fps = 0
 queue = {}
 
 cap = None
-mode = None
+mode = None 
 
 def camera_start( device = 'webcam'):
     global cap, width, height, mode 
     mode = device
     if mode == 'webcam':
         print("webcam start")
-        cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    elif mode == 'ipcam':
+    elif mode == 'ipcam': 
         print("ipcam start")
         cap = ipcamCapture(ip_camera_url)
         cap.start()
