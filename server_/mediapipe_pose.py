@@ -78,7 +78,7 @@ def camera_start(device='webcam'):
 
 
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, body_height, width, height
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, body_height
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -93,9 +93,7 @@ def mediapipe_pose():
             else:
                 print("mode error, please check parameter 'mode'")
                 break
-            # img_height, img_width, img_channel = image.shape
-            img_height = height
-            img_width = width
+            img_height, img_width, img_channel = image.shape
 
             # Flip the image horizontally for a later selfie-view display, and convert
             # the BGR image to RGB.
@@ -146,13 +144,15 @@ def mediapipe_pose():
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
             time2 = time.time()
             fps = 1 / (time2 - time1)
-            # print fps, depth, x_center
-            cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            # print fps (10, 40) , body height (img_width - 150, 40), x_center (img_width - 150, 80)
+            cv2.rectangle(image, (5, 10), (90, 50), (0, 0, 0), -1)
+            cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.rectangle(image, (img_width - 155, 10), (img_width - 55, 90), (0, 0, 0), -1)
             cv2.putText(image, str(round(body_height, 2)), (img_width - 150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                        (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255),
+                        (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),
                         2, cv2.LINE_AA)
-            # cv2.imshow('MediaPipe Pose', image)
+            cv2.imshow('MediaPipe Pose', image)
             # convert back to RGB
             im_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             # save image in queue
@@ -218,5 +218,5 @@ def draw_pose(image, landmark_list, connections):
             cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
 
-# camera_start(device='webcam')
-# mediapipe_pose()
+camera_start(device='webcam')
+mediapipe_pose()
