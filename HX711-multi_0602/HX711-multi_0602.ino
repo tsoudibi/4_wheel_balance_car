@@ -28,50 +28,55 @@ int map_X = 0;
 void setup() {
   Serial.begin(115200);
   Serial.flush();
-  resetX_Y();
+  reset_XY();
   tare();
 }
 void loop() {
   int acc;
   int test_time;
   sendRawData(); //this is for sending raw data, for where everything else is done in processing
-  int motor_mode;
-  motor_mode = motor(map_X,map_Y);
-  speeddef(motor_mode,map_X,map_Y);
+
+  //speedOutput
+  SpeedOutput(map_X,map_Y);
 
   //on serial data (any data) re-tare
   if (Serial.available()>0) {
     while (Serial.available()) {
     }
-  tare();
+    tare();
   }
-  resetX_Y();
+  
+  reset_XY();
 }
 void weight(int i) {
   switch(i) {
     case 0:
-      map_Y = 0.7*(map_Y - results[i]);
-      map_X = 0.7*(map_X - results[i]);
+      map_Y = map_Y - results[i]*1.3;
+      map_X = map_X - results[i]*1.3;
     break;
     case 1:
-      map_Y = 0.7*(map_Y - results[i]);
-      map_X = 0.7*(map_X + results[i]);
+      map_Y = map_Y - results[i]*1.53;
+      map_X = map_X + results[i]*1.3;
     break;
     case 2:
-      map_Y = 0.5*(map_Y + results[i]);
-      map_X = 0.5*(map_X + results[i]);
+      map_Y = map_Y + results[i];
+      map_X = map_X + results[i];
     break;
     case 3:
-      map_Y = 0.5*(map_Y + results[i]);
-      map_X = 0.5*(map_X - results[i]);
+      map_Y = map_Y + results[i]*1.1818;
+      map_X = map_X - results[i]*1.153;
     break;
 
   }
+  if(abs(map_X)<10)
+    map_X = 0;
+  if(abs(map_Y)<10)
+    map_Y = 0;
    /*map_Y = map(map_Y,-20000,20000,-1023,1023);
    map_X = map(map_X,-20000,20000,-1023,1023);*/
 }
 //避免一直無限增加
-void resetX_Y() {
+void reset_XY() {
   map_Y = 0;
   map_X = 0;
 }
@@ -87,7 +92,6 @@ void sendRawData() {
     if(results[i] < -10000)
      results[i] = -10000;
 
-    
     weight(i);
     delay(10);
   }  

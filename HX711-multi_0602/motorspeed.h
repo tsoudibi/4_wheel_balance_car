@@ -1,108 +1,138 @@
 #ifndef motorspeed_h
 #define motorspeed_h
 
-//motor 控制
-int motor(int map_X,int map_Y) {
-  
-  int motor_mode;
 
-  ////////////前進時//////////////////
+#include "Queue.h"
+#include "arduino.h"
+
+Queue<unsigned long> queue_map_X(20);
+Queue<unsigned long> queue_map_Y(20);
+
+int flag = 0;
+int count = 0;
+
+/*reset point*/
+int map_x_ori,map_y_ori;
+
+/*reset speed*/
+int speed_l = 0;
+int speed_r = 0;
+
+/*speed control by HX711*/
+void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   
-  if(map_Y < -300 && map_Y >= -350){
-    if(map_X < 100 && map_X >=-100)
-    motor_mode = 1;//原地不動 
-    /*if(map_X >= 110 && map_X <150 || map_X < -50 && map_X > -150) 
-    motor_mode = 2;//直線加*/
-    if(map_X > 100)
-    motor_mode = 4;//右轉
-    if(map_X < -100)
-    motor_mode = 3;//左轉      
+  int FlagtoDetectchange = 0;
+
+  //加速
+  if (map_Y - map_y_ori > 600 && FlagtoDetectchange == 0)
+  {
+    speed_l++;
+    speed_r++;
+    FlagtoDetectchange = 1;
   }
-  if(map_Y > -300 && map_Y <= 200){
-    if(map_X < 45 && map_X >=-45)
-      motor_mode = 2;//直線加速
-    if(map_X < -45)
-      motor_mode = 3;//左轉
-    if(map_X >= 45)
-      motor_mode = 4;//右轉
-    }
-  if(map_Y > 200) {
-    if(map_X < 150 && map_X >= -150)
-     motor_mode = 2;//直線前進
-    if(map_X < -150)
-     motor_mode = 3;//左轉
-    if(map_X > 150)
-     motor_mode = 4;//右轉  
-    }
-    
-  ///////////////後退時////////////////////
-    
-  if(map_Y > -200 && map_Y <= -300){
-    if(map_X < 100 && map_X >=-100)
-    motor_mode = 1;//原地不動
-    if(map_X >= 100 && map_X < 200 || map_X < -100 && map_X > -200) 
-    motor_mode = 5;//直線加速
-    if(map_X > 200)
-    motor_mode = 7;//右轉
-    if(map_X < -200)
-    motor_mode = 6;//左轉      
+  
+  
+  //減速
+  if(map_Y - map_y_ori < -300 && FlagtoDetectchange == 0)
+  {
+    speed_l--;
+    speed_r--;
+    FlagtoDetectchange = 1;
   }
-  if(map_Y < -300 && map_Y >= -400){
-    if(map_X < 200 && map_X >=-200)
-      motor_mode = 5;//直線加速
-    if(map_X < -200)
-      motor_mode = 6;//左轉
-    if(map_X >= 200)
-      motor_mode = 7;//右轉
+  
+  //左右轉
+    if (-300 < map_Y - map_y_ori < 600 && FlagtoDetectchange == 0) 
+  {
+
+    if(map_X - map_x_ori > 400)
+    {
+      speed_r = speed_l - 8;
     }
-  if(map_Y < -400) {
-    if(map_X < 150 && map_X >= -150)
-     motor_mode = 5;//直線前進
-    if(map_X < -150)
-     motor_mode = 6;//左轉
-    if(map_X > 150)
-     motor_mode = 7;//右轉  
+    if(map_X - map_x_ori < -400)
+    {
+      speed_l = speed_r - 8;
     }
-  return motor_mode;      
+    map_y_ori = map_Y;
+    FlagtoDetectchange = 1;
+  }  
 }
 
-void speeddef(int motor_mode,int map_Y, int map_X){
-  int speed_l;
-  int speed_r;
-  switch(motor_mode){
-    case(1):
-      speed_l = 0;
-      speed_r = 0;
-    break;
-    case(2):
-      speed_l = (map_Y+100)*0.6;
-      speed_r = (map_Y+100)*0.6;
-    break;
-    case(3):
-      speed_l = 0.7*(map_Y+100);
-      speed_r = 0.7*(map_Y+100)-map_X;
-    break;
-    case(4):
-      speed_l = 0.7*(map_Y+100)+map_X;
-      speed_r = 0.7*(map_Y+100);
-    break;
-    /*case(5):
-      speed_l = -(map_Y+100);
-      speed_r = -(map_Y+100);
-     break; 
-    case(6):
-      speed_l = 0.7*map_X-0.7*map_Y;
-      speed_r = 0.7*map_Y;
-    break;
-    case(7):
-      speed_l = 0.7*map_X-0.7*map_Y;
-      speed_r = 0.7*map_Y;*/        
-  }
-  Serial.print(motor_mode);
-  Serial.print(",");
-  Serial.print(speed_l);
-  Serial.print(",");
-  Serial.println(speed_r);
+/*save location in queue*/
+void LocationtoQueue(int map_X,int map_Y)
+{
+  queue_map_X.push(map_X);
+  queue_map_Y.push(map_Y);
+
+  if(queue_map_X.count()>=15)
+  	queue_map_X.pop();
+  if(queue_map_Y.count()>=15)
+  	queue_map_Y.pop();
 }
 
+/*reset coordinate first time*/
+void ResetCoordinate(int map_X,int map_Y)
+{ 
+  //reset
+  if(flag == 0)
+  {
+    if(abs(queue_map_X.peek() - map_X) > 10 && abs(queue_map_Y.peek()- map_Y) > 10)
+    {
+    flag = 1;
+    //Serial.println("reset");
+    delay(5000);
+    map_x_ori = map_X;
+    map_y_ori = map_Y;
+    }
+  }
+  //whether come back to initialzation or not
+  if(flag == 1)
+  {
+    if(abs(queue_map_X.peek() == 0) && abs(queue_map_Y.peek() == 0))
+    {
+      count++;
+      
+      //stop reset
+      if(abs(queue_map_X.peek() > 30) || abs(queue_map_Y.peek() > 30))
+        count = 0;
+        
+      //reset successfully
+      if (count == 15)
+        flag = 0;
+    }
+  }  
+}
+
+/*speed output*/
+void SpeedOutput(int map_X,int map_Y)
+{
+  LocationtoQueue(map_X,map_Y);
+  ResetCoordinate(map_X,map_Y);
+  
+  //靜止
+  if (flag == 0)
+  {
+    speed_l = 0;
+    speed_r = 0;
+  }
+  //啟動
+  if (flag == 1)
+  {
+    speed_control(map_x_ori,map_y_ori,map_X,map_Y);
+  }
+  
+  //avoid negative speed
+  if(speed_l < 0)
+    speed_l = 0;
+  if(speed_r < 0)
+    speed_r = 0;
+
+  //limit max speed
+  if(speed_l > 10)
+    speed_l = 10;
+  if(speed_r >10)
+    speed_r = 10;
+
+  //transport data to esp32    
+  Serial.println(String(map_X)+","+String(map_Y)+","+String(speed_l)+","+String(speed_r));
+}
 #endif
