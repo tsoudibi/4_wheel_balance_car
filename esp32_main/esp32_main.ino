@@ -3,7 +3,16 @@
 #include "motor_control.h"
 #include "btn_control.h"
 
+#include "arduino_connect.h"
+#include <esp32-hal-dac.h>
+#include "pid.h"
+#include "PID_v1.h"
+
+
 void setup(){
+  
+  pinMode(motor_l,OUTPUT);
+  pinMode(motor_r,OUTPUT);
   Serial.begin(115200);
   //serial set
   setup_hard_serial();
@@ -14,6 +23,9 @@ void setup(){
   //wifi connection set
   wifi_connect();
   http_INIT();
+
+  //PID set
+  PID_setup();
 }
 
 void loop(){

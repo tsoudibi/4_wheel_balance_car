@@ -12,8 +12,8 @@
 #define motor_r 26
 #define rev_pin 35
 
-int signal_L = 50;
-int signal_R = 50;
+int signal_L = 1;
+int signal_R = 1;
 
 void motor_setup(){
   pinMode(motor_l,OUTPUT);
@@ -21,16 +21,12 @@ void motor_setup(){
   pinMode(rev_pin,OUTPUT);
 }
 
-void motor_control(){
-  int speed_l;
-  int speed_r;
-  speed_l = 1.4*signal_L ;
-  speed_r = 1.4*signal_R ;
-  
-  if(speed_l > 0 && speed_r > 0)
-  {
-    dacWrite(motor_l,speed_l);
-    dacWrite(motor_r,speed_r);
+void motor_control(int L, int R){
+  signal_L = L;
+  signal_R = R;
+  if(L > 0 && R > 0){
+    dacWrite(motor_l,L);
+    dacWrite(motor_r,R);
   }
   else{
     dacWrite(motor_l,0);
@@ -39,7 +35,7 @@ void motor_control(){
   /*Serial.print(speed_l);
   Serial.print(",");
   Serial.println(speed_r);*/
-  Serial.println("[sped] :"+String(speed_l)+","+String(speed_r));
+  Serial.println("[motr] :"+String(signal_L)+","+String(signal_R));
   //time_now = millis();
   //Serial.println( "[HTTP] post:"+http_POST(speed_l,speed_r)+" ,used time:"+(millis()-time_now));
 }
@@ -53,9 +49,5 @@ int get_control_signal(char which){
   }
 }
 
-void set_control_signal(int L,int R){
-  signal_R=R;
-  signal_L=L;
-}
 
 #endif /* MOTOR_CONTROL_H */
