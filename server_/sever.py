@@ -127,8 +127,8 @@ def esp32():
         print(data)
         car_stat.control_L = data["control"][0]
         car_stat.control_R = data["control"][1]
-        car_stat.rpm_L = data["RPM"][0]
-        car_stat.rpm_R = data["RPM"][1]
+        car_stat.RPM_L = data["RPM"][0]
+        car_stat.RPM_R = data["RPM"][1]
         car_stat.sensor_x = data["sensor"][0]
         car_stat.sensor_y = data["sensor"][1]
         newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
@@ -247,10 +247,9 @@ def newStatus():
 
 
 def create_RPM_plot_real():
-
-    N = 5
-    random_x1 = np.random.randint(-200, 200, N, dtype='int32')
-    random_y1 = np.random.randint(-200, 200, N, dtype='int32')
+    
+    rpm_x = [-128, 128]
+    rpm_y = [car_stat.RPM_L, car_stat.RPM_R]
 
     con_x = [-128, 128]
     con_y = [car_stat.control_L, car_stat.control_R]
@@ -258,8 +257,8 @@ def create_RPM_plot_real():
     # Create a trace
     data = [go.Scatter(
         name='RPM',
-        x=random_x1,
-        y=random_y1,
+        x=rpm_x,
+        y=rpm_y,
         mode='lines+markers',  # lines+dots
         marker=dict(size=30, color='rgba(255, 109, 0, 1)')
     ), go.Scatter(
