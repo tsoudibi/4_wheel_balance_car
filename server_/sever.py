@@ -13,6 +13,7 @@ import thread
 
 app = Flask(__name__)
 
+
 # car status
 class status:
     def __init__(self):
@@ -115,7 +116,9 @@ def esp32():
         elif which == 'new':
             return str(car_stat.new)
         elif which == 'cam':
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_y) + "," + str(car_stat.cam_width) + "," + str(car_stat.cam_height) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_Analog_x) + "," + str(car_stat.cam_Analog_y)
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_y) + "," + str(car_stat.cam_width) + "," + str(
+                car_stat.cam_height) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_Analog_x) + "," + str(
+                car_stat.cam_Analog_y)
         SSID = request.args.get('SSID')
         if SSID is not None:
             car_stat.SSID = SSID
@@ -181,18 +184,18 @@ def plot_trigger():
 def camera_plot():
     btn = request.args.get('btn')  # get button name
     print(btn)
-    if btn == 'STOP':       # when "STOP" clicked
+    if btn == 'STOP':  # when "STOP" clicked
         global t
         t.kill()
         data = {'stopBtn': 'CONTINUE'}
         return data
-    elif btn == 'START':    # when "START"  clicked
+    elif btn == 'START':  # when "START"  clicked
         mp.camera_start(device='webcam')
         t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
         data = {'stopBtn': 'STOP'}
         return data
-    else:                   # when "CONTINUE" clicked
+    else:  # when "CONTINUE" clicked
         t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
         data = {'stopBtn': 'STOP'}
@@ -247,7 +250,6 @@ def newStatus():
 
 
 def create_RPM_plot_real():
-    
     rpm_x = [-128, 128]
     rpm_y = [car_stat.RPM_L, car_stat.RPM_R]
 
@@ -276,7 +278,6 @@ def create_RPM_plot_real():
 
 
 def create_plot_real():
-
     # Create a trace
     data = [go.Scatter(
         x=car_stat.queue_sensor_x,
@@ -290,26 +291,7 @@ def create_plot_real():
     return graphJSON
 
 
-def create_plot_random():
-    N = 5
-    random_x = np.random.randint(-500, 500, N, dtype='int32')
-    random_y = np.random.randint(-500, 500, N, dtype='int32')
-
-    # Create a trace
-    data = [go.Scatter(
-        x=random_x,
-        y=random_y,
-        mode='lines+markers',  # lines+dots
-        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
-    )]
-
-    graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
-
-    return graphJSON
-
-
 def newQueue(queue_x, queue_y, new_x, new_y):
-
     if len(queue_x) == 5:
         del queue_x[0]  # pop x
         del queue_y[0]  # pop y
