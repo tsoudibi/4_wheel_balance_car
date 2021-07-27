@@ -9,8 +9,8 @@
 #define threshold 20
 
 /* save the HZ of motor should be */
-int HZ_L;
-int HZ_R;
+int HZ_L = 0;
+int HZ_R = 0;
 
 void btn_PID(int L, int R);
 
@@ -65,13 +65,13 @@ void btn_PID(int L, int R){
   PIDcontrol_left();
   PIDcontrol_right();
   /* after PID */
-  int HZ_L = get_PID_result('l');
-  int HZ_R = get_PID_result('r');
+  int DAC_L = get_PID_result('l');
+  int DAC_R = get_PID_result('r');
   /* RUN the motor */
-  motor_control(HZ_L,HZ_R);
+  motor_control(DAC_L,DAC_R);
   /* print data and send to server */
   time_now = millis();
-  Serial.println( "[HTTP] post:"+http_POST(HZ_L,HZ_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));
+  Serial.println( "[HTTP] post:"+http_POST(DAC_L,DAC_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));
 }
 
 #endif /* BTN_CONTROL_H */

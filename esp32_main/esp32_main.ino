@@ -41,7 +41,7 @@ void loop(){
   }else if (response=="camera"){
     control_mode=3;
   }else{
-    Serial.println("[ERRO] wrong mode response from sever");
+    Serial.println("[ERRO] wrong mode response from server");
     Serial.println(response);
   }
   /*depend on mode pick a function to run*/

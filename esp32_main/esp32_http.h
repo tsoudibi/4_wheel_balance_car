@@ -5,7 +5,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 
-const char* ssid_1 = "DB_TOTOLink_25";
+const char* ssid_1 = "DBDB";
 const char* password_1 =  "DBDBDBDBB";
 const char* ssid_2 = "BOB安";
 const char* password_2 =  "12345678";
@@ -45,16 +45,19 @@ void wifi_connect(){
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain");  
   int httpCode = http.GET(); //Send the request
+  String payload;
   if (httpCode > 0) { //Check the returning code
-    String payload = http.getString();   //Get the request response payload
+    payload = http.getString();   //Get the request response payload
     Serial.println("[WIFI] server response: "+payload);             //Print the response payload
   }else{
+    payload = http.getString();   //Get the request response payload
     Serial.println("[WIFI] ERROR of response");
+    Serial.println(payload);
   }
 }
 
 void http_INIT(){
-  http.begin("http://10.1.1.2:5000//esp32");
+  http.begin("http://10.1.1.2:5000/esp32");
   http.addHeader("Content-Type", "text/plain");  
 }  
 
