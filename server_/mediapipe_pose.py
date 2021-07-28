@@ -35,7 +35,7 @@ class ipcamCapture:
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_camera_url = 'http://admin:admin@192.168.137.49:8080/video'
+ip_camera_url = 'http://admin:admin@10.1.1.3:8080/video'
 
 # set image size of camera, smaller will run faster
 # camera Info:

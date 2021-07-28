@@ -7,6 +7,8 @@
 #define MOTOR_CONTROL_H
 
 #include <esp32-hal-dac.h>//for contronl
+/*pid*/
+#include "pid.h"
 /*control setting*/
 #define motor_l 26
 #define motor_r 25
@@ -52,5 +54,7 @@ int get_control_signal(char which){
     return signal_L;
   }
 }
+
+
 
 #endif /* MOTOR_CONTROL_H */

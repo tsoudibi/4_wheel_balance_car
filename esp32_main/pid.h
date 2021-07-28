@@ -18,8 +18,8 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-double kp_l=1,ki_l=0,kd_l=0;
-double kp_r=1,ki_r=0,kd_r=0;
+double kp_l=10,ki_l=0,kd_l=0;
+double kp_r=10,ki_r=0,kd_r=0;
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
 
@@ -75,5 +75,13 @@ void PIDcontrol_right()
 int get_PID_result(char which){
   if (which == 'l') return Output_l_fin;
   if (which == 'r') return Output_r_fin;
+}
+/*To deal with all PId function and get output signal*/
+void PID(int command_hz_L,int command_hz_R,int encoder_L,int encoder_R)
+{
+  set_CommandHZ_PID(command_hz_L,command_hz_R);
+  set_EncodingHZ_PID(encoder_L,encoder_R);
+  PIDcontrol_left();
+  PIDcontrol_right();
 }
 #endif

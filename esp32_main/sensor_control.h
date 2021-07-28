@@ -6,8 +6,7 @@
 #include "arduino_connect.h"
 #include "pid.h"
 
-/*[HTTP]debug*/
-unsigned long int time_now;
+
 
 void sensor_control(){
   /* update data from encoder and sensor */
@@ -33,9 +32,7 @@ void sensor_control(){
   /* RUN the motor */
   motor_control(after_PID_L,after_PID_R);
   /* print data and send to server */
-  time_now = millis();
-  Serial.println( "[sens] map:("+String(map_x)+", "+String(map_y)+") speed:("+String(command_L)+", "+String(command_R)+") ");
-  Serial.println( "[HTTP] post:"+http_POST(after_PID_L,after_PID_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));
+
 }
 
 
