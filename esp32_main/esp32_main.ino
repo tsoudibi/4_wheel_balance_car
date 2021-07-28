@@ -85,7 +85,7 @@ void loop(){
   /*PID control*/
   PID(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R);
   DAC_L = get_PID_result('l');
-  DAC_R = get_PID_result('l');
+  DAC_R = get_PID_result('r');
   /*motor contorl*/
   motor_control(DAC_L,DAC_R);
   /*send data to server*/
