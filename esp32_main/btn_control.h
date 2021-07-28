@@ -9,42 +9,52 @@
 #define threshold 20
 
 /* save the HZ of motor should be */
+/*The smallest speed is 7*/
 int HZ_L = 0;
 int HZ_R = 0;
 
 void btn_PID(int L, int R);
 
 void btn_control(){
+  /* update data from encoder and sensor */
+  update_data_all();
+  
   if (http_GET("new")=="1"){
     /* get movement from sever */
     String mov=http_GET("movement");
     /* get current HZ from motor_control.h */
-    HZ_L = get_control_signal('l');
+    
+    /*HZ_L = get_control_signal('l');
     HZ_R = get_control_signal('r');
-    /* with different movement, make different adjust*/
+    
+    /* with different movement, make different adjust, change the command*/
       if (mov== "forward"){
-          btn_PID(HZ_L+2,HZ_R+2);
-          Serial.print("[move]forward");}else
+          HZ_L = HZ_L + 2;
+          HZ_R = HZ_R + 2;
+          Serial.println("[move]forward");}else
       if (mov== "left"){
-          btn_PID(HZ_L-1,HZ_R+1);
-          Serial.print("[move]left");}else
+          HZ_L = HZ_L - 1;
+          HZ_R = HZ_R + 1;          
+          Serial.println("[move]left");}else
       if (mov=="right"){
-          btn_PID(HZ_L+1,HZ_R-1);
-          Serial.print("[move]right");}else
+          HZ_L = HZ_L + 1;
+          HZ_R = HZ_R - 1;
+          Serial.println("[move]right");}else
       if (mov== "stop"){
-          btn_PID(0,0);
-          Serial.print("[move]stop");
+          HZ_L = 0;
+          HZ_R = 0;
+          Serial.println("[move]stop");
       }else{
         Serial.println("[ERRO] wrong movent command");
       }
   }
+  /*PID control*/
+  btn_PID(HZ_L,HZ_R);
 }
 
 
 /* consider pid control */
 void btn_PID(int L, int R){
-  /* update data from encoder and sensor */
-  update_data_all();
   /* encoder HZ from arduino*/
   int ISR_HZ_L = get_serial_data(1);
   int ISR_HZ_R = get_serial_data(2);
@@ -59,6 +69,11 @@ void btn_PID(int L, int R){
   if (command_R >= threshold) command_R = threshold;
   if (command_L <= 0) command_L = 0;
   if (command_R <= 0) command_R = 0;
+
+ 
+//y = 1.4114x-135.62 left
+//y = 1.3527x-127.48 right
+  
   /* do PID */
   set_EncodingHZ_PID(ISR_HZ_L,ISR_HZ_R);
   set_CommandHZ_PID(command_L,command_R);
@@ -69,9 +84,12 @@ void btn_PID(int L, int R){
   int DAC_R = get_PID_result('r');
   /* RUN the motor */
   motor_control(DAC_L,DAC_R);
+  /*  save it */
+  HZ_L = L;
+  HZ_R = R;
   /* print data and send to server */
   time_now = millis();
-  Serial.println( "[HTTP] post:"+http_POST(DAC_L,DAC_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));
+  Serial.println( "[HTTP] post:"+http_POST(HZ_L,HZ_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));
 }
 
 #endif /* BTN_CONTROL_H */

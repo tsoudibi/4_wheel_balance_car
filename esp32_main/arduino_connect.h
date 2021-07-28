@@ -35,9 +35,9 @@ int Command_speed_r = 0;
 
 void setup_hard_serial(){
     //encoder
-    Serialbyarduino_1.begin(115200, SERIAL_8N1, 14, 15);//baud rate, mode, RX, TX
+    Serialbyarduino_1.begin(115200, SERIAL_8N1, 32, 33);//baud rate, mode, RX, TX
     //sensor
-    Serialbyarduino_2.begin(115200, SERIAL_8N1, 32, 33);//baud rate, mode, RX, TX
+    Serialbyarduino_2.begin(115200, SERIAL_8N1, 14, 15);//baud rate, mode, RX, TX
 }
 
 void read_uart_encoder(){

@@ -5,9 +5,9 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 
-const char* ssid_1 = "DBDB";
+const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";
-const char* ssid_2 = "BOB安";
+const char* ssid_2 = "BOB";
 const char* password_2 =  "12345678";
 const char* ssid_3 = "PawPatrolll";
 const char* password_3 =  "as80894512";
@@ -20,8 +20,8 @@ HTTPClient http;
 
 void wifi_connect(){
   int i=100;
-  WiFi.begin(ssid_1, password_1);
-  while (WiFi.status() != WL_CONNECTED and i) {
+  WiFi.begin(ssid_2, password_2);
+  while (WiFi.status() != WL_CONNECTED && i) {
     delay(1000);i--;
     Serial.println("[WIFI] Connecting to WiFi1..");
   }
@@ -40,7 +40,7 @@ void wifi_connect(){
     }
   }*/
   if (i!=100) Serial.println("[WIFI] Connected to the WiFi network");
-  String HTTP="http://10.1.1.2:5000/esp32?SSID=";
+  String HTTP="http://140.116.78.219:5005/esp32?SSID=";
   HTTP=HTTP+WiFi.SSID();
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain");  
@@ -51,13 +51,13 @@ void wifi_connect(){
     Serial.println("[WIFI] server response: "+payload);             //Print the response payload
   }else{
     payload = http.getString();   //Get the request response payload
-    Serial.println("[WIFI] ERROR of response");
+    Serial.println("[WIFI] ERROR of response when first connecting to server");
     Serial.println(payload);
   }
 }
 
 void http_INIT(){
-  http.begin("http://10.1.1.2:5000/esp32");
+  http.begin("http://140.116.78.219:5005/esp32");
   http.addHeader("Content-Type", "text/plain");  
 }  
 
@@ -69,7 +69,7 @@ void http_END(){
 //time_now = millis();
 //Serial.println("[HTTP] get:"+http_GET("movement")+",used time:"+(millis()-time_now));
 String http_GET(char* which){
-  String HTTP="http://10.1.1.2:5000/esp32?which=";
+  String HTTP="http://140.116.78.219:5005/esp32?which=";
   HTTP=HTTP+which;
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain");  
@@ -79,7 +79,9 @@ String http_GET(char* which){
     //Serial.println(payload);             //Print the response payload
     return payload;
   }else{
-    Serial.println("[ERRO] ERROR of GET");
+    String msg = "[ERRO] ERROR of GET when which = ";
+    msg = msg + which;
+    Serial.println(msg);
   }
   http_END();
 }
@@ -98,7 +100,7 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
   // serialize
   serializeJson(doc, output);
   // connect and add header
-  http.begin("http://10.1.1.2:5000/esp32");
+  http.begin("http://140.116.78.219:5005/esp32");
   http.addHeader("Content-Type","application/json");
   // send POST request
   int http_code = http.POST(output);

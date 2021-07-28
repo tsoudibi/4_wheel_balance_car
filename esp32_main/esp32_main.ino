@@ -8,6 +8,9 @@
 #include "pid.h"
 #include "PID_v1.h"
 
+#include "motor_control.h"
+
+
 
 void setup(){
   
@@ -53,4 +56,6 @@ void loop(){
       sensor_control();
       break;
   }
+  
+
 }

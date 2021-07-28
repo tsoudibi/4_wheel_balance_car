@@ -8,12 +8,16 @@
 
 #include <esp32-hal-dac.h>//for contronl
 /*control setting*/
-#define motor_l 25
-#define motor_r 26
+#define motor_l 26
+#define motor_r 25
 #define rev_pin 35
 
 int signal_L = 1;
 int signal_R = 1;
+
+/*command hz*/
+int command_hz_L = 0;
+int command_hz_R = 0;
 
 void motor_setup(){
   pinMode(motor_l,OUTPUT);
@@ -48,6 +52,5 @@ int get_control_signal(char which){
     return signal_L;
   }
 }
-
 
 #endif /* MOTOR_CONTROL_H */
