@@ -14,10 +14,11 @@
 #define motor_r 25
 #define rev_pin 35
 
+/* real HZ command to motor*/
 int signal_L = 1;
 int signal_R = 1;
 
-/*command hz*/
+/* command hz */
 int command_hz_L = 0;
 int command_hz_R = 0;
 
@@ -38,13 +39,13 @@ void motor_control(int L, int R){
     dacWrite(motor_l,0);
     dacWrite(motor_r,0);
   }
-  /*Serial.print(speed_l);
-  Serial.print(",");
-  Serial.println(speed_r);*/
-  Serial.println("[motr] :"+String(signal_L)+","+String(signal_R));
-  //time_now = millis();
-  //Serial.println( "[HTTP] post:"+http_POST(speed_l,speed_r)+" ,used time:"+(millis()-time_now));
+  Serial.println("[motor] :"+String(signal_L)+","+String(signal_R));
 }
+
+/*
+ * HZ = 1.4114DAC-135.62 left
+ * HZ = 1.3527DAC-127.48 right
+ */
 
 int get_control_signal(char which){
   if (which=='r'){

@@ -34,19 +34,6 @@ void PID_setup()
    mypid_left.SetMode(AUTOMATIC);
 }
 
-/* set CommandHZ */
-void set_CommandHZ_PID(int hz_l,int hz_r){
-  command_HZ_l = hz_l;
-  command_HZ_r = hz_r;
-}
-
-/* set EncodingHZ */
-void set_EncodingHZ_PID(int HZ_l,int HZ_r)
-{
-  Encoding_HZ_l = HZ_l;
-  Encoding_HZ_r = HZ_r;
-}
-
 /* caculate PID left */
 void PIDcontrol_left()
 {
@@ -76,11 +63,15 @@ int get_PID_result(char which){
   if (which == 'l') return Output_l_fin;
   if (which == 'r') return Output_r_fin;
 }
-/*To deal with all PId function and get output signal*/
-void PID(int command_hz_L,int command_hz_R,int encoder_L,int encoder_R)
+/* gather all data needed and do the PID */
+void PID(int command_hz_L,int command_hz_R,int encoder_hz_L,int encoder_hz_R)
 {
-  set_CommandHZ_PID(command_hz_L,command_hz_R);
-  set_EncodingHZ_PID(encoder_L,encoder_R);
+  /* set parameter needed (command HZ and encoder HZ) */ 
+  command_HZ_l = command_hz_L;
+  command_HZ_r = command_hz_R;
+  Encoding_HZ_l = encoder_hz_L;
+  Encoding_HZ_r = encoder_hz_R;
+  /* do the PID */
   PIDcontrol_left();
   PIDcontrol_right();
 }

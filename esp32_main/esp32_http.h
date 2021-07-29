@@ -12,113 +12,113 @@ const char* password_2 =  "12345678";
 const char* ssid_3 = "PawPatrolll";
 const char* password_3 =  "as80894512";
 
+const String SERVER_IP = "http://140.116.78.219:5005" ;
 
-String req;
-String rsp;
-
+/* create client object*/
 HTTPClient http; 
 
-void wifi_connect(){
-  int i=100;
+void WIFI_INIT(){
+  /* give 60 seconds to connect WIFI, else faild*/
+  int i = 60;
   WiFi.begin(ssid_2, password_2);
   while (WiFi.status() != WL_CONNECTED && i) {
-    delay(1000);i--;
-    Serial.println("[WIFI] Connecting to WiFi1..");
+    delay(1000); i--;
+    Serial.println("[Wi-Fi] Connecting to WiFi...");
   }
-  /*WiFi.begin(ssid_2, password_2);i=3;
-  while (WiFi.status() != WL_CONNECTED and i) {
-    delay(1000);i--;
-    Serial.println("[WIFI] Connecting to WiFi2..");
-  }
-  WiFi.begin(ssid_3, password_3);i=3;
-  while (WiFi.status() != WL_CONNECTED and i) {
-    delay(1000);i--;
-    Serial.println("[WIFI] Connecting to WiFi3..");
-    if(i<0){
-      Serial.println("[WIFI] failed to connect any WIFI");
-      i=100;
-    }
-  }*/
-  if (i!=100) Serial.println("[WIFI] Connected to the WiFi network");
-  String HTTP="http://140.116.78.219:5005/esp32?SSID=";
-  HTTP=HTTP+WiFi.SSID();
-  http.begin(HTTP);
-  http.addHeader("Content-Type", "text/plain");  
-  int httpCode = http.GET(); //Send the request
-  String payload;
-  if (httpCode > 0) { //Check the returning code
-    payload = http.getString();   //Get the request response payload
-    Serial.println("[WIFI] server response: "+payload);             //Print the response payload
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[Wi-Fi] Connection faild.");
   }else{
-    payload = http.getString();   //Get the request response payload
-    Serial.println("[WIFI] ERROR of response when first connecting to server");
-    Serial.println(payload);
+    Serial.println("[Wi-Fi] Connection successed.");
+    /* set client request timeout*/
+    http.setTimeout(200);
+    http.setConnectTimeout(200);
+    /* first get request, send SSID to server*/
+    String HTTP = "/esp32?SSID=";
+    HTTP = SERVER_IP + HTTP + WiFi.SSID();
+    http.begin(HTTP);
+    http.addHeader("Content-Type", "text/plain");  
+    int httpCode = http.GET(); //Send the request
+    /* handle the server response*/
+    String payload;
+    if (httpCode > 0) {
+      /* if get correct respone */
+      payload = http.getString();   //Get the request response payload
+      Serial.println("[Wi-Fi] server response: " + payload);             //Print the response payload
+    }else{
+      /* cannot send SSID to server, but keep going */
+      Serial.println("[Wi-Fi] ERROR of response when first connecting to server");
+      Serial.println("[Wi-Fi] keep going");
+      if(httpCode == HTTPC_ERROR_CONNECTION_REFUSED){
+        Serial.println("[Wi-Fi] Server offline, closing :( ");
+        http.end();
+      }
+    }
   }
-}
-
-void http_INIT(){
-  http.begin("http://140.116.78.219:5005/esp32");
-  http.addHeader("Content-Type", "text/plain");  
 }  
 
-void http_END(){
-  http.end();  //Free resources
-}
-
-//using
-//time_now = millis();
-//Serial.println("[HTTP] get:"+http_GET("movement")+",used time:"+(millis()-time_now));
-
-
 String http_GET(char* which){
-  String HTTP="http://140.116.78.219:5005/esp32?which=";
-  HTTP=HTTP+which;
+  /* set client request timeout*/
+  http.setTimeout(200);
+  http.setConnectTimeout(200);
+  /* connect and add header */
+  String HTTP="/esp32?which=";
+  HTTP = SERVER_IP + HTTP +which;
   http.begin(HTTP);
-  http.addHeader("Content-Type", "text/plain");  
+  http.addHeader("Content-Type", "text/plain"); 
+  /* sent GET request */ 
   int httpCode = http.GET(); //Send the request
+  /* handle the server response*/
   if (httpCode > 0) { //Check the returning code
+    /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
-    //Serial.println(payload);             //Print the response payload
     return payload;
   }else{
-    String msg = "[ERRO] ERROR of GET when which = ";
-    msg = msg + which;
-    Serial.println(msg);
+    /* if respone is bad, return httpCode as String */
+    return String(httpCode); 
   }
-  http_END();
+  http.end();
 }
 
-//control = analog control signal to motor
-//speed = encoder RMP to esp32
-//sensor = mass center from arduino to esp32
+
+/* control = analog control signal to motor
+ * speed = encoder RMP to esp32
+ * sensor = mass center from arduino to esp32 */
 
 String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sensor_x=0, int sensor_y=0){  
-  // make json data
+  /* set client request timeout*/
+  http.setTimeout(200);
+  http.setConnectTimeout(200);
+  /* create JSON formate*/
   StaticJsonDocument<200> doc;
   doc["control"] = serialized("["+String(controlL)+","+String(controlR)+"]");
   doc["RPM"] = serialized("["+String(speedL)+","+String(speedR)+"]");
   doc["sensor"] = serialized("["+String(sensor_x)+","+String(sensor_y)+"]");
   String output;
-  // serialize
+  /* serialize */
   serializeJson(doc, output);
-  // connect and add header
-  http.begin("http://140.116.78.219:5005/esp32");
+  /* connect and add header */
+  String HTTP="/esp32";
+  HTTP = SERVER_IP + HTTP ;
+  http.begin(HTTP);
   http.addHeader("Content-Type","application/json");
-  // send POST request
+  /* send POST request */
   int http_code = http.POST(output);
-  if(http_code == 200)
-  {
-      // get respons json
-      rsp = http.getString();
+  /* handle the server response*/
+  if(http_code == 200){
+      /* if respone is normal, return respone as string */
+      /* get respons json */
+      String rsp = http.getString();
       DynamicJsonDocument doc(1024);
-      // json deserialize
+      /* json deserialize */
       deserializeJson(doc, rsp);
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
       return state;
   }else{
+    /* if respone is bad, return http_code */
     return String(http_code);
   }
+  http.end();
 }
 
 
