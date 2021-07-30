@@ -115,10 +115,10 @@ function getDynamicData() {
         url: '/newStatus',
         dataType: 'json',
         success: function(data) { // if server response data
-            $("#speedL").html(data.speedL);
-            $("#speedR").html(data.speedR);
-            $("#statusL").html(data.statusL);
-            $("#statusR").html(data.statusR);
+            $("#RPM_L").html(data.RPM_L);
+            $("#RPM_R").html(data.RPM_R);
+            $("#status_L").html(data.status_L);
+            $("#status_R").html(data.status_R);
             $("#control_L").html(data.control_L);
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);

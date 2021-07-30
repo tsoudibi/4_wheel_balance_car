@@ -241,7 +241,7 @@ def newStatus():
     data = {'RPM_L': car_stat.RPM_L,
             'RPM_R': car_stat.RPM_R,
             'status_L': car_stat.cam_depth,
-            'status_R': car_stat.cam_x,
+            'status_R': str(car_stat.cam_x),
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID
