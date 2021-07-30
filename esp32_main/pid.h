@@ -3,8 +3,6 @@
 #include <esp32-hal-dac.h>
 #include "PID_v1.h"
 
-#define motor_l 25
-#define motor_r 26
 /* HZ from encoder */
 int Encoding_HZ_l;
 int Encoding_HZ_r;
@@ -18,8 +16,8 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-double kp_l=10,ki_l=0,kd_l=0;
-double kp_r=10,ki_r=0,kd_r=0;
+double kp_l=1.5,ki_l=0.4,kd_l=0.1;
+double kp_r=1.7,ki_r=0.4,kd_r=0.1;
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
 

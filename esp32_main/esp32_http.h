@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 
+#define TIMEOUT 40
+
 const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";
 const char* ssid_2 = "BOB";
@@ -29,14 +31,14 @@ void WIFI_INIT(){
     Serial.println("[Wi-Fi] Connection faild.");
   }else{
     Serial.println("[Wi-Fi] Connection successed.");
-    /* set client request timeout*/
-    http.setTimeout(200);
-    http.setConnectTimeout(200);
-    /* first get request, send SSID to server*/
+    /* first get request, begin and add header*/
     String HTTP = "/esp32?SSID=";
     HTTP = SERVER_IP + HTTP + WiFi.SSID();
     http.begin(HTTP);
     http.addHeader("Content-Type", "text/plain");  
+    /* set client request timeout and sent SSID to server*/
+    http.setTimeout(TIMEOUT);
+    http.setConnectTimeout(TIMEOUT);
     int httpCode = http.GET(); //Send the request
     /* handle the server response*/
     String payload;
@@ -48,7 +50,7 @@ void WIFI_INIT(){
       /* cannot send SSID to server, but keep going */
       Serial.println("[Wi-Fi] ERROR of response when first connecting to server");
       Serial.println("[Wi-Fi] keep going");
-      if(httpCode == HTTPC_ERROR_CONNECTION_REFUSED){
+      if(httpCode == -1){ /* HTTPC_ERROR_CONNECTION_REFUSED */
         Serial.println("[Wi-Fi] Server offline, closing :( ");
         http.end();
       }
@@ -57,14 +59,14 @@ void WIFI_INIT(){
 }  
 
 String http_GET(char* which){
-  /* set client request timeout*/
-  http.setTimeout(200);
-  http.setConnectTimeout(200);
   /* connect and add header */
   String HTTP="/esp32?which=";
   HTTP = SERVER_IP + HTTP +which;
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain"); 
+  /* set client request timeout*/
+  http.setTimeout(TIMEOUT);
+  http.setConnectTimeout(TIMEOUT);
   /* sent GET request */ 
   int httpCode = http.GET(); //Send the request
   /* handle the server response*/
@@ -85,9 +87,6 @@ String http_GET(char* which){
  * sensor = mass center from arduino to esp32 */
 
 String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sensor_x=0, int sensor_y=0){  
-  /* set client request timeout*/
-  http.setTimeout(200);
-  http.setConnectTimeout(200);
   /* create JSON formate*/
   StaticJsonDocument<200> doc;
   doc["control"] = serialized("["+String(controlL)+","+String(controlR)+"]");
@@ -101,6 +100,9 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
   HTTP = SERVER_IP + HTTP ;
   http.begin(HTTP);
   http.addHeader("Content-Type","application/json");
+  /* set client request timeout*/
+  http.setTimeout(TIMEOUT);
+  http.setConnectTimeout(TIMEOUT);
   /* send POST request */
   int http_code = http.POST(output);
   /* handle the server response*/

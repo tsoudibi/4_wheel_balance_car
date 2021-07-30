@@ -20,6 +20,36 @@ int DAC_L = 0;
 /*[HTTP]debug*/
 unsigned long int time_now;
 
+/*declare the task for multitask*/
+TaskHandle_t PID_Task;
+
+/*PID function for muiltask*/
+void PID_function(void * parameter)
+{
+  for(;;){
+    /* update data from encoder and sensor */
+    update_data_all();
+    /* encoder HZ from arduino*/
+    ISR_HZ_L = get_serial_data(1);
+    ISR_HZ_R = get_serial_data(2);
+    /* mass center at map from arduino */
+    map_x = get_serial_data(3);
+    map_y = get_serial_data(4);
+    /* make one motor reverse */
+    digitalWrite(rev_pin,LOW);
+    /* PID control and get result DAC command */
+    PID(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R);
+    DAC_L = get_PID_result('l');
+    DAC_R = get_PID_result('r');
+
+  
+    /* motor contorl */
+    motor_control(DAC_L,DAC_R);
+
+    /*to check use core*/
+    //Serial.println(xPortGetCoreID());
+  }
+}
 
 void setup(){
   /* serial set */ 
@@ -34,37 +64,38 @@ void setup(){
 
   /* PID set */
   PID_setup();
+
+  /*multitask setup*/
+  xTaskCreatePinnedToCore(
+    PID_function,       //Task function
+    "PID control",      //Taskname
+    10000,              //Task stack(usually use 10000)
+    NULL,               //Task input
+    0,                  //Task priortity(more big means that more need to deal with)
+    &PID_Task,          //Task direction
+    0                   //specify the core we use
+  );
 }
 
 void loop(){
-  /* update data from encoder and sensor */
-  update_data_all();
-  /* encoder HZ from arduino*/
-  ISR_HZ_L = get_serial_data(1);
-  ISR_HZ_R = get_serial_data(2);
-  /* mass center at map from arduino */
-  map_x = get_serial_data(3);
-  map_y = get_serial_data(4);
-  /* make one motor reverse */
-  digitalWrite(rev_pin,LOW);
-
   /* from server, get control mode */
   int control_mode = 0;
   String response = http_GET("control_mode");
   if (response == "button"){
     control_mode = 1;
   }else if (response == "sensor"){
-    control_mode = 2;
+    control_mode = 2; 
   }else if (response == "camera"){
     control_mode = 3;
-  }else if (response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED ) {
-    /* timeout https://github.com/espressif/arduino-esp32/issues/1433#issuecomment-475875579 */
+  }else if (response == "-11" ) {
+    /* error: timeout, HTTPC_ERROR_CONNECTION_REFUSED
+     * https://github.com/espressif/arduino-esp32/issues/1433#issuecomment-475875579 */
     Serial.println("[ERROR] server timeout when GET CONTOL MODE ");
   }else{
     Serial.print("[ERROR] wrong mode response from server, httpCode = ");
     Serial.println(response);
   }
-
+  
   
   /* depend on mode, pick a function to run */
   switch(control_mode){
@@ -85,15 +116,7 @@ void loop(){
       Command_R = 0;
       break;
   }
-  /* PID control and get result DAC command */
-  PID(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R);
-  DAC_L = get_PID_result('l');
-  DAC_R = get_PID_result('r');
-
   
-  /* motor contorl */
-  motor_control(DAC_L,DAC_R);
-
   
   /* send data to server */
   time_now = millis();

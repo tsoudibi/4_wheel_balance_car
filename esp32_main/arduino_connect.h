@@ -1,4 +1,4 @@
-/* arduino_connect.h
+/* arduino_connect.h  
  * this header connect esp32 with two Arudino
  * one for encoder, send the current motor speed (all mode)
  * another for sensor, send the mass coordinate (all mode) and command HZ (only on sensor_contol mode)*/

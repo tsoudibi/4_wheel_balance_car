@@ -13,7 +13,7 @@
 int HZ_L = 0;
 int HZ_R = 0;
 
-void btn_control(int HZ_L,int HZ_R){
+void btn_control(int HZ_L_btn,int HZ_R_btn){
   /* update data from encoder and sensor */
   update_data_all();
   
@@ -21,19 +21,18 @@ void btn_control(int HZ_L,int HZ_R){
     /* get movement from sever */
     String mov=http_GET("movement");
 
-    
     /* with different movement, make different adjust, change the command*/
     if (mov== "forward"){
-        HZ_L = HZ_L + 2;
-        HZ_R = HZ_R + 2;
-        Serial.println("[click] forward");}else
+        HZ_L = HZ_L_btn + 2;
+        HZ_R = HZ_R_btn + 2;
+        Serial.println("[click] forward"+String(HZ_L)+String(HZ_R));}else
     if (mov== "left"){
-        HZ_L = HZ_L - 1;
-        HZ_R = HZ_R + 1;          
+        HZ_L = HZ_L_btn - 1;
+        HZ_R = HZ_R_btn + 1;          
         Serial.println("[click] left");}else
     if (mov=="right"){
-        HZ_L = HZ_L + 1;
-        HZ_R = HZ_R - 1;
+        HZ_L = HZ_L_btn + 1;
+        HZ_R = HZ_R_btn - 1;
         Serial.println("[click] right");}else
     if (mov== "stop"){
         HZ_L = 0;
@@ -54,7 +53,6 @@ void btn_control(int HZ_L,int HZ_R){
   Serial.println( "[HTTP] post:"+http_POST(HZ_L,HZ_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y)+" ,used time:"+(millis()-time_now));*/
   
 }
-
 
 
 int return_command_hz_btn(char which)
