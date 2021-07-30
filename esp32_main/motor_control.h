@@ -39,7 +39,7 @@ void motor_control(int L, int R){
     dacWrite(motor_l,0);
     dacWrite(motor_r,0);
   }
-  Serial.println("[motor] :"+String(signal_L)+","+String(signal_R));
+  //Serial.println("[motor] :"+String(signal_L)+","+String(signal_R));
 }
 
 /*

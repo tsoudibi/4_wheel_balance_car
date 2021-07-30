@@ -78,6 +78,7 @@ void setup(){
 }
 
 void loop(){
+  delay(50);
   /* from server, get control mode */
   int control_mode = 0;
   String response = http_GET("control_mode");
@@ -116,8 +117,7 @@ void loop(){
       Command_R = 0;
       break;
   }
-  
-  
+  delay(50);
   /* send data to server */
   time_now = millis();
   if (control_mode == 1){
