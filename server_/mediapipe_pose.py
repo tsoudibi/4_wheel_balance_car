@@ -47,13 +47,17 @@ height = 720 // 1
 depth = 0
 x_center = 0
 y_center = 0
-body_height = 0
+depth_normalized = 0
 
 # fps
 time1 = time.time()
 time2 = time.time()
 fps = 0
+
+# data to pass to server
 queue = {}
+position_queue = []
+average_position = (0, 0)
 
 cap = None
 mode = None
@@ -78,7 +82,7 @@ def camera_start(device='webcam'):
 
 
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, body_height
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -136,19 +140,19 @@ def mediapipe_pose():
                         y_left_hip = landmark.y
                 x_center = (x_right_hip + x_left_hip) / 2 - 0.5
                 y_center = (y_right_hip + y_left_hip) / 2 - 0.5
-                body_height = y_max - y_min
+                depth_normalized = 1 - ((y_min - y_max) / img_height)
                 cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
                 # draw cneter point of body
                 cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)),
-                           body_height // 30, (224, 220, 164), -1)
+                           (y_max - y_min) // 30, (224, 220, 164), -1)
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
             time2 = time.time()
             fps = 1 / (time2 - time1)
-            # print fps (10, 40) , body height (img_width - 150, 40), x_center (img_width - 150, 80)
+            # print fps (10, 40) , body height(normalized) (img_width - 150, 40), x_center (img_width - 150, 80)
             cv2.rectangle(image, (5, 10), (90, 50), (0, 0, 0), -1)
             cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             cv2.rectangle(image, (img_width - 155, 10), (img_width - 55, 90), (0, 0, 0), -1)
-            cv2.putText(image, str(round(body_height, 2)), (img_width - 150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1,
+            cv2.putText(image, str(round(depth_normalized, 2)), (img_width - 150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1,
                         (255, 255, 255), 2, cv2.LINE_AA)
             cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),
                         2, cv2.LINE_AA)
@@ -160,6 +164,15 @@ def mediapipe_pose():
                 queue = im_rgb
             else:
                 queue[0] = im_rgb
+            # save position in queue (size = 10)
+            position_queue.append([depth_normalized, x_center])
+            if len(position_queue) > 10:
+                position_queue.pop()
+            # caculate average value in the queue
+            for positions in position_queue:
+                average_position = average_position + (positions[0], positions[1])
+            average_position = (average_position[0] / 10, average_position[1] / 10)
+            # except keyboard interupt
             if cv2.waitKey(5) & 0xFF == 27:
                 break
     # Release the VideoCapture object

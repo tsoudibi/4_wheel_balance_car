@@ -33,12 +33,9 @@ class status:
         self.control_R = 0
 
         self.cam_x = 0
-        self.cam_y = 0
-        self.cam_width = 0
-        self.cam_height = 0
         self.cam_depth = 0
-        self.cam_Analog_x = 0
-        self.cam_Analog_y = 0
+        self.cam_HZ_x = 0
+        self.cam_HZ_y = 0
 
         self.SSID = 'NAN'
 
@@ -220,6 +217,10 @@ def CAM_newIMG():
     if mp.queue is None:
         return None
     else:
+        # save position 
+        car_stat.cam_depth = mp.average_position[0]
+        car_stat.cam_x = mp.average_position[1]
+
         # convert numpy array to PIL Image
         img = Image.fromarray(mp.queue[0].astype('uint8'))
 
@@ -239,8 +240,8 @@ def CAM_newIMG():
 def newStatus():
     data = {'RPM_L': car_stat.RPM_L,
             'RPM_R': car_stat.RPM_R,
-            'status_L': 'NONE',
-            'status_R': 'NONE',
+            'status_L': car_stat.cam_depth,
+            'status_R': car_stat.cam_x,
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID
@@ -280,10 +281,10 @@ def create_RPM_plot_real():
 def create_plot_real():
     # Create a trace
     data = [go.Scatter(
-        x=car_stat.queue_sensor_x,
-        y=car_stat.queue_sensor_y,
-        mode='lines+markers',  # lines+dots
-        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
+        x = car_stat.queue_sensor_x,
+        y = car_stat.queue_sensor_y,
+        mode = 'lines+markers',  # lines+dots
+        marker = dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
