@@ -16,14 +16,18 @@ const char* password_3 =  "DBDBDBDBB";
 
 const String SERVER_IP = "http://140.116.78.219:5005" ;
 
-#define led_pin_1 12
+#define led_pin_tx 12
+#define led_pin_rx 27
+#define led_pin_err 35
 
 /* create client object*/
 HTTPClient http; 
 
 void WIFI_INIT(){
   /* set led pinmode */
-  pinMode(led_pin_1, OUTPUT);
+  pinMode(led_pin_tx, OUTPUT);
+  pinMode(led_pin_rx, OUTPUT);
+  pinMode(led_pin_err, OUTPUT);
   /* give 60 seconds to connect WIFI, else faild*/
   int i = 60;
   WiFi.begin(ssid_2, password_2);
@@ -77,12 +81,17 @@ String http_GET(char* which){
   if (httpCode > 0) { //Check the returning code
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
-    digitalWrite(led_pin_1,HIGH);
+    /* blink the led*/
+    digitalWrite(led_pin_rx,HIGH);
     delay(10);
-    digitalWrite(led_pin_1,LOW);
+    digitalWrite(led_pin_rx,LOW);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */
+    /* blink the led*/
+    digitalWrite(led_pin_err,HIGH);
+    delay(10);
+    digitalWrite(led_pin_err,LOW);
     return String(httpCode); 
   }
   http.end();
@@ -122,9 +131,17 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
       deserializeJson(doc, rsp);
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
+      /* blink the led*/
+      digitalWrite(led_pin_tx,HIGH);
+      delay(10);
+      digitalWrite(led_pin_tx,LOW);
       return state;
   }else{
     /* if respone is bad, return http_code */
+    /* blink the led*/
+    digitalWrite(led_pin_err,HIGH);
+    delay(10);
+    digitalWrite(led_pin_err,LOW);
     return String(http_code);
   }
   http.end();
