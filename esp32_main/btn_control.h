@@ -39,6 +39,7 @@ void btn_control(int HZ_L_btn,int HZ_R_btn){
         HZ_R = 0;
         Serial.println("[click] stop");
     }else{
+      Serial.print(mov);
       Serial.println("[ERROR] wrong movent command");
     }
     /* consider threshold, adjust command HZ*/

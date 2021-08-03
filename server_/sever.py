@@ -52,7 +52,7 @@ class status:
 
 # esp32 data log queue
 esp_log_queue = []
-esp_log_string = None
+esp_log_string = ''
 
 car_stat = status()
 
@@ -117,7 +117,7 @@ def esp_log(method, argu="None"):
     if len(esp_log_queue) > 5:
         esp_log_queue.pop()
     for logs in esp_log_queue:
-        esp_log_string = esp_log_string + logs + "\n"
+        esp_log_string = esp_log_string + logs + '\n'
 
 
 @app.route("/esp32", methods=['GET', 'POST'])
