@@ -30,6 +30,10 @@ class status:
         self.queue_sensor_x = []
         self.queue_sensor_y = []
 
+        self.esp32_post_t1 = 0
+        self.esp32_post_t2 = 0
+        self.esp32_post_dt = 0
+
         self.control_L = 0
         self.control_R = 0
 
@@ -145,6 +149,15 @@ def esp32():
 
     # get data from esp32
     if request.method == "POST":
+
+        # record esp32 post time interval
+        if car_stat.esp32_post_t2 == 0:
+            car_stat.esp32_post_t1 = time.time_ns()
+        else:
+            car_stat.esp32_post_t2 = time.time_ns()  # ns
+            car_stat.esp32_post_dt = (car_stat.esp32_post_t2 - car_stat.esp32_post_t1)*1000  # ms
+
+        # get esp32 data
         data = request.get_json()
         print(data)
         car_stat.control_L = data["control"][0]
@@ -265,7 +278,8 @@ def newStatus():
             'status': esp_log_string,
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
-            'SSID': car_stat.SSID
+            'SSID': car_stat.SSID,
+            'esp32_post_dt': car_stat.esp32_post_dt
             }
 
     return data

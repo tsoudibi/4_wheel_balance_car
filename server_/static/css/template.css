@@ -68,6 +68,9 @@ h2{
     height:100px;
 }
 
+#esp32_post_dt{
+    font-size:10px;
+}
 .direction button{
     height:300px;
     width:32%;

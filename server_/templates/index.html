@@ -32,7 +32,7 @@
                 <td id="RPM_R">{{ data.RPM_R }}</td>
             </tr>
             <tr align=center>
-                <td>DAC</td>
+                <td>DAC<p>esp32 POST:</p><p id="esp32_post_dt">{{ data.esp32_post_dt }}</p><p>ms</p></td>
                 <td id="control_L">{{ data.control_L }}</td>
                 <td id="control_R">{{ data.control_R }}</td>
             </tr>
@@ -103,6 +103,7 @@ function getDynamicData() {
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);
             $("#status").html(data.status);
+            $("#esp32_post_dt").html(esp32_post_dt);
         }
     });
     $.ajax({
