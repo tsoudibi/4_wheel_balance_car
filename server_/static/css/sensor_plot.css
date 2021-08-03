@@ -34,9 +34,10 @@ h2{
 
 .status table {
   font-family: 微軟正黑體;
-  font-size:40px;
+  font-size:35px;
   width:100%;
   text-align:center;
+  padding:6px;
   border-radius:5px;
 }
 
@@ -44,7 +45,7 @@ h2{
   color:#fff;
   background-color: #48cae4;
   border:2px solid #fff;
-  padding:6px;
+  padding:10px;
   border-radius:5px;
 }
 
@@ -55,9 +56,14 @@ h2{
   border-radius:5px;
 }
 
-#wifi{
-  font-size: 40px;
-  text-align:center;
+#esp32_post{
+    font-size:15px;
+}
+
+#status{
+    height:100px;
+    font-size:20px;
+
 }
 
 button{

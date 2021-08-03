@@ -17,6 +17,7 @@ app = Flask(__name__)
 # car status
 class status:
     def __init__(self):
+
         self.new = 0
 
         self.movement = "NAN132"
@@ -29,15 +30,25 @@ class status:
         self.queue_sensor_x = []
         self.queue_sensor_y = []
 
+        self.esp32_post_t1 = 0
+        self.esp32_post_t2 = 0
+        self.esp32_post_dt = 0
+
         self.control_L = 0
         self.control_R = 0
 
-        self.cam_x = 0
-        self.cam_depth = 0
-        self.cam_HZ_x = 0
-        self.cam_HZ_y = 0
+        self.cam_x = None
+        self.cam_y = None
+        self.cam_width = None
+        self.cam_depth = None
+        self.cam_height = None
+        self.cam_HZ_x = None
+        self.cam_HZ_y = None
+        self.cam_Analog_x = None
+        self.cam_Analog_y = None
 
         self.SSID = 'NAN'
+
 
 # esp32 data log queue
 esp_log_queue = []
@@ -53,8 +64,7 @@ def controller():
     # 狀態初始化
     data = {'RPM_L': 'Getting...',
             'RPM_R': 'Getting...',
-            'status_L': 'Getting...',
-            'status_R': 'Getting...',
+            'status': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
             'SSID': 'Getting...'
@@ -98,11 +108,12 @@ def camera():
 
     return render_template('camera.html', data=data)
 
-def esp_log(method , argu = "None"):
+
+def esp_log(method, argu="None"):
     global esp_log_string, esp_log_queue
-    now_time = time.localtime(time.time)
-    esp_log_queue.append(str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) +
-        " [esp] " + method + argu)
+    now_time = time.localtime(time.time())
+    esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
+                         " [esp] " + method + argu)
     if len(esp_log_queue) > 5:
         esp_log_queue.pop()
     for logs in esp_log_queue:
@@ -115,9 +126,9 @@ def esp32():
     if request.method == "GET":
         which = request.args.get('which')
         if which == 'movement':
-            if car_stat.new ==1 :
+            if car_stat.new == 1:
                 car_stat.new = 0
-                esp_log("get " , car_stat.movement)
+                esp_log("get ", car_stat.movement)
             return car_stat.movement
         elif which == 'control_mode':
             return str(car_stat.control_mode)
@@ -138,6 +149,15 @@ def esp32():
 
     # get data from esp32
     if request.method == "POST":
+
+        # record esp32 post time interval
+        if car_stat.esp32_post_t2 == 0:
+            car_stat.esp32_post_t1 = time.time_ns()
+        else:
+            car_stat.esp32_post_t2 = time.time_ns()  # ns
+            car_stat.esp32_post_dt = (car_stat.esp32_post_t2 - car_stat.esp32_post_t1)*1000  # ms
+
+        # get esp32 data
         data = request.get_json()
         print(data)
         car_stat.control_L = data["control"][0]
@@ -148,7 +168,6 @@ def esp32():
         car_stat.sensor_y = data["sensor"][1]
         newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
         return jsonify({"state": "ok"})
-
 
 
 @app.route("/mode1_button_click", methods=['GET', 'POST'])
@@ -256,11 +275,11 @@ def CAM_newIMG():
 def newStatus():
     data = {'RPM_L': car_stat.RPM_L,
             'RPM_R': car_stat.RPM_R,
-            'status_L': car_stat.cam_depth,
-            'status_R': str(car_stat.cam_x),
+            'status': esp_log_string,
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
-            'SSID': car_stat.SSID
+            'SSID': car_stat.SSID,
+            'esp32_post_dt': car_stat.esp32_post_dt
             }
 
     return data
@@ -270,8 +289,8 @@ def create_RPM_plot_real():
     rpm_x = [-128, 128]
     rpm_y = [car_stat.RPM_L, car_stat.RPM_R]
 
-    con_x = [-128, 128]
-    con_y = [car_stat.control_L, car_stat.control_R]
+    con_x = [-70, 70]
+    con_y = [car_stat.control_L*0.5, car_stat.control_R*0.5]
 
     # Create a trace
     data = [go.Scatter(
@@ -279,6 +298,7 @@ def create_RPM_plot_real():
         x=rpm_x,
         y=rpm_y,
         mode='lines+markers',  # lines+dots
+        line_width=10,
         marker=dict(size=30, color='rgba(255, 109, 0, 1)')
     ), go.Scatter(
         name='Control',
@@ -286,7 +306,7 @@ def create_RPM_plot_real():
         y=con_y,
         mode='lines+markers',  # lines+dots
         line_width=10,
-        marker=dict(size=50, color='rgba(61, 90, 128, 0.8)')
+        marker=dict(size=25, color='rgba(61, 90, 128, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
@@ -297,10 +317,10 @@ def create_RPM_plot_real():
 def create_plot_real():
     # Create a trace
     data = [go.Scatter(
-        x = car_stat.queue_sensor_x,
-        y = car_stat.queue_sensor_y,
-        mode = 'lines+markers',  # lines+dots
-        marker = dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
+        x=car_stat.queue_sensor_x,
+        y=car_stat.queue_sensor_y,
+        mode='lines+markers',  # lines+dots
+        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
     )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)

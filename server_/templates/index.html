@@ -21,9 +21,9 @@
     <CENTER>
         <table>
             <tr align=center>
-                <th align=center></th>
-                <th>Left motor</th>
-                <th>Right motor</th>
+                <th align=center>motor</th>
+                <th>Left</th>
+                <th>Right</th>
                 <th id="scatter" rowspan="5"></th>
             </tr>
             <tr align=center>
@@ -32,18 +32,19 @@
                 <td id="RPM_R">{{ data.RPM_R }}</td>
             </tr>
             <tr align=center>
-                <td>Signal Control</td>
+                <td rowspan="2">DAC</td>
                 <td id="control_L">{{ data.control_L }}</td>
                 <td id="control_R">{{ data.control_R }}</td>
             </tr>
-            <tr align=center>
-                <td>Status</td>
-                <td id="status_L">{{ data.status_L }}</td>
-                <td id="status_R">{{ data.status_R }}</td>
+            <tr>
+                <td id="esp32_post" colspan="2"><p>esp32 POST:</p><p id="esp32_post_dt">{{ data.esp32_post_dt }}</p><p>ms</p></td>
             </tr>
             <tr>
                 <td>WiFi</td>
-                <td id="wifi" colspan="2">{{ data.WiFi_SSID }}</td>
+                <td id="wifi" colspan="2">{{ data.SSID }}</td>
+            </tr>
+            <tr align=center>
+                <td id="status" colspan="4">{{ data.status }}</td>
             </tr>
         </table>
     </CENTER>
@@ -61,7 +62,6 @@
     <CENTER>
         <a href=# id=backward><button type="button" name="backward">倒車檔</button></a>
     </CENTER>
-    </a>
 </div>
 </body>
 </html>
@@ -74,23 +74,23 @@
 <script type=text/javascript>
 setInterval(function() {
     getDynamicData()
-}, 30); // refreshing frequency (ms)
+}, 10); // refreshing frequency (ms)
 var config = {
     displayModeBar: true
 }; // 工具列不顯示
 var layout = {
     autoresize: false,
-    height: 600,
-    width: 500,
+    height: 500,
+    width: 400,
 
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0.05)',
     xaxis: {
-        range: [-256, 256],
+        range: [-150, 150],
         showticklabels: false,
     },
     yaxis: {
-        range: [-130, 256],
+        range: [-20, 150],
         showticklabels: false,
     }
 };
@@ -102,11 +102,11 @@ function getDynamicData() {
         success: function(data) { // if server response data
             $("#RPM_L").html(data.RPM_L);
             $("#RPM_R").html(data.RPM_R);
-            $("#status_L").html(data.status_L);
-            $("#status_R").html(data.status_R);
             $("#control_L").html(data.control_L);
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);
+            $("#status").html(data.status);
+            $("#esp32_post_dt").html(esp32_post_dt);
         }
     });
     $.ajax({
@@ -120,6 +120,7 @@ function getDynamicData() {
 
 $(function() {
     $('a#forward').bind('click', function() {
+        //document.getElementById("status").innerHTML += "button#forward clicked";
         $.getJSON('/mode1_button_click', {
             a: this.id
         }, function(data) {});
