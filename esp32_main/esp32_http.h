@@ -5,21 +5,25 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 
-#define TIMEOUT 40
+#define TIMEOUT 60
 
 const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";
 const char* ssid_2 = "BOB";
 const char* password_2 =  "12345678";
-const char* ssid_3 = "PawPatrolll";
-const char* password_3 =  "as80894512";
+const char* ssid_3 = "DBDB";
+const char* password_3 =  "DBDBDBDBB";
 
 const String SERVER_IP = "http://140.116.78.219:5005" ;
+
+#define led_pin_1 12
 
 /* create client object*/
 HTTPClient http; 
 
 void WIFI_INIT(){
+  /* set led pinmode */
+  pinMode(led_pin_1, OUTPUT);
   /* give 60 seconds to connect WIFI, else faild*/
   int i = 60;
   WiFi.begin(ssid_2, password_2);
@@ -73,6 +77,9 @@ String http_GET(char* which){
   if (httpCode > 0) { //Check the returning code
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
+    digitalWrite(led_pin_1,HIGH);
+    delay(10);
+    digitalWrite(led_pin_1,LOW);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */
