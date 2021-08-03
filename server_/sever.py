@@ -100,11 +100,13 @@ def camera():
 
 def esp_log(method , argu = "None"):
     global esp_log_string, esp_log_queue
-    esp_log_queue.append("[esp] " + method + argu)
+    now_time = time.localtime(time.time)
+    esp_log_queue.append(str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) +
+        " [esp] " + method + argu)
     if len(esp_log_queue) > 5:
         esp_log_queue.pop()
     for logs in esp_log_queue:
-        esp_log_string = esp_log_string + logs + '\n'
+        esp_log_string = esp_log_string + logs + "\n"
 
 
 @app.route("/esp32", methods=['GET', 'POST'])
