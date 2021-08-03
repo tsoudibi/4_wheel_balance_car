@@ -5,7 +5,8 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 
-#define TIMEOUT 60
+
+#define TIMEOUT 150
 
 const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";
@@ -21,13 +22,21 @@ const String SERVER_IP = "http://140.116.78.219:5005" ;
 #define led_pin_err 35
 
 /* create client object*/
-HTTPClient http; 
+HTTPClient http;
+
+/*set led pin*/
+const int freq = 5000;
+const int resolution = 8;
 
 void WIFI_INIT(){
-  /* set led pinmode */
-  pinMode(led_pin_tx, OUTPUT);
-  pinMode(led_pin_rx, OUTPUT);
-  pinMode(led_pin_err, OUTPUT);
+  /* set led mode*/
+  ledcSetup(1, freq, resolution);
+  ledcSetup(2, freq, resolution);
+  ledcSetup(3, freq, resolution);
+  /* set ;ed pin*/
+  ledcAttachPin(led_pin_tx, 1);
+  ledcAttachPin(led_pin_rx, 2);
+  ledcAttachPin(led_pin_err, 3);
   /* give 60 seconds to connect WIFI, else faild*/
   int i = 60;
   WiFi.begin(ssid_2, password_2);
@@ -82,16 +91,16 @@ String http_GET(char* which){
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
     /* blink the led*/
-    digitalWrite(led_pin_rx,HIGH);
+    ledcWrite(2,10);
     delay(10);
-    digitalWrite(led_pin_rx,LOW);
+    ledcWrite(2,0);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */
     /* blink the led*/
-    digitalWrite(led_pin_err,HIGH);
+    ledcWrite(3,10);
     delay(10);
-    digitalWrite(led_pin_err,LOW);
+    ledcWrite(3,0);
     return String(httpCode); 
   }
   http.end();
@@ -132,16 +141,16 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
       /* blink the led*/
-      digitalWrite(led_pin_tx,HIGH);
+      ledcWrite(1,10);
       delay(10);
-      digitalWrite(led_pin_tx,LOW);
+      ledcWrite(1,0);
       return state;
   }else{
     /* if respone is bad, return http_code */
     /* blink the led*/
-    digitalWrite(led_pin_err,HIGH);
+    ledcWrite(3,10);
     delay(10);
-    digitalWrite(led_pin_err,LOW);
+    ledcWrite(3,0);
     return String(http_code);
   }
   http.end();

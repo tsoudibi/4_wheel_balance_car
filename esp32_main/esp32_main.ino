@@ -122,29 +122,29 @@ void loop(){
   time_now = millis();
   if (control_mode == 1){
     String Response = http_POST(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y);
-    if (response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED){
+    if (Response.toInt() == -11){
       Serial.println("[ERROR] server timeout when POST data in mode 1 ");
     }else{
-      String msg = "[ http] post:" + response + " ,used time:" + (millis()-time_now);
+      String msg = "[ http] post:" + Response + " ,used time:" + (millis()-time_now);
       Serial.println(msg);
     }
   }
   if (control_mode == 2){
     String Response = http_POST(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y);
-    if (response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED){
+    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED){
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:("+String(map_x)+", "+String(map_y)+") speed:("+String(Command_L)+", "+String(Command_R)+") ");
-    String msg = "[ http] post:" + response + " ,used time:" + (millis()-time_now);
+    String msg = "[ http] post:" + Response + " ,used time:" + (millis()-time_now);
     Serial.println(msg);
   }
   if (control_mode == 3){
     String Response = http_POST(Command_L,Command_R,ISR_HZ_L,ISR_HZ_R,map_x,map_y);
-    if (response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED){
+    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED){
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:("+String(map_x)+", "+String(map_y)+") speed:("+String(Command_L)+", "+String(Command_R)+") ");
-    String msg = "[ http] post:" + response + " ,used time:" + (millis()-time_now);
+    String msg = "[ http] post:" + Response + " ,used time:" + (millis()-time_now);
     Serial.println(msg);
   }
 }
