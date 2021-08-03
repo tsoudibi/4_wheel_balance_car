@@ -1,9 +1,9 @@
 h1{
-  color:#fff; /* 字體:顏色 */
-  font-size:50px; /* 字體:大小 */
-  font-weight:bold;
-  background-color:#ff6d00; /* 背景:顏色 */
-  padding:0px; /* 內距:寬度 */
+    color:#fff; /* 字體:顏色 */
+    font-size:50px; /* 字體:大小 */
+    font-weight:bold;
+    background-color:#ff6d00; /* 背景:顏色 */
+    padding:0px; /* 內距:寬度 */
 }
 
 h2{
@@ -24,7 +24,6 @@ h3{
 .mode input{
   width:30%;
   font-size:40px;
-  border:0;
   margin-bottom:0.4rem;
   background-color:#ffba08;
   color:#fff;
@@ -40,17 +39,10 @@ h3{
 
 .status table {
   font-family: 微軟正黑體;
-  font-size:40px;
+  font-size:35px;
   width:100%;
   text-align:center;
-  border-radius:5px;
-}
-
-.status table {
-  font-family: 微軟正黑體;
-  font-size:40px;
-  width:100%;
-  text-align:center;
+  padding:6px;
   border-radius:5px;
 }
 
@@ -58,7 +50,7 @@ h3{
   color:#fff;
   background-color: #48cae4;
   border:2px solid #fff;
-  padding:6px;
+  padding:10px;
   border-radius:5px;
 }
 
@@ -69,16 +61,16 @@ h3{
   border-radius:5px;
 }
 
+#status{
+    height:100px;
+}
+
 #scatter{
   background-color: #E0FBFC;
   margin-bottom:0rem;
   margin-top:0rem;
   border:4px #48cae4 solid;
   padding:0px;
-}
-#wifi{
-  font-size: 40px;
-  text-align:center;
 }
 
 #camera_img{
