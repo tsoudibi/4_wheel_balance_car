@@ -56,8 +56,14 @@ h2{
   border-radius:5px;
 }
 
+#esp32_post{
+    font-size:15px;
+}
+
 #status{
     height:100px;
+    font-size:20px;
+
 }
 
 button{

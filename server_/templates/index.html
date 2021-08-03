@@ -32,16 +32,19 @@
                 <td id="RPM_R">{{ data.RPM_R }}</td>
             </tr>
             <tr align=center>
-                <td>DAC<div class="esp32_post"><p>esp32 POST:</p><p id="esp32_post_dt">{{ data.esp32_post_dt }}</p><p>ms</p></div></td>
+                <td rowspan="2">DAC</td>
                 <td id="control_L">{{ data.control_L }}</td>
                 <td id="control_R">{{ data.control_R }}</td>
+            </tr>
+            <tr>
+                <td id="esp32_post" colspan="2"><p>esp32 POST:</p><p id="esp32_post_dt">{{ data.esp32_post_dt }}</p><p>ms</p></td>
             </tr>
             <tr>
                 <td>WiFi</td>
                 <td id="wifi" colspan="2">{{ data.SSID }}</td>
             </tr>
             <tr align=center>
-                <td id="status" colspan="3">{{ data.status }}</td>
+                <td id="status" colspan="4">{{ data.status }}</td>
             </tr>
         </table>
     </CENTER>
