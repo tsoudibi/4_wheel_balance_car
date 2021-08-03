@@ -53,7 +53,6 @@ class status:
 # esp32 data log queue
 esp_log_queue = []
 esp_log_string = ''
-
 car_stat = status()
 
 
@@ -67,7 +66,8 @@ def controller():
             'status': 'Getting...',
             'control_L': 'Getting...',
             'control_R': 'Getting...',
-            'SSID': 'Getting...'
+            'SSID': 'Getting...',
+            'esp32_post_dt': '000'
             }
 
     return render_template("index.html", data=data)
@@ -113,9 +113,10 @@ def esp_log(method, argu="None"):
     global esp_log_string, esp_log_queue
     now_time = time.localtime(time.time())
     esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
-                         " [esp] " + method + argu)
+                         ' esp ' + method + argu)
     if len(esp_log_queue) > 5:
         esp_log_queue.pop()
+    esp_log_string = ''
     for logs in esp_log_queue:
         esp_log_string = esp_log_string + logs + '\n'
 
@@ -275,10 +276,10 @@ def CAM_newIMG():
 def newStatus():
     data = {'RPM_L': car_stat.RPM_L,
             'RPM_R': car_stat.RPM_R,
-            'status': esp_log_string,
             'control_L': car_stat.control_L,
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID,
+            'status': esp_log_string,
             'esp32_post_dt': car_stat.esp32_post_dt
             }
 
