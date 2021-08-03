@@ -39,6 +39,9 @@ class status:
 
         self.SSID = 'NAN'
 
+# esp32 data log queue
+esp_log_queue = []
+esp_log_string = None
 
 car_stat = status()
 
@@ -95,6 +98,14 @@ def camera():
 
     return render_template('camera.html', data=data)
 
+def esp_log(method , argu = "None"):
+    global esp_log_string, esp_log_queue
+    esp_log_queue.append("[esp] " + method + argu)
+    if len(esp_log_queue) > 5:
+        esp_log_queue.pop()
+    for logs in esp_log_queue:
+        esp_log_string = esp_log_string + logs + '\n'
+
 
 @app.route("/esp32", methods=['GET', 'POST'])
 def esp32():
@@ -102,7 +113,9 @@ def esp32():
     if request.method == "GET":
         which = request.args.get('which')
         if which == 'movement':
-            car_stat.new = 0
+            if car_stat.new ==1 :
+                car_stat.new = 0
+                esp_log("get " , car_stat.movement)
             return car_stat.movement
         elif which == 'control_mode':
             return str(car_stat.control_mode)
@@ -133,6 +146,7 @@ def esp32():
         car_stat.sensor_y = data["sensor"][1]
         newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
         return jsonify({"state": "ok"})
+
 
 
 @app.route("/mode1_button_click", methods=['GET', 'POST'])
