@@ -286,7 +286,6 @@ def CAM_newIMG():
     if mp.image2server is None or camera_btn_mode == 'STOP':
         return None
     else:
-        time1 = time.time()
         # save position 
         car_stat.cam_depth = mp.average_position[0]
         car_stat.cam_x = mp.average_position[1]
@@ -302,10 +301,11 @@ def CAM_newIMG():
 
         # move to beginning of file so `send_file()` it will read from start
         file_object.seek(0)
-        time2 = time.time()
+
         # record esp_log
-        esp_log_cam('depth: ' + str(round(car_stat.cam_depth, 2)) + ', x: ' + str(round(car_stat.cam_x, 2)))
-        print (time2-time1)
+        if camera_btn_mode != 'STOP':
+            esp_log_cam('depth: ' + str(round(car_stat.cam_depth, 2)) + ', x: ' + str(round(car_stat.cam_x, 2)))
+
         return send_file(file_object, mimetype='image/jpeg')
 
 
