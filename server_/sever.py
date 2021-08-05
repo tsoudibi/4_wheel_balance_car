@@ -8,7 +8,7 @@ import numpy as np
 import plotly as py
 import plotly.graph_objs as go
 from flask import Flask, render_template, request, jsonify, send_file
-import mediapipe_pose as mp
+import mediapipe_pose as mp_p
 import thread
 
 app = Flask(__name__)
@@ -38,14 +38,9 @@ class status:
         self.control_R = 0
 
         self.cam_x = None
-        self.cam_y = None
-        self.cam_width = None
         self.cam_depth = None
-        self.cam_height = None
-        self.cam_HZ_x = None
-        self.cam_HZ_y = None
-        self.cam_Analog_x = None
-        self.cam_Analog_y = None
+        self.cam_HZ_L = None
+        self.cam_HZ_R = None
 
         self.SSID = 'NAN'
 
@@ -145,9 +140,7 @@ def esp32():
         elif which == 'new':
             return str(car_stat.new)
         elif which == 'cam':
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_y) + "," + str(car_stat.cam_width) + "," + str(
-                car_stat.cam_height) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_Analog_x) + "," + str(
-                car_stat.cam_Analog_y)
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
         # upate SSID on server
         SSID = request.args.get('SSID')
         if SSID is not None:
@@ -225,8 +218,7 @@ def esp_log_cam(msg):
     global esp_log_string, esp_log_queue
     # record time
     now_time = time.localtime(time.time())
-    esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
-                         msg)
+    esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' + msg)
     # set the lenght of queue to 5
     if len(esp_log_queue) > 5:
         esp_log_queue.pop(0)
@@ -250,16 +242,16 @@ def camera_plot():
         return data
     elif camera_btn_mode == 'START':  # when "START"  clicked
     # start the camera along with thread
-        mp.camera_start(device='webcam')
-        t = thread.thread_with_trace(target=mp.mediapipe_pose)
+        mp_p.camera_start(device='webcam')
+        t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log
-        esp_log_cam('camera start, ip:' + mp.ip_address)
+        esp_log_cam('camera start, ip:' + mp_p.ip_address)
         data = {'stopBtn': 'STOP'}
         return data
     else:  # when "CONTINUE" clicked
         # start the thread
-        t = thread.thread_with_trace(target=mp.mediapipe_pose)
+        t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log
         esp_log_cam('camera continue')
@@ -276,22 +268,23 @@ def RPM_newPlot():
 @app.route('/newPlot', methods=['GET', 'POST'])
 def newPlot():
     scatter = create_plot_real()
-    # print(scatter)
     return scatter
 
 
 @app.route('/CAM_newIMG', methods=['GET'])
 def CAM_newIMG():
-    global camera_btn_mode 
-    if mp.image2server is None or camera_btn_mode == 'STOP':
+    global camera_btn_mode, esp_log_queue
+    if mp_p.image2server is None :
         return None
     else:
-        # save position 
-        car_stat.cam_depth = mp.average_depth
-        car_stat.cam_x = mp.average_x
+        # get position fome mediapipe.py and save to object 
+        car_stat.cam_depth = mp_p.average_depth
+        car_stat.cam_x = mp_p.average_x
+        car_stat.cam_HZ_L = mp_p.HZ_L
+        car_stat.cam_HZ_R = mp_p.HZ_R
 
         # convert numpy array to PIL Image
-        img = Image.fromarray(mp.image2server.astype('uint8'))
+        img = Image.fromarray(mp_p.image2server.astype('uint8'))
 
         # create file-object in memory
         file_object = io.BytesIO()
@@ -300,10 +293,13 @@ def CAM_newIMG():
         img.save(file_object, 'jpeg')
 
         # move to beginning of file so `send_file()` it will read from start
-        file_object.seek(0)
+        file_object.seek(0) 
 
-        # record esp_log
-        if camera_btn_mode != 'STOP':
+        # record esp_log, set interval of 1s
+        now_time = time.localtime(time.time())
+        time_in_log = esp_log_queue[len(esp_log_queue)-1].split(']')
+        sec = time_in_log[0].split(':')
+        if camera_btn_mode != 'STOP' and sec[2] != str(now_time.tm_sec):
             esp_log_cam('depth: ' + str(round(car_stat.cam_depth, 2)) + ', x: ' + str(round(car_stat.cam_x, 2)))
 
         return send_file(file_object, mimetype='image/jpeg')
