@@ -35,7 +35,8 @@ class ipcamCapture:
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_camera_url = 'http://admin:admin@10.1.1.3:8080/video'
+ip_address = '10.1.1.3:8080'
+ip_camera_url = 'http://admin:admin@' + ip_address + '/video'
 
 # set image size of camera, smaller will run faster
 # camera Info:
@@ -131,7 +132,6 @@ def mediapipe_pose():
                         y_min = y
                     if idx == 12:
                         depth = abs(landmark.z * img_width)
-                        print(landmark.z)
                     if idx == 24:
                         x_right_hip = landmark.x
                         y_right_hip = landmark.y
