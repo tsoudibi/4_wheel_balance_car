@@ -291,7 +291,7 @@ def CAM_newIMG():
         car_stat.cam_x = mp.average_position[1]
 
         # convert numpy array to PIL Image
-        img = Image.fromarray(mp.queue[0].astype('uint8'))
+        img = Image.fromarray(mp.image2server.astype('uint8'))
 
         # create file-object in memory
         file_object = io.BytesIO()

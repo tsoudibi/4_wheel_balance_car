@@ -56,7 +56,7 @@ time2 = time.time()
 fps = 0
 
 # data to pass to server
-queue = {}
+image2server 
 position_queue = []
 average_position = (0, 0)
 
@@ -83,7 +83,7 @@ def camera_start(device='webcam'):
 
 
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position, image2server
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -159,11 +159,8 @@ def mediapipe_pose():
             # cv2.imshow('MediaPipe Pose', image)
             # convert back to RGB
             im_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            # save image in queue
-            if queue is None:
-                queue = im_rgb
-            else:
-                queue[0] = im_rgb
+            # save image in image2server
+            image2server = im_rgb
             # save position in queue (size = 10)
             position_queue.append([depth_normalized, x_center])
             if len(position_queue) > 10:
