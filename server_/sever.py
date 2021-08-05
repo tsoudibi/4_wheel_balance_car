@@ -287,8 +287,8 @@ def CAM_newIMG():
         return None
     else:
         # save position 
-        car_stat.cam_depth = mp.average_position[0]
-        car_stat.cam_x = mp.average_position[1]
+        car_stat.cam_depth = mp.average_depth
+        car_stat.cam_x = mp.average_x
 
         # convert numpy array to PIL Image
         img = Image.fromarray(mp.image2server.astype('uint8'))

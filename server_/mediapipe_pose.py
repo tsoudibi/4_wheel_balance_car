@@ -58,7 +58,8 @@ fps = 0
 # data to pass to server
 image2server = None
 position_queue = []
-average_position = (0, 0)
+average_depth = 0
+average_x = 0
 
 cap = None
 mode = None
@@ -83,7 +84,8 @@ def camera_start(device='webcam'):
 
 
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position, image2server
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center
+    global depth_normalized, position_queue, average_depth, average_x, image2server
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -167,8 +169,10 @@ def mediapipe_pose():
                 position_queue.pop()
             # caculate average value in the queue
             for positions in position_queue:
-                average_position = average_position + (positions[0], positions[1])
-            average_position = (average_position[0] / 10, average_position[1] / 10)
+                average_depth = average_depth + positions[0]
+                average_x = average_x + positions[1]
+            average_depth = average_depth[0] / 10
+            average_x = average_x[0] / 10
             # except keyboard interupt
             if cv2.waitKey(5) & 0xFF == 27:
                 break
