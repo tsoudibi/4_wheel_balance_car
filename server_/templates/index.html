@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>馬桶車:Controller</title>
+    <title>馬桶車:Button Mode</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/template.css') }}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -11,7 +11,7 @@
 <h2>模式切換</h2>
 <div class="mode">
     <CENTER>
-        <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller"></a>
+        <a href="{{url_for('button')}}"><input type="button" name="mode_1" value="button"></a>
         <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
         <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
     </CENTER>
@@ -121,7 +121,7 @@ function getDynamicData() {
 $(function() {
     $('a#forward').bind('click', function() {
         //document.getElementById("status").innerHTML += "button#forward clicked";
-        $.getJSON('/mode1_button_click', {
+        $.getJSON('/button_mode_button_click', {
             a: this.id
         }, function(data) {});
         return false;
@@ -130,7 +130,7 @@ $(function() {
 
 $(function() {
     $('a#left').bind('click', function() {
-        $.getJSON('/mode1_button_click', {
+        $.getJSON('/button_mode_button_click', {
             a: this.id
         }, function(data) {});
         return false;
@@ -139,7 +139,7 @@ $(function() {
 
 $(function() {
     $('a#stop').bind('click', function() {
-        $.getJSON('/mode1_button_click', {
+        $.getJSON('/button_mode_button_click', {
             a: this.id
         }, function(data) {});
         return false;
@@ -148,7 +148,7 @@ $(function() {
 
 $(function() {
     $('a#right').bind('click', function() {
-        $.getJSON('/mode1_button_click', {
+        $.getJSON('/button_mode_button_click', {
             a: this.id
         }, function(data) {});
         return false;
@@ -157,7 +157,7 @@ $(function() {
 
 $(function() {
     $('a#backward').bind('click', function() {
-        $.getJSON('/mode1_button_click', {
+        $.getJSON('/button_mode_button_click', {
             a: this.id
         }, function(data) {});
         return false;

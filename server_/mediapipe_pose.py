@@ -35,7 +35,8 @@ class ipcamCapture:
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_camera_url = 'http://admin:admin@10.1.1.3:8080/video'
+ip_address = '10.1.1.3:8080'
+ip_camera_url = 'http://admin:admin@' + ip_address + '/video'
 
 # set image size of camera, smaller will run faster
 # camera Info:
@@ -55,7 +56,7 @@ time2 = time.time()
 fps = 0
 
 # data to pass to server
-queue = {}
+image2server = None
 position_queue = []
 average_position = (0, 0)
 
@@ -82,7 +83,7 @@ def camera_start(device='webcam'):
 
 
 def mediapipe_pose():
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, depth_normalized, position_queue, average_position, image2server
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -131,7 +132,6 @@ def mediapipe_pose():
                         y_min = y
                     if idx == 12:
                         depth = abs(landmark.z * img_width)
-                        print(landmark.z)
                     if idx == 24:
                         x_right_hip = landmark.x
                         y_right_hip = landmark.y
@@ -159,11 +159,8 @@ def mediapipe_pose():
             # cv2.imshow('MediaPipe Pose', image)
             # convert back to RGB
             im_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            # save image in queue
-            if queue is None:
-                queue = im_rgb
-            else:
-                queue[0] = im_rgb
+            # save image in image2server
+            image2server = im_rgb
             # save position in queue (size = 10)
             position_queue.append([depth_normalized, x_center])
             if len(position_queue) > 10:
