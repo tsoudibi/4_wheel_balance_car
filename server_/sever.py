@@ -55,6 +55,8 @@ esp_log_queue = []
 esp_log_string = ''
 car_stat = status()
 
+# camera mode btn flag
+camera_btn_mode = 'None'
 
 @app.route("/")
 def button():
@@ -235,24 +237,31 @@ def esp_log_cam(msg):
 
 @app.route('/camara_mode_button_click')
 def camera_plot():
-    btn = request.args.get('btn')  # get button name
-    print(btn)
-    if btn == 'STOP':  # when "STOP" clicked
+    global camera_btn_mode 
+    camera_btn_mode = request.args.get('btn')  # get button name
+    print(camera_btn_mode)
+    if camera_btn_mode == 'STOP':  # when "STOP" clicked
+        # stop the thread
         global t
         t.kill()
+        # record esp_log
         esp_log_cam('camera stop')
         data = {'stopBtn': 'CONTINUE'}
         return data
-    elif btn == 'START':  # when "START"  clicked
+    elif camera_btn_mode == 'START':  # when "START"  clicked
+    # start the camera along with thread
         mp.camera_start(device='webcam')
         t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
+        # record esp_log
         esp_log_cam('camera start, ip:' + mp.ip_address)
         data = {'stopBtn': 'STOP'}
         return data
     else:  # when "CONTINUE" clicked
+        # start the thread
         t = thread.thread_with_trace(target=mp.mediapipe_pose)
         t.start()
+        # record esp_log
         esp_log_cam('camera continue')
         data = {'stopBtn': 'STOP'}
         return data
@@ -273,7 +282,8 @@ def newPlot():
 
 @app.route('/CAM_newIMG', methods=['GET'])
 def CAM_newIMG():
-    if mp.queue is None:
+    global camera_btn_mode 
+    if mp.queue is None or camera_btn_mode == 'STOP':
         return None
     else:
         # save position 
