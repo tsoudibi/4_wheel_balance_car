@@ -46,11 +46,13 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
 
     if(map_X - map_x_ori > 400)
     {
-      speed_r = speed_l - 8;
+      speed_r--;
+      speed_l++;
     }
     if(map_X - map_x_ori < -400)
     {
-      speed_l = speed_r - 8;
+      speed_l--;
+      speed_r++;
     }
     map_y_ori = map_Y;
     FlagtoDetectchange = 1;
@@ -63,9 +65,9 @@ void LocationtoQueue(int map_X,int map_Y)
   queue_map_X.push(map_X);
   queue_map_Y.push(map_Y);
 
-  if(queue_map_X.count()>=15)
+  if(queue_map_X.count()>=10)
   	queue_map_X.pop();
-  if(queue_map_Y.count()>=15)
+  if(queue_map_Y.count()>=10)
   	queue_map_Y.pop();
 }
 
@@ -133,6 +135,6 @@ void SpeedOutput(int map_X,int map_Y)
     speed_r = 10;
 
   //transport data to esp32    
-  Serial.println(String(map_X)+","+String(map_Y)+","+String(speed_l)+","+String(speed_r));
+  Serial.println(String(map_X)+","+String(map_Y)+","+String(speed_l)+","+String(speed_r)+","+String(flag));
 }
 #endif
