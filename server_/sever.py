@@ -57,7 +57,7 @@ car_stat = status()
 
 
 @app.route("/")
-def controller():
+def button():
     car_stat.control_mode = "button"
 
     # 狀態初始化
@@ -115,7 +115,7 @@ def esp_log(method, argu="None"):
     esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
                          ' esp ' + method + argu)
     if len(esp_log_queue) > 5:
-        esp_log_queue.pop()
+        esp_log_queue.pop(0)
     esp_log_string = ''
     for logs in esp_log_queue:
         esp_log_string = esp_log_string + logs + '\n'
@@ -171,7 +171,7 @@ def esp32():
         return jsonify({"state": "ok"})
 
 
-@app.route("/mode1_button_click", methods=['GET', 'POST'])
+@app.route("/button_mode_button_click", methods=['GET', 'POST'])
 def direction_instructions():
     if request.method == "GET":
         btn = request.args.get('a')
@@ -201,7 +201,7 @@ def direction_instructions():
     return "nothing"
 
 
-@app.route('/mode2_button_click')
+@app.route('/sensor_mode_button_click')
 def plot_trigger():
     btn = request.args.get('btn')
     print(btn)
@@ -213,7 +213,7 @@ def plot_trigger():
         return data
 
 
-@app.route('/mode3_button_click')
+@app.route('/camara_mode_button_click')
 def camera_plot():
     btn = request.args.get('btn')  # get button name
     print(btn)

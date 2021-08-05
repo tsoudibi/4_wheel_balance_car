@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>馬桶車:Camera</title>
+    <title>馬桶車:Camera Mode</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/camera.css') }}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -11,7 +11,7 @@
 <h2>模式切換</h2>
 <div class="mode">
     <CENTER>
-        <a href="{{url_for('controller')}}"><input type="button" name="mode_1" value="controller"></a>
+        <a href="{{url_for('button')}}"><input type="button" name="mode_1" value="button"></a>
         <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
         <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
     </CENTER>
@@ -152,7 +152,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
 $(function() {
     $('a#stop').bind('click', function() {
-        $.getJSON('/mode3_button_click', {
+        $.getJSON('/camara_mode_button_click', {
             btn: $("#stop_btn").html()
         }, function(data) {
             $("#stop_btn").html(data.stopBtn);
