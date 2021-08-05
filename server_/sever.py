@@ -283,9 +283,10 @@ def newPlot():
 @app.route('/CAM_newIMG', methods=['GET'])
 def CAM_newIMG():
     global camera_btn_mode 
-    if mp.queue is None or camera_btn_mode == 'STOP':
+    if mp.image2server is None or camera_btn_mode == 'STOP':
         return None
     else:
+        time1 = time.time()
         # save position 
         car_stat.cam_depth = mp.average_position[0]
         car_stat.cam_x = mp.average_position[1]
@@ -296,15 +297,15 @@ def CAM_newIMG():
         # create file-object in memory
         file_object = io.BytesIO()
 
-        # write PNG in file-object
+        # write jpeg in file-object
         img.save(file_object, 'jpeg')
 
         # move to beginning of file so `send_file()` it will read from start
         file_object.seek(0)
-
+        time2 = time.time()
         # record esp_log
         esp_log_cam('depth: ' + str(round(car_stat.cam_depth, 2)) + ', x: ' + str(round(car_stat.cam_x, 2)))
-
+        print (time2-time1)
         return send_file(file_object, mimetype='image/jpeg')
 
 

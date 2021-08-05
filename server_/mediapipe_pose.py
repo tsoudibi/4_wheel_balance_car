@@ -56,7 +56,7 @@ time2 = time.time()
 fps = 0
 
 # data to pass to server
-image2server 
+image2server = None
 position_queue = []
 average_position = (0, 0)
 
