@@ -53,6 +53,7 @@ car_stat = status()
 camera_btn_mode = 'None'
 
 
+
 @app.route("/")
 def button():
     car_stat.control_mode = "button"
@@ -265,15 +266,15 @@ def camera_plot():
         return data
 
 
-@app.route('/HZ_RESTART_button_click')
-def HZ_restart():
+@app.route('/HZ_RESET_button_click')
+def HZ_reset():
     result = {'data': ''}
     if mp_p.HZ_L == 0 and mp_p.HZ_R == 0:
-        result['data'] = "HZ doesn't need to be restarted !"
+        result['data'] = "HZ doesn't need to reset !"
     else:
         mp_p.HZ_L = 0
         mp_p.HZ_R = 0
-        result['data'] = 'HZ has be restarted !'
+        result['data'] = 'Resetting completed !'
     return result
 
 

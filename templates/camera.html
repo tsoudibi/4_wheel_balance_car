@@ -49,6 +49,7 @@
         </table>
     </CENTER>
 </div>
+<h2>影像辨識</h2>
 <div id="camera_img">
     <CENTER>
         <img id="img" src="/static/img/img_default.jpeg" alt="影像辨識圖片"/>
@@ -62,12 +63,14 @@
         <div class="slidecontainer">
             <input type="range" min="30" max="150" value="150" class="slider" id="myRange">
             <p>Value: <span id="demo"></span></p>
-            <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{data.stopBtn}}</button></a>
-            <a href=# id=HZ_restart><button id="HZ_restart_btn" type="button" name="HZ RESTART">HZ RESTART</button></a>
         </div>
     </CENTER>
 </div>
 <div>
+    <center>
+        <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{data.stopBtn}}</button></a>
+        <a href=# id=HZ_reset><button id="HZ_reset_btn" type="button" name="HZ RESET">HZ RESET</button></a>
+    </center>
 </div>
 </body>
 </html>
@@ -173,8 +176,8 @@ $(function() {
 
 
 $(function() {
-    $('a#HZ_restart').bind('click', function() {
-        $.getJSON('/HZ_RESTART_button_click', {
+    $('a#HZ_reset').bind('click', function() {
+        $.getJSON('/HZ_RESET_button_click', {
         }, function(data) {
         console.log(data.data);});
         return false;
