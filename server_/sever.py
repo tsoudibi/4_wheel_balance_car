@@ -329,7 +329,8 @@ def newStatus():
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID,
             'status': esp_log_string,
-            'esp32_post_dt': car_stat.esp32_post_dt
+            'esp32_post_dt': car_stat.esp32_post_dt,
+            'direction': 'x: ' + str(car_stat.queue_sensor_x) + ' , y: ' + str(car_stat.queue_sensor_x)
             }
 
     return data
