@@ -14,8 +14,8 @@ Flash LED every second
 
 #define ledPin 13
 int timer1_counter;
-int HZ_l;
-int HZ_r;
+float HZ_l;
+float HZ_r;
 
 int first_state=0;
 int next_state=0;

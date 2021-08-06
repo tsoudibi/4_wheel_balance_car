@@ -18,9 +18,6 @@
 int signal_L = 1;
 int signal_R = 1;
 
-/* command hz */
-int command_hz_L = 0;
-int command_hz_R = 0;
 
 void motor_setup(){
   pinMode(motor_l,OUTPUT);

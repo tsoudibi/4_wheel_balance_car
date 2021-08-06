@@ -44,12 +44,12 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     if (-300 < map_Y - map_y_ori < 600 && FlagtoDetectchange == 0) 
   {
 
-    if(map_X - map_x_ori > 400)
+    if(map_X - map_x_ori > 300)
     {
       speed_r--;
       speed_l++;
     }
-    if(map_X - map_x_ori < -400)
+    if(map_X - map_x_ori < -300)
     {
       speed_l--;
       speed_r++;
