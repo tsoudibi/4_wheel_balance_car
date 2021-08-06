@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>馬桶車:SensorPlot Mode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sensor_plot.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<h1><CENTER>馬桶車</CENTER></h1>
+<h2>模式切換</h2>
+<div class="mode">
+      <CENTER>
+          <a href="{{url_for('button')}}"><input type="button" name="mode_1" value="button"></a>
+          <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
+          <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
+      </CENTER>
+</div>
+<h2>狀態顯示</h2>
+<div class=status>
+    <CENTER>
+        <table>
+            <tr align=center>
+                <th align=center></th>
+                <th>Left motor</th>
+                <th>Right motor</th>
+            </tr>
+            <tr align=center>
+                <td>RPM</td>
+                <td id="RPM_L">{{ data.RPM_L }}</td>
+                <td id="RPM_R">{{ data.RPM_R }}</td>
+            </tr>
+            <tr align=center>
+                <td rowspan="2">DAC</td>
+                <td id="control_L">{{ data.control_L }}</td>
+                <td id="control_R">{{ data.control_R }}</td>
+            </tr>
+            <tr>
+                <td id="esp32_post" colspan="2"><span>esp32 POST: </span><span id="esp32_post_dt" >{{ data.esp32_post_dt }}</span><span> ms</span></td>
+            </tr>
+            <tr>
+                <td>WiFi</td>
+                <td id="wifi" colspan="2">{{ data.SSID }}</td>
+            </tr>
+            <tr align=center>
+                <td id="status" colspan="3">{{ data.status }}</td>
+            </tr>
+        </table>
+    </CENTER>
+</div>
+<div class="chart" id="scatter"></div>
+<div>
+    <CENTER>
+        <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{ data.stopBtn }}</button></a>
+    </CENTER>
+</div>
+</body>
+</html>
+
+<!--load jQuery-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+var plot = setInterval(function() {
+    getDynamicData()
+}, 30); // refreshing frequency (ms)
+var layout = {
+    height: 1000,
+    xaxis: {
+        title: 'x-direction',
+        range: [-1000, 1000],
+    },
+    yaxis: {
+        title: 'y-direction',
+        range: [-1000, 1000],
+    }
+};
+
+function getDynamicData() {
+    $.ajax({
+        url: '/newStatus',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            $("#RPM_L").html(data.RPM_L);
+            $("#RPM_R").html(data.RPM_R);
+            $("#control_L").html(data.control_L);
+            $("#control_R").html(data.control_R);
+            $("#wifi").html(data.SSID);
+            $("#esp32_post_dt").html(data.esp32_post_dt);
+            $("#status").html(data.direction);
+        }
+    });
+    $.ajax({
+        url: '/newPlot',
+        dataType: 'json',
+        success: function(data) { // if server response data
+            Plotly.newPlot('scatter', data, layout);
+        } // new plot
+    });
+}
+
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+$(function() {
+    $('a#stop').bind('click', function() {
+        $.getJSON('/sensor_mode_button_click', {
+            btn: $("#stop_btn").html()
+        }, function(data) {
+            $("#stop_btn").html(data.stopBtn);
+            if (data.stopBtn == "CONTINUE") { //執行暫停
+                console.log('Stopped');
+                clearInterval(plot);
+                plot = null;
+            } else { //執行重啟
+                console.log('continuing');
+                plot = setInterval(function() {
+                    getDynamicData()
+                }, 1000);
+            }
+        });
+    });
+});
+</script>
