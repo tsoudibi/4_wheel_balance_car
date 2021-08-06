@@ -62,13 +62,12 @@
         <div class="slidecontainer">
             <input type="range" min="30" max="150" value="150" class="slider" id="myRange">
             <p>Value: <span id="demo"></span></p>
+            <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{data.stopBtn}}</button></a>
+            <a href=# id=HZ_restart><button id="HZ_restart_btn" type="button" name="HZ RESTART">HZ RESTART</button></a>
         </div>
     </CENTER>
 </div>
 <div>
-    <CENTER>
-        <a href=# id=stop><button id="stop_btn" type="button" name="stop">{{data.stopBtn}}</button></a>
-    </CENTER>
 </div>
 </body>
 </html>
@@ -169,6 +168,16 @@ $(function() {
 
             }
         });
+    });
+});
+
+
+$(function() {
+    $('a#HZ_restart').bind('click', function() {
+        $.getJSON('/HZ_RESTART_button_click', {
+        }, function(data) {
+        console.log(data.data);});
+        return false;
     });
 });
 </script>

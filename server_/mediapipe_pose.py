@@ -196,6 +196,7 @@ def mediapipe_pose(debug_mode = False):
     cv2.destroyAllWindows()
     # https://google.github.io/mediapipe/solutions/pose#static_image_mode
 
+
 HZ_L = 0
 HZ_R = 0
 X_THRESHOLD = 0.1
@@ -203,16 +204,17 @@ DEPTH_FIX = 0.8
 DEPTH_THRESHOLD = 0.2
 DEPTH_BREAKPOINT = 0.1
 
+
 def caculate_HZ():
     global average_depth, average_x, HZ_L, HZ_R
     # x range from -0.5 to 0.5
     if average_x > X_THRESHOLD:
         # body in right
-        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.2
+        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.05
     elif average_x < X_THRESHOLD * -1:
         # body in left
         HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.05
-    # depth range from 0.3 to 3  (soft range)
+    # depth range from 0~1.6 (soft range)
     if average_depth > DEPTH_FIX + DEPTH_THRESHOLD:
         # too far, speed up
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.05

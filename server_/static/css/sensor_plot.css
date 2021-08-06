@@ -63,7 +63,7 @@ h2{
 #status{
     height:100px;
     font-size:20px;
-
+    white-space:pre-wrap; /* 不縮減空白字；跳行字會跳行；長行也會跳行 */
 }
 
 button{

@@ -17,7 +17,6 @@ app = Flask(__name__)
 # car status
 class status:
     def __init__(self):
-
         self.new = 0
 
         self.movement = "NAN132"
@@ -52,6 +51,7 @@ car_stat = status()
 
 # camera mode btn flag
 camera_btn_mode = 'None'
+
 
 @app.route("/")
 def button():
@@ -140,7 +140,8 @@ def esp32():
         elif which == 'new':
             return str(car_stat.new)
         elif which == 'cam':
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_HZ_L) + "," + str(
+                car_stat.cam_HZ_R)
         # upate SSID on server
         SSID = request.args.get('SSID')
         if SSID is not None:
@@ -155,7 +156,7 @@ def esp32():
             car_stat.esp32_post_t1 = time.time_ns()
         else:
             car_stat.esp32_post_t2 = time.time_ns()  # ns
-            car_stat.esp32_post_dt = (car_stat.esp32_post_t2 - car_stat.esp32_post_t1)*1000  # ms
+            car_stat.esp32_post_dt = (car_stat.esp32_post_t2 - car_stat.esp32_post_t1) * 1000  # ms
 
         # get esp32 data
         data = request.get_json()
@@ -213,12 +214,14 @@ def plot_trigger():
         data = {'stopBtn': 'STOP'}
         return data
 
+
 # esp_log in camera mode
 def esp_log_cam(msg):
     global esp_log_string, esp_log_queue
     # record time
     now_time = time.localtime(time.time())
-    esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' + msg)
+    esp_log_queue.append(
+        '[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' + msg)
     # set the lenght of queue to 5
     if len(esp_log_queue) > 5:
         esp_log_queue.pop(0)
@@ -227,9 +230,10 @@ def esp_log_cam(msg):
     for logs in esp_log_queue:
         esp_log_string = esp_log_string + logs + '\n'
 
+
 @app.route('/camara_mode_button_click')
 def camera_plot():
-    global camera_btn_mode 
+    global camera_btn_mode
     camera_btn_mode = request.args.get('btn')  # get button name
     print(camera_btn_mode)
     if camera_btn_mode == 'STOP':  # when "STOP" clicked
@@ -241,7 +245,7 @@ def camera_plot():
         data = {'stopBtn': 'CONTINUE'}
         return data
     elif camera_btn_mode == 'START':  # when "START"  clicked
-    # start the camera along with thread
+        # start the camera along with thread
         mp_p.camera_start(device='webcam')
         t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
@@ -259,6 +263,18 @@ def camera_plot():
         return data
 
 
+@app.route('/HZ_RESTART_button_click')
+def HZ_restart():
+    result = {'data': ''}
+    if mp_p.HZ_L == 0 and mp_p.HZ_R == 0:
+        result['data'] = "HZ doesn't need to be restarted !"
+    else:
+        mp_p.HZ_L = 0
+        mp_p.HZ_R = 0
+        result['data'] = 'HZ has be restarted !'
+    return result
+
+
 @app.route('/RPM_newPlot', methods=['GET', 'POST'])
 def RPM_newPlot():
     scatter = create_RPM_plot_real()
@@ -274,7 +290,7 @@ def newPlot():
 @app.route('/CAM_newIMG', methods=['GET'])
 def CAM_newIMG():
     global camera_btn_mode, esp_log_queue
-    if mp_p.image2server is None :
+    if mp_p.image2server is None:
         return None
     else:
         # get position fome mediapipe.py and save to object 
@@ -293,11 +309,11 @@ def CAM_newIMG():
         img.save(file_object, 'jpeg')
 
         # move to beginning of file so `send_file()` it will read from start
-        file_object.seek(0) 
+        file_object.seek(0)
 
         # record esp_log, set interval of 1s
         now_time = time.localtime(time.time())
-        time_in_log = esp_log_queue[len(esp_log_queue)-1].split(']')
+        time_in_log = esp_log_queue[len(esp_log_queue) - 1].split(']')
         sec = time_in_log[0].split(':')
         if camera_btn_mode != 'STOP' and sec[2] != str(now_time.tm_sec):
             esp_log_cam('depth: ' + str(round(car_stat.cam_depth, 2)) + ', x: ' + str(round(car_stat.cam_x, 2)))
@@ -324,7 +340,7 @@ def create_RPM_plot_real():
     rpm_y = [car_stat.RPM_L, car_stat.RPM_R]
 
     con_x = [-70, 70]
-    con_y = [car_stat.control_L*0.5, car_stat.control_R*0.5]
+    con_y = [car_stat.control_L * 0.5, car_stat.control_R * 0.5]
 
     # Create a trace
     data = [go.Scatter(

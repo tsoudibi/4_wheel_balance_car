@@ -80,6 +80,7 @@ h3{
 }
 
 #camera_img{
+    width:70%;
     margin-right:10px;
     float:left;
 }
@@ -151,4 +152,12 @@ button:hover{
   width:30%;
   background-color:#023e8a;
   border:0px #efea5a solid;
+}
+
+#stop_btn{
+    float:left;
+}
+
+#HZ_restart_btn{
+    float:left;
 }
