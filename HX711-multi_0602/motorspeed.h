@@ -27,7 +27,7 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   if (map_Y - map_y_ori > 600 && FlagtoDetectchange == 0)
   {
     speed_l++;
-    speed_r++;
+    speed_r = speed_l;
     FlagtoDetectchange = 1;
   }
   
@@ -36,7 +36,7 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   if(map_Y - map_y_ori < -300 && FlagtoDetectchange == 0)
   {
     speed_l--;
-    speed_r--;
+    speed_r = speed_l;
     FlagtoDetectchange = 1;
   }
   
@@ -56,7 +56,8 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     }
     map_y_ori = map_Y;
     FlagtoDetectchange = 1;
-  }  
+  }
+  delay(500);
 }
 
 /*save location in queue*/
@@ -94,11 +95,11 @@ void ResetCoordinate(int map_X,int map_Y)
       count++;
       
       //stop reset
-      if(abs(queue_map_X.peek() > 30) || abs(queue_map_Y.peek() > 30))
+      if(abs(queue_map_X.peek() > 100) || abs(queue_map_Y.peek() > 100))
         count = 0;
         
-      //reset successfully
-      if (count == 15)
+      //reset successfully and stop
+      if (count == 10)
         flag = 0;
     }
   }  

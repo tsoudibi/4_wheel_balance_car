@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 
 
-#define TIMEOUT 150
+#define TIMEOUT 170
 
 const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";

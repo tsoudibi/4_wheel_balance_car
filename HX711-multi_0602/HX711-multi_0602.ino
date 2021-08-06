@@ -68,9 +68,10 @@ void weight(int i) {
     break;
 
   }
-  if(abs(map_X)<10)
+  /*to avoid the error*/
+  if(abs(map_X)<30)
     map_X = 0;
-  if(abs(map_Y)<10)
+  if(abs(map_Y)<30)
     map_Y = 0;
    /*map_Y = map(map_Y,-20000,20000,-1023,1023);
    map_X = map(map_X,-20000,20000,-1023,1023);*/

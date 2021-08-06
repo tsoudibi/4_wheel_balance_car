@@ -16,8 +16,8 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-double kp_l=0.7,ki_l=0.8,kd_l=0.1;
-double kp_r=0.7,ki_r=0.55,kd_r=0.1;
+double kp_l=0.9,ki_l=0.8,kd_l=0.1;
+double kp_r=0.9,ki_r=0.55,kd_r=0.1;
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
 
