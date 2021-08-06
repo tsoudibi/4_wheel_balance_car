@@ -1,0 +1,95 @@
+h1{
+    color:#fff; /* 字體:顏色 */
+    font-size:50px; /* 字體:大小 */
+    font-weight:bold;
+    background-color:#ff6d00; /* 背景:顏色 */
+    padding:0px; /* 內距:寬度 */
+}
+
+h2{
+    color: #293241;
+    font-size: 40px;
+    font-weight: bold;
+    background-color: #fff;
+    border-left: 7px solid #642100; /* 左邊框:寬度 樣式 顏色 */
+    padding:10px;
+}
+
+.mode input{
+    width:30%;
+    font-size:40px;
+    border:0;
+    margin-bottom:0.4rem;
+    background-color:#ffba08;
+    color:#fff;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.mode input:hover{
+    color:#ffba08;
+    background-color:#fff;
+    border:4px #ffba08 solid;
+}
+
+.status table {
+    font-family: 微軟正黑體;
+    font-size:35px;
+    width:100%;
+    text-align:center;
+    padding:6px;
+    border-radius:5px;
+}
+
+.status th {
+    color:#fff;
+    background-color: #48cae4;
+    border:2px solid #fff;
+    padding:10px;
+    border-radius:5px;
+}
+
+.status td {
+    background-color: #e0fbfc;
+    border:2px solid #fff;
+    padding:6px;
+    border-radius:5px;
+}
+
+#scatter{
+    background-color: #E0FBFC;
+    margin-bottom:0rem;
+    margin-top:0rem;
+    border:4px #48cae4 solid;
+    padding:0px;
+}
+
+#esp32_post{
+    font-size:20px;
+}
+
+#status{
+    height:100px;
+    font-size:20px;
+    white-space:pre-wrap; /* 不縮減空白字；跳行字會跳行；長行也會跳行 */
+}
+
+.direction button{
+    height:300px;
+    width:32%;
+    font-size:70px;
+    border:0;
+    margin-bottom:0.4rem;
+    background-color:#3D5A80;
+    color:#fff;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.direction button:hover{
+    color:#fff;
+    font-size:70px;
+    margin-bottom:0.4rem;
+    background-color:#98C1D9;
+    border:0px #00b4d8 solid;
+}

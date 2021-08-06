@@ -1,0 +1,163 @@
+h1{
+    color:#fff; /* 字體:顏色 */
+    font-size:50px; /* 字體:大小 */
+    font-weight:bold;
+    background-color:#ff6d00; /* 背景:顏色 */
+    padding:0px; /* 內距:寬度 */
+}
+
+h2{
+  color: #293241;
+  font-size: 40px;
+  font-weight: bold;
+  background-color: #fff;
+  border-left: 7px solid #642100; /* 左邊框:寬度 樣式 顏色 */
+  padding:10px;
+}
+h3{
+  color: #293241;
+  font-size: 30px;
+  font-weight: bold;
+  background-color: #fff;
+  padding:10px;
+}
+.mode input{
+  width:30%;
+  font-size:40px;
+  margin-bottom:0.4rem;
+  background-color:#ffba08;
+  color:#fff;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.mode input:hover{
+  color:#ffba08;
+  background-color:#fff;
+  border:4px #ffba08 solid;
+}
+
+.status table {
+  font-family: 微軟正黑體;
+  font-size:35px;
+  width:100%;
+  text-align:center;
+  padding:6px;
+  border-radius:5px;
+}
+
+.status th {
+  color:#fff;
+  background-color: #48cae4;
+  border:2px solid #fff;
+  padding:10px;
+  border-radius:5px;
+}
+
+.status td {
+  background-color: #e0fbfc;
+  border:2px solid #fff;
+  padding:6px;
+  border-radius:5px;
+}
+
+#esp32_post{
+    font-size:20px;
+}
+
+#status{
+    height:100px;
+    font-size:20px;
+    white-space:pre-wrap; /* 不縮減空白字；跳行字會跳行；長行也會跳行 */
+}
+
+#scatter{
+  background-color: #E0FBFC;
+  margin-bottom:0rem;
+  margin-top:0rem;
+  border:4px #48cae4 solid;
+  padding:0px;
+}
+
+#camera_img{
+    width:70%;
+    margin-right:10px;
+    float:left;
+}
+#frame_control{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.slidecontainer {
+    width: 100%;
+    padding:10px;
+
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 25%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+button{
+  font-size:30px;
+  border:0;
+  width:30%;
+  height:60px;
+  margin-bottom:0.4rem;
+  background-color:#3D5A80;
+  color:#fff;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+button:hover{
+  color:#fff;
+  font-size:30px;
+  width:30%;
+  background-color:#023e8a;
+  border:0px #efea5a solid;
+}
+
+#stop_btn{
+    float:left;
+}
+
+#HZ_restart_btn{
+    float:left;
+}
