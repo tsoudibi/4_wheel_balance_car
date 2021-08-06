@@ -43,7 +43,7 @@
                 <td id="wifi" colspan="2">{{ data.SSID }}</td>
             </tr>
             <tr align=center>
-                <td id="status" colspan="3"><p id="direction"></p>{{ data.status }}</td>
+                <td id="status" colspan="3">{{ data.status }}</td>
             </tr>
         </table>
     </CENTER>
@@ -88,8 +88,7 @@ function getDynamicData() {
             $("#control_L").html(data.control_L);
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);
-            $("#status").html(data.status);
-            $("#direction").html(data.direction);
+            $("#status").html(data.direction);
         }
     });
     $.ajax({
