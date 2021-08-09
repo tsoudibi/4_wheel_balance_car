@@ -31,8 +31,8 @@ int signal_Y = 0;
 
 int Command_speed_l = 0;
 int Command_speed_r = 0;
-
-
+//HX711 set on or off
+int flag = 0;
 void setup_hard_serial(){
     //encoder
     Serialbyarduino_1.begin(115200, SERIAL_8N1, 32, 33);//baud rate, mode, RX, TX
@@ -97,6 +97,7 @@ void split_sensor(){
   signal_Y = value_2[2];
   Command_speed_l = value_2[3];
   Command_speed_r = value_2[4];
+  flag = value_2[5];
 }
 
 int get_serial_data(int n)
@@ -112,7 +113,9 @@ int get_serial_data(int n)
   if(n == 5)
     return Command_speed_l;
   if(n == 6)
-    return Command_speed_r; 
+    return Command_speed_r;
+  if(n == 7)
+    return flag; 
 }
 
 void update_data_all(){

@@ -5,8 +5,8 @@
 #include "Queue.h"
 #include "arduino.h"
 
-Queue<unsigned long> queue_map_X(20);
-Queue<unsigned long> queue_map_Y(20);
+Queue<unsigned long> queue_map_X(5);
+Queue<unsigned long> queue_map_Y(5);
 
 int flag = 0;
 int count = 0;
@@ -23,38 +23,38 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   
   int FlagtoDetectchange = 0;
 
-  //加速
-  if (map_Y - map_y_ori > 600 && FlagtoDetectchange == 0)
+  //left
+  if (map_X - map_x_ori > 600 && FlagtoDetectchange == 0)
   {
     speed_l++;
-    speed_r = speed_l;
+    speed_r--;
     FlagtoDetectchange = 1;
   }
   
   
-  //減速
-  if(map_Y - map_y_ori < -300 && FlagtoDetectchange == 0)
+  //right
+  if(map_X - map_x_ori < -600 && FlagtoDetectchange == 0)
   {
     speed_l--;
-    speed_r = speed_l;
+    speed_r++;
     FlagtoDetectchange = 1;
   }
   
-  //左右轉
-    if (-300 < map_Y - map_y_ori < 600 && FlagtoDetectchange == 0) 
+  
+    if (-600 < map_X - map_x_ori < 600 && FlagtoDetectchange == 0) 
   {
-
-    if(map_X - map_x_ori > 300)
+    //forward
+    if(map_Y - map_y_ori > 300)
+    {
+      speed_r++;
+      speed_l = speed_r;
+    }
+    //slow
+    if(map_Y - map_y_ori < -200)
     {
       speed_r--;
-      speed_l++;
+      speed_l = speed_r;
     }
-    if(map_X - map_x_ori < -300)
-    {
-      speed_l--;
-      speed_r++;
-    }
-    map_y_ori = map_Y;
     FlagtoDetectchange = 1;
   }
   /*to let speed change smooth*/
@@ -96,11 +96,11 @@ void ResetCoordinate(int map_X,int map_Y)
       count++;
       
       //stop reset
-      if(abs(queue_map_X.peek() > 100) || abs(queue_map_Y.peek() > 100))
+      if(abs(map_X) > 100 || abs(map_Y) > 100)
         count = 0;
         
       //reset successfully and stop
-      if (count == 10)
+      if (count == 3)
         flag = 0;
     }
   }  
@@ -111,7 +111,8 @@ void SpeedOutput(int map_X,int map_Y)
 {
   LocationtoQueue(map_X,map_Y);
   ResetCoordinate(map_X,map_Y);
-  
+
+  unsigned long time_count = 0;
   //靜止
   if (flag == 0)
   {
@@ -120,8 +121,13 @@ void SpeedOutput(int map_X,int map_Y)
   }
   //啟動
   if (flag == 1)
-  {
-    speed_control(map_x_ori,map_y_ori,map_X,map_Y);
+  { 
+  /*set time to smooth the speed change*/
+    if(millis()- time_count > 1000)
+    {
+      speed_control(map_x_ori,map_y_ori,map_X,map_Y);
+      time_count = millis();
+    }
   }
   
   //avoid negative speed

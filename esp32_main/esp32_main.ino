@@ -141,7 +141,7 @@ void loop() {
     }
     Serial.println("[sensr] map:(" + String(map_x) + ", " + String(map_y) + ") speed:(" + String(Command_L) + ", " + String(Command_R) + ") ");
     String msg = "[ http] post:" + Response + " ,used time:" + (millis() - time_now);
-    Serial.println(msg);
+    Serial.println(msg+"flag = "+String(get_serial_data(7)));
   }
   if (control_mode == 3) {
     String Response = http_POST(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
