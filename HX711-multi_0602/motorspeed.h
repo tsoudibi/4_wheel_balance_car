@@ -57,7 +57,8 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     map_y_ori = map_Y;
     FlagtoDetectchange = 1;
   }
-  delay(500);
+  /*to let speed change smooth*/
+  delay(1000);
 }
 
 /*save location in queue*/

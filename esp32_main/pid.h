@@ -69,31 +69,12 @@ void PID(int command_hz_L,int command_hz_R,int encoder_hz_L,int encoder_hz_R)
   /* set parameter needed (command HZ and encoder HZ) */
   /* let PID make change smoothy */
   /* left */
-  if(command_HZ_l != command_hz_L)
-  {
-    commanderror = (abs(command_HZ_l - command_hz_L))/2;
-    /*if commanderror is too small that is near equal to 0*/
-    if(commanderror < 0.02){
-      command_HZ_l = command_hz_L;
-      commanderror = 0;}
-    else{
-      command_HZ_l = command_HZ_l + commanderror;}
-  }
+  command_HZ_l = command_hz_L;
+  Encoding_HZ_l = encoder_hz_L;
   PIDcontrol_left();
   /*right*/
-  if(command_HZ_r != command_hz_R)
-  {
-    commanderror = abs((command_HZ_r - command_hz_R))/2;
-    Serial.println("123");
-    Serial.println(String(command_hz_L)+","+String(command_hz_R)+","+String(command_HZ_l)+","+String(command_HZ_r)+","+String(commanderror));
-    /*if commanderror is too small that is near equal to 0*/
-    if(commanderror < 0.02){
-      command_HZ_r = command_hz_R;
-      commanderror = 0;}
-    else{
-      command_HZ_r = command_HZ_r - commanderror;
-      }
-  }
+  command_HZ_r = command_hz_R;
+  Encoding_HZ_r = encoder_hz_R;
   PIDcontrol_right();
   //Serial.println(String(command_hz_L)+","+String(command_hz_R)+","+String(command_HZ_l)+","+String(command_HZ_r));
 }
