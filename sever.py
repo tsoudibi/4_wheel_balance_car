@@ -53,6 +53,12 @@ car_stat = status()
 camera_btn_mode = 'None'
 
 
+@app.route("/dinner_mode")
+def dinner():
+    # 狀態初始化
+    data = {}
+    return render_template("dinner.html", data=data)
+
 
 @app.route("/")
 def button():
@@ -361,7 +367,8 @@ def create_RPM_plot_real():
         mode='lines+markers',  # lines+dots
         line_width=10,
         marker=dict(size=25, color='rgba(61, 90, 128, 1)')
-    )]
+    )
+    ]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
 
@@ -371,11 +378,41 @@ def create_RPM_plot_real():
 def create_plot_real():
     # Create a trace
     data = [go.Scatter(
-        x=car_stat.queue_sensor_x,
-        y=car_stat.queue_sensor_y,
-        mode='lines+markers',  # lines+dots
-        marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
-    )]
+        x=[-1000, -1000, 1000, 1000, -1000],
+        y=[-800, 800, 800, -800, -800],
+        mode='markers',
+        marker=dict(color='rgba(142, 202, 230, 0.5)'),
+        fill='toself')
+        , go.Scatter(
+            x=[600, 600, 1000, 1000, 600],
+            y=[-800, 800, 800, -800, -800],
+            mode='markers',
+            marker=dict(color='rgba(142, 202, 230, 0.5)'),
+            fill='toself')
+        , go.Scatter(
+            x=[-600, -600, 600, 600, -600],
+            y=[300, 800, 800, 300, 300],
+            mode='markers',
+            marker=dict(color='rgba(33, 158, 168, 0.1)'),
+            fill='toself')
+        , go.Scatter(
+            x=[-600, -600, 600, 600, -600],
+            y=[-200, -800, -800, -200, -200],
+            mode='markers',
+            marker=dict(color='rgba(33, 158, 168, 0.1)'),
+            fill='toself')
+        , go.Scatter(
+            x=[-600, -600, 600, 600, -600],
+            y=[-200, 300, 300, -200, -200],
+            mode='markers',
+            marker=dict(color='rgba(2, 48, 71, 0.1)'),
+            fill='toself')
+        , go.Scatter(
+            x=[10, 20, 30, 40, 50],
+            y=[10, 20, 30, 40, 50],
+            mode='lines+markers',  # lines+dots
+            marker=dict(size=[20, 30, 40, 50, 60], color='rgba(255, 109, 0, 1)')
+        )]
 
     graphJSON = json.dumps(data, cls=py.utils.PlotlyJSONEncoder)
 
