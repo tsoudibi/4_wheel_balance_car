@@ -134,15 +134,26 @@ function getDynamicData() {
 }
 
 function getDynamicIMG() {
+    var time1 = new Date();
     $.ajax({
         url: '/CAM_newIMG',
         Type: 'GET',
+        timeout: 150,
         contentType: "image/jpeg",
-        complete: function(data) { // complete只要請求完成，無論返回成功還是失敗
+        success: function(data) { 
+            // complete只要請求完成，無論返回成功還是失敗
+            // success 只有在成功執行後才會跑
             // upload new img
             //dt = new Date();
             //$('img').attr('src',+"?"+new Date());
+            var time2 = new Date();
             $('img').attr('src', '/CAM_newIMG');
+            console.log('newIMG success \nused time: ' + String(time2 - time1));
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            // 若發生錯誤，列印出錯誤代碼
+            var time2 = new Date();
+            console.log('newIMG error :' + jqXHR.statusText + textStatus + '\nused time: ' + String(time2 - time1));
         }
     });
 }

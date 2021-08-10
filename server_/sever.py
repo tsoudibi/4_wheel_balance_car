@@ -120,7 +120,7 @@ def esp_log_btn(method, argu="None"):
     # record time
     now_time = time.localtime(time.time())
     esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
-                         ' esp ' + method + argu)
+                        ' esp ' + method + argu)
     # set the lenght of queue to 5
     if len(esp_log_queue) > 5:
         esp_log_queue.pop(0)
@@ -139,8 +139,10 @@ def esp32():
             if car_stat.new == 1:
                 car_stat.new = 0
                 esp_log_btn("get ", car_stat.movement)
+                print('esp32 GET movement: ' + str(car_stat.movement))
             return car_stat.movement
         elif which == 'control_mode':
+            print('esp32 GET control_mode: ' + str(car_stat.control_mode))
             return str(car_stat.control_mode)
         elif which == 'RPM':
             return str(car_stat.RPM_L) + "," + str(car_stat.RPM_R)
@@ -148,13 +150,16 @@ def esp32():
             return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
         elif which == 'new':
             return str(car_stat.new)
-        elif which == 'cam':
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_HZ_L) + "," + str(
-                car_stat.cam_HZ_R)
+        elif which == 'cam_position' :
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth)
+        elif which == 'cam_HZ':
+            print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
+            return str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
         # upate SSID on server
         SSID = request.args.get('SSID')
         if SSID is not None:
             car_stat.SSID = SSID
+            print('esp32 GET SSID: ' + car_stat.SSID)
             return car_stat.SSID
 
     # get data from esp32
@@ -169,7 +174,7 @@ def esp32():
 
         # get esp32 data
         data = request.get_json()
-        print(data)
+        print('esp32 POST: ' + data)
         car_stat.control_L = data["control"][0]
         car_stat.control_R = data["control"][1]
         car_stat.RPM_L = data["RPM"][0]
@@ -187,27 +192,27 @@ def direction_instructions():
     if request.method == "GET":
         btn = request.args.get('a')
         if btn == 'forward':
-            print('forward')
+            print('btn_mode :forward')
             car_stat.new = 1
             car_stat.movement = "forward"
         elif btn == 'left':
-            print('left')
+            print('btn_mode :left')
             car_stat.new = 1
             car_stat.movement = "left"
         elif btn == 'right':
-            print('right')
+            print('btn_mode :right')
             car_stat.new = 1
             car_stat.movement = "right"
         elif btn == 'stop':
-            print('stop')
+            print('btn_mode :stop')
             car_stat.new = 1
             car_stat.movement = "stop"
         elif btn == 'backward':
-            print('backward')
+            print('btn_mode :backward')
             car_stat.new = 1
             car_stat.movement = "backward"
         else:
-            print('btn error')
+            print('btn_mode :btn error')
 
     return "nothing"
 
@@ -215,7 +220,7 @@ def direction_instructions():
 @app.route('/sensor_mode_button_click')
 def plot_trigger():
     btn = request.args.get('btn')
-    print(btn)
+    print('sensor_btn: ' + btn)
     if btn == 'STOP':
         data = {'stopBtn': 'CONTINUE'}
         return data
