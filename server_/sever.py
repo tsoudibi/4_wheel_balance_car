@@ -429,4 +429,8 @@ def newQueue(queue_x, queue_y, new_x, new_y):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    # run production server on flask
+    # reference: https://stackoverflow.com/questions/38982807/are-a-wsgi-server-and-http-server-required-to-serve-a-flask-app/38982989#38982989
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=5000)
+    #app.run(host='0.0.0.0', debug=True)
