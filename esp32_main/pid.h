@@ -16,8 +16,14 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-double kp_l=1.5,ki_l=0.4,kd_l=0;
-double kp_r=1.7,ki_r=0.8,kd_r=0;
+
+/* for button */
+/*double kp_l=1.6,ki_l=0.6,kd_l=0;
+double kp_r=1.7,ki_r=0.8,kd_r=0;*/
+/*for sensor*/
+double kp_l=3,ki_l=1.3,kd_l=0;
+double kp_r=3,ki_r=1.2,kd_r=0;
+
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
 /**/
