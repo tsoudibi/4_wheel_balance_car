@@ -22,31 +22,30 @@ char HZ_char_array[50] ;
 
 void camera_control(){
   /* update data from encoder and sensor */
-  update_data_all();
+  /*update_data_all();*/
 
   /* get HZ command from sever */
   String HZ_string = http_GET("cam_HZ");
-
-  /* to char array */
-  int HZ_string_len = HZ_string.length() + 1;   //sensor
-  HZ_string.toCharArray(HZ_char_array, HZ_string_len); //sensor
-  
-  /* split */
-  char *arr_1;
-  arr_1 = strtok(HZ_char_array, ",");
-  int i = 0;
-  int value_1[3];
-  while (arr_1 != NULL)
-  {
-    value_1[++i] = atoi(arr_1); 
-    arr_1 = strtok(NULL, ",");
-  }
-
-  /* if error, use bacup command */
-  if (cam_HZ_L > 100 || cam_HZ_R > 100 || cam_HZ_L < 0 || cam_HZ_R < 0){
+  if (HZ_string == "-1" || HZ_string == "-11"){
     cam_HZ_L = cam_HZ_L_backup;
     cam_HZ_R = cam_HZ_R_backup;
+    Serial.println(HZ_string);
   }else{
+    Serial.println(HZ_string);
+    /* to char array */
+    int HZ_string_len = HZ_string.length() + 1;   //sensor
+    HZ_string.toCharArray(HZ_char_array, HZ_string_len); //sensor
+    
+    /* split */
+    char *arr_1;
+    arr_1 = strtok(HZ_char_array, ",");
+    int i = 0;
+    int value_1[3];
+    while (arr_1 != NULL)
+    {
+      value_1[++i] = atoi(arr_1); 
+      arr_1 = strtok(NULL, ",");
+    }
     cam_HZ_L = value_1[1];
     cam_HZ_R = value_1[2];
   }
