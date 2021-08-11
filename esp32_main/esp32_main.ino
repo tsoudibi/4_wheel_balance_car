@@ -20,19 +20,13 @@ int map_x = 0;
 int map_y = 0;
 int DAC_R = 0;
 int DAC_L = 0;
-/*get control mode*/
-int control_mode = 0;
+
 /*[HTTP]debug*/
 unsigned long int time_now;
 
 /*declare the task for multitask*/
 TaskHandle_t PID_Task;
 
-/*return control mode to change PID paremeter*/
-int ReturnControlMode()
-{
-  return control_mode;
-}
 /*PID function for muiltask*/
 void PID_function(void * parameter)
 {
@@ -91,6 +85,8 @@ void setup() {
 
 void loop() {
   delay(50);
+  /*get control mode*/
+  int control_mode = 0;
   /* from server, get control mode */
   String response = http_GET("control_mode");
   if (response == "button") {
@@ -116,17 +112,23 @@ void loop() {
       btn_control(Command_L, Command_R);
       Command_L = return_command_hz_btn('l');
       Command_R = return_command_hz_btn('r');
+      /*return control mode to change PID paremeter*/
+      getcontrolmode(control_mode);
       break;
     case 2:
       /* get the command HZ form Arduino (sensor */
       Command_L = get_serial_data(5);
       Command_R = get_serial_data(6);
+      /*return control mode to change PID paremeter*/
+      getcontrolmode(control_mode);
       break;
     case 3:
       /* get the command HZ form camera control */
       camera_control();
       Command_L = return_command_hz_camera('l');
       Command_R = return_command_hz_camera('r');
+      /*return control mode to change PID paremeter*/
+      getcontrolmode(control_mode);
       break;
   }
   delay(50);
