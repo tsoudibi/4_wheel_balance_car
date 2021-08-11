@@ -16,7 +16,8 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-
+double kp_l,ki_l,kd_l;
+double kp_r,ki_r,kd_r;
 /* for button */
 /*double kp_l=1.6,ki_l=0.6,kd_l=0;
 double kp_r=1.7,ki_r=0.8,kd_r=0;*/
