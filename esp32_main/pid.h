@@ -16,12 +16,11 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-int control_Mode = 0;
-double kp_l,ki_l,kd_l;
-double kp_r,ki_r,kd_r;
+/*double kp_l,ki_l,kd_l;
+double kp_r,ki_r,kd_r;*/
 /* for button */
-/*double kp_l=1.6,ki_l=0.6,kd_l=0;
-double kp_r=1.7,ki_r=0.8,kd_r=0;*/
+double kp_l=0.6,ki_l=0.8,kd_l=0;
+double kp_r=0.6,ki_r=0.5,kd_r=0;
 /*for sensor*/
 /*double kp_l=3,ki_l=1.3,kd_l=0;
 double kp_r=3,ki_r=1.2,kd_r=0;*/
@@ -29,6 +28,23 @@ double kp_r=3,ki_r=1.2,kd_r=0;*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
 
+/*void get_control_mode(int control_mode_PID)
+{
+  int control_Mode = 0;
+  control_Mode = control_mode_PID;
+  if(control_Mode == 1 || control_Mode == 2)
+  {
+    kp_l=3;ki_l=1.3;kd_l=0;
+    kp_r=3;ki_r=1.2;kd_r=0;
+    Serial.println("mode"+String(control_Mode));
+  }
+  else if(control_Mode == 3)
+  {
+    kp_l=1.6;ki_l=0.6;kd_l=0;
+    kp_r=1.7;ki_r=0.8;kd_r=0;
+    Serial.println("mode"+String(control_Mode));
+  }
+}*/
 
 /* create PID object*/
 PID mypid_left(&input_l, &output_l, &setpoint_l, kp_l, ki_l, kd_l, DIRECT); 
@@ -41,22 +57,7 @@ void PID_setup()
    mypid_left.SetMode(AUTOMATIC);
 }
 /*to get mode to change parameter*/
-void getcontrolmode(int control_mode_PID)
-{
-  control_Mode = control_mode_PID;
-  if(control_Mode == 1 || 2)
-  {
-    kp_l=3,ki_l=1.3,kd_l=0;
-    kp_r=3,ki_r=1.2,kd_r=0;
-    Serial.println("mode"+String(control_Mode));
-  }
-  else if(control_Mode == 3)
-  {
-    kp_l=1.6,ki_l=0.6,kd_l=0;
-    kp_r=1.7,ki_r=0.8,kd_r=0;
-    Serial.println("mode"+String(control_Mode));
-  }
-}
+
 
 /* caculate PID left */
 void PIDcontrol_left()
