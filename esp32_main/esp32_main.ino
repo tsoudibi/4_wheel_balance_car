@@ -1,6 +1,7 @@
 #include "esp32_http.h"
 #include "motor_control.h"
 #include "btn_control.h"
+#include "camera_control.h"
 
 #include "arduino_connect.h"
 #include <esp32-hal-dac.h>
@@ -122,9 +123,10 @@ void loop() {
       Command_R = get_serial_data(6);
       break;
     case 3:
-      /*  */
-      Command_L = 0;
-      Command_R = 0;
+      /* get the command HZ form camera control */
+      camera_control();
+      Command_L = return_command_hz_camera('l');
+      Command_R = return_command_hz_camera('r');
       break;
   }
   delay(50);
