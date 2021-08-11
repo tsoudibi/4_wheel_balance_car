@@ -16,29 +16,44 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
+int control_mode = 0;
 double kp_l,ki_l,kd_l;
 double kp_r,ki_r,kd_r;
 /* for button */
 /*double kp_l=1.6,ki_l=0.6,kd_l=0;
 double kp_r=1.7,ki_r=0.8,kd_r=0;*/
 /*for sensor*/
-double kp_l=3,ki_l=1.3,kd_l=0;
-double kp_r=3,ki_r=1.2,kd_r=0;
+/*double kp_l=3,ki_l=1.3,kd_l=0;
+double kp_r=3,ki_r=1.2,kd_r=0;*/
 
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
-/**/
-int commanderror = 0;
+
 
 /* create PID object*/
 PID mypid_left(&input_l, &output_l, &setpoint_l, kp_l, ki_l, kd_l, DIRECT); 
 PID mypid_right(&input_r, &output_r, &setpoint_r, kp_r, ki_r, kd_r, DIRECT); 
 
-/* seup */
+/* set up */
 void PID_setup()
 {
    mypid_right.SetMode(AUTOMATIC);
    mypid_left.SetMode(AUTOMATIC);
+}
+
+void getcontrolmode(int control_mode_PID)
+{
+  control_mode = control_mode_PID;
+  if(control_mode = 1 || 2)
+  {
+    kp_l=3,ki_l=1.3,kd_l=0;
+    kp_r=3,ki_r=1.2,kd_r=0;
+  }
+  if(control_mode = 3)
+  {
+    kp_l=1.6,ki_l=0.6,kd_l=0;
+    kp_r=1.7,ki_r=0.8,kd_r=0;
+  }
 }
 
 /* caculate PID left */
