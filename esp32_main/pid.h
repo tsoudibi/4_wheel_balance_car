@@ -16,7 +16,7 @@ double Output_r;
 double Output_l_fin;
 double Output_r_fin;
 /* PID parameter */
-int control_mode = 0;
+int control_Mode = 0;
 double kp_l,ki_l,kd_l;
 double kp_r,ki_r,kd_r;
 /* for button */
@@ -40,19 +40,21 @@ void PID_setup()
    mypid_right.SetMode(AUTOMATIC);
    mypid_left.SetMode(AUTOMATIC);
 }
-
+/*to get mode to change parameter*/
 void getcontrolmode(int control_mode_PID)
 {
-  control_mode = control_mode_PID;
-  if(control_mode = 1 || 2)
+  control_Mode = control_mode_PID;
+  if(control_Mode == 1 || 2)
   {
     kp_l=3,ki_l=1.3,kd_l=0;
     kp_r=3,ki_r=1.2,kd_r=0;
+    Serial.println("mode"+String(control_Mode));
   }
-  if(control_mode = 3)
+  else if(control_Mode == 3)
   {
     kp_l=1.6,ki_l=0.6,kd_l=0;
     kp_r=1.7,ki_r=0.8,kd_r=0;
+    Serial.println("mode"+String(control_Mode));
   }
 }
 
