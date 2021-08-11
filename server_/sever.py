@@ -260,7 +260,7 @@ def camera_plot():
         return data
     elif camera_btn_mode == 'START':  # when "START"  clicked
         # start the camera along with thread
-        mp_p.camera_start(device='webcam')
+        mp_p.camera_start(device='ipcam')
         t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log

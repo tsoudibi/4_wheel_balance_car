@@ -51,7 +51,7 @@ void camera_control(){
     cam_HZ_R = value_1[2];
   }
   
-  /* stor backup command */
+  /* store backup command */
   cam_HZ_L_backup = cam_HZ_L;
   cam_HZ_R_backup = cam_HZ_R;
   
