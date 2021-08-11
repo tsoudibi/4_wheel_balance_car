@@ -174,7 +174,7 @@ def esp32():
 
         # get esp32 data
         data = request.get_json()
-        print('esp32 POST: ' + data)
+        print('esp32 POST: ' + str(data))
         car_stat.control_L = data["control"][0]
         car_stat.control_R = data["control"][1]
         car_stat.RPM_L = data["RPM"][0]
