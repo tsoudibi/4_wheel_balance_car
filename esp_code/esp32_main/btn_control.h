@@ -18,7 +18,7 @@ void btn_control(int HZ_L_btn,int HZ_R_btn){
   update_data_all();
   
   /* get movement from sever */
-  String mov = http_GET("movement");
+  String mov = server_gather_http("movement");
 
   /* with different movement, make different adjust, change the command*/
   if (mov == "forward"){

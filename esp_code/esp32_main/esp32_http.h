@@ -33,7 +33,7 @@ void WIFI_INIT(){
   ledcSetup(1, freq, resolution);
   ledcSetup(2, freq, resolution);
   ledcSetup(3, freq, resolution);
-  /* set ;ed pin*/
+  /* set led pin*/
   ledcAttachPin(led_pin_tx, 1);
   ledcAttachPin(led_pin_rx, 2);
   ledcAttachPin(led_pin_err, 3);
@@ -90,14 +90,14 @@ String http_GET(char* which){
   if (httpCode > 0) { //Check the returning code
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
-    /* blink the led*/
+    /* blink the led(rx)*/
     ledcWrite(2,10);
     delay(10);
     ledcWrite(2,0);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */
-    /* blink the led*/
+    /* blink the led(error)*/
     ledcWrite(3,10);
     delay(10);
     ledcWrite(3,0);
@@ -140,14 +140,14 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
       deserializeJson(doc, rsp);
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
-      /* blink the led*/
+      /* blink the led(tx)*/
       ledcWrite(1,10);
       delay(10);
       ledcWrite(1,0);
       return state;
   }else{
     /* if respone is bad, return http_code */
-    /* blink the led*/
+    /* blink the led(error)*/
     ledcWrite(3,10);
     delay(10);
     ledcWrite(3,0);
@@ -189,19 +189,19 @@ String server_update_http(int controlL, int controlR, int speedL = 0, int speedR
       /* if respone is normal, return respone as string */
       /* get respons json */
       String rsp = http.getString();
-      DynamicJsonDocument doc(1024);
+      DynamicJsonDocument doc(100);
       /* json deserialize */
       deserializeJson(doc, rsp);
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
-      /* blink the led*/
+      /* blink the led(tx)*/
       ledcWrite(1,10);
       delay(10);
       ledcWrite(1,0);
       return state;
   }else{
     /* if respone is bad, return http_code */
-    /* blink the led*/
+    /* blink the led(error)*/
     ledcWrite(3,10);
     delay(10);
     ledcWrite(3,0);
@@ -225,20 +225,20 @@ String server_gather_http(String which){
       /* if respone is normal, return respone as string */
       /* get respons json */
       String rsp = http.getString();
-      DynamicJsonDocument doc(1024);
+      DynamicJsonDocument doc(100);
       /* json deserialize */
       deserializeJson(doc, rsp);
       JsonObject obj = doc.as<JsonObject>();
       String state = obj["state"];
       String response = obj["response"];
-      /* blink the led*/
-      ledcWrite(1,10);
+      /* blink the led(rx)*/
+      ledcWrite(2,10);
       delay(10);
-      ledcWrite(1,0);
+      ledcWrite(2,0);
       return response;
   }else{
     /* if respone is bad, return http_code */
-    /* blink the led*/
+    /* blink the led(error)*/
     ledcWrite(3,10);
     delay(10);
     ledcWrite(3,0);

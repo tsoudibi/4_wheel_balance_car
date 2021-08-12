@@ -68,6 +68,9 @@ void setup() {
   /* wifi connection set */
   WIFI_INIT();
 
+  /* establish connect with server */
+  connect_server_PSOT();
+  
   /* PID set */
   PID_setup();
 
@@ -88,7 +91,7 @@ void setup() {
 void loop() {
   delay(50);
   /* from server, get control mode */
-  String response = http_GET("control_mode");
+  String response = server_gather_http("control_mode");
   if (response == "button") {
     control_mode = 1;
   } else if (response == "sensor") {
@@ -129,7 +132,7 @@ void loop() {
   /* send data to server */
   time_now = millis();
   if (control_mode == 1) {
-    String Response = http_POST(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
+    String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
     if (Response.toInt() == -11) {
       Serial.println("[ERROR] server timeout when POST data in mode 1 ");
     } else {
@@ -138,7 +141,7 @@ void loop() {
     }
   }
   if (control_mode == 2) {
-    String Response = http_POST(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
+    String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
     if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED) {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
@@ -147,7 +150,7 @@ void loop() {
     Serial.println(msg+"flag = "+String(get_serial_data(7)));
   }
   if (control_mode == 3) {
-    String Response = http_POST(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
+    String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
     if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED) {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
