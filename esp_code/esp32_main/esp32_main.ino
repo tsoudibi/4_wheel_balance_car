@@ -100,7 +100,7 @@ void loop() {
        https://github.com/espressif/arduino-esp32/issues/1433#issuecomment-475875579 */
     Serial.println("[ERROR] server timeout when GET CONTOL MODE ");
   } else {
-    Serial.print("[ERROR] wrong mode response from server, httpCode = ");
+    Serial.print("[ERROR] wrong mode response from server (control mode), httpCode = ");
     Serial.println(response);
   }
 

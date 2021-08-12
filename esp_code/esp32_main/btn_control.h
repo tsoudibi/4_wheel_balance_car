@@ -17,37 +17,37 @@ void btn_control(int HZ_L_btn,int HZ_R_btn){
   /* update data from encoder and sensor */
   update_data_all();
   
-  if (http_GET("new")=="1"){
-    /* get movement from sever */
-    String mov=http_GET("movement");
+  /* get movement from sever */
+  String mov = http_GET("movement");
 
-    /* with different movement, make different adjust, change the command*/
-    if (mov== "forward"){
-        HZ_L = HZ_L_btn + 1;
-        HZ_R = HZ_R_btn + 1;
-        Serial.println("[click] forward"+String(HZ_L)+String(HZ_R));}else
-    if (mov== "left"){
-        HZ_L = HZ_L_btn - 1;
-        HZ_R = HZ_R_btn + 1;          
-        Serial.println("[click] left");}else
-    if (mov=="right"){
-        HZ_L = HZ_L_btn + 1;
-        HZ_R = HZ_R_btn - 1;
-        Serial.println("[click] right");}else
-    if (mov== "stop"){
-        HZ_L = 0;
-        HZ_R = 0;
-        Serial.println("[click] stop");
-    }else{
-      Serial.print(mov);
-      Serial.println("[ERROR] wrong movent command");
-    }
-    /* consider threshold, adjust command HZ*/
-    if (HZ_L >= threshold) HZ_L = threshold;
-    if (HZ_R >= threshold) HZ_R = threshold;
-    if (HZ_L <= 0) HZ_L = 0;
-    if (HZ_R <= 0) HZ_R = 0;
+  /* with different movement, make different adjust, change the command*/
+  if (mov == "forward"){
+    HZ_L = HZ_L_btn + 1;
+    HZ_R = HZ_R_btn + 1;
+    Serial.println("[click] forward"+String(HZ_L)+String(HZ_R));
+  }else if (mov == "left"){
+    HZ_L = HZ_L_btn - 1;
+    HZ_R = HZ_R_btn + 1;          
+    Serial.println("[click] left");
+  }else if (mov =="right"){
+    HZ_L = HZ_L_btn + 1;
+    HZ_R = HZ_R_btn - 1;
+    Serial.println("[click] right");
+  }else if (mov == "stop"){
+    HZ_L = 0;
+    HZ_R = 0;
+    Serial.println("[click] stop");
+  }else if (mov == "None"){
+    /* no new button has been pressed*/
+  }else{
+    /* other expection*/
+    Serial.println("[ERROR] wrong movent command, http code: " + mov);
   }
+  /* consider threshold, adjust command HZ*/
+  if (HZ_L >= threshold) HZ_L = threshold;
+  if (HZ_R >= threshold) HZ_R = threshold;
+  if (HZ_L <= 0) HZ_L = 0;
+  if (HZ_R <= 0) HZ_R = 0;
 
   /* print data and send to server */
   /*time_now = millis();

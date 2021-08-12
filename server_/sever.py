@@ -140,7 +140,8 @@ def esp32():
                 car_stat.new = 0
                 esp_log_btn("get ", car_stat.movement)
                 print('esp32 GET movement: ' + str(car_stat.movement))
-            return car_stat.movement
+                return car_stat.movement
+            return "None"
         elif which == 'control_mode':
             print('esp32 GET control_mode: ' + str(car_stat.control_mode))
             return str(car_stat.control_mode)
