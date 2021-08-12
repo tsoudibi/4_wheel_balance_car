@@ -176,16 +176,45 @@ def esp32():
         # get esp32 data
         data = request.get_json()
         print('esp32 POST: ' + str(data))
-        car_stat.control_L = data["control"][0]
-        car_stat.control_R = data["control"][1]
-        car_stat.RPM_L = data["RPM"][0]
-        car_stat.RPM_R = data["RPM"][1]
-        car_stat.sensor_x = data["sensor"][0]
-        car_stat.sensor_y = data["sensor"][1]
-        # save sensor coordinate into queue 
-        newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
-        # return JSON to esp32, make sure data transfer success
-        return jsonify({"state": "ok"})
+        if data["mode"] == "update":
+            car_stat.control_L = data["control"][0]
+            car_stat.control_R = data["control"][1]
+            car_stat.RPM_L = data["RPM"][0]
+            car_stat.RPM_R = data["RPM"][1]
+            car_stat.sensor_x = data["sensor"][0]
+            car_stat.sensor_y = data["sensor"][1]
+            # save sensor coordinate into queue 
+            newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
+            # return JSON to esp32, make sure data transfer success
+            return jsonify({"state": "ok"})
+        elif data["mode"] == "gather":
+            if data["which"] == "movement":
+                if car_stat.new == 1:
+                    car_stat.new = 0
+                    esp_log_btn("get ", car_stat.movement)
+                    print('esp32 GET movement: ' + str(car_stat.movement))
+                    return jsonify({"state": "ok", "response":str(car_stat.movement)})
+                return jsonify({"state": "ok", "response":"None"})
+            elif which == 'control_mode':
+                print('esp32 GET control_mode: ' + str(car_stat.control_mode))
+                return jsonify({"state": "ok", "response":str(car_stat.control_mode)})
+            elif which == 'cam_HZ':
+                print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
+                return jsonify({"state": "ok", "response":"[" + str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R) + "]"})
+        else :
+            # out of expection
+            car_stat.control_L = data["control"][0]
+            car_stat.control_R = data["control"][1]
+            car_stat.RPM_L = data["RPM"][0]
+            car_stat.RPM_R = data["RPM"][1]
+            car_stat.sensor_x = data["sensor"][0]
+            car_stat.sensor_y = data["sensor"][1]
+            # save sensor coordinate into queue 
+            newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
+            # return JSON to esp32, make sure data transfer success
+            print("esp post request in wrong mode")
+            return jsonify({"state": "ok"})
+
 
 
 @app.route("/button_mode_button_click", methods=['GET', 'POST'])

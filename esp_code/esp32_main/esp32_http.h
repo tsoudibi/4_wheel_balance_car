@@ -78,7 +78,7 @@ void WIFI_INIT(){
 String http_GET(char* which){
   /* connect and add header */
   String HTTP="/esp32?which=";
-  HTTP = SERVER_IP + HTTP +which;
+  HTTP = SERVER_IP + HTTP + which;
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain"); 
   /* set client request timeout*/
@@ -154,6 +154,96 @@ String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sens
     return String(http_code);
   }
   http.end();
+}
+
+/* testing section 
+ * only use post request and don't disconnect with server 
+ * which call "http persistence" */
+
+void connect_server_PSOT(){
+  /* connect and add header */
+  String HTTP="/esp32";
+  HTTP = SERVER_IP + HTTP ;
+  http.begin(HTTP);
+  http.addHeader("Content-Type","application/json");
+  /* set client request timeout*/
+  http.setTimeout(TIMEOUT);
+  http.setConnectTimeout(TIMEOUT);
+}
+
+/* send data to sever */
+String server_update_http(int controlL, int controlR, int speedL = 0, int speedR = 0, int sensor_x = 0, int sensor_y = 0){
+  /* create JSON formate*/
+  StaticJsonDocument<200> doc;
+  doc["mode"] = serialized("update");
+  doc["control"] = serialized("["+String(controlL)+","+String(controlR)+"]");
+  doc["RPM"] = serialized("["+String(speedL)+","+String(speedR)+"]");
+  doc["sensor"] = serialized("["+String(sensor_x)+","+String(sensor_y)+"]");
+  String output;
+  /* serialize */
+  serializeJson(doc, output);
+  /* send POST request */
+  int http_code = http.POST(output);
+  /* handle the server response*/
+  if(http_code == 200){
+      /* if respone is normal, return respone as string */
+      /* get respons json */
+      String rsp = http.getString();
+      DynamicJsonDocument doc(1024);
+      /* json deserialize */
+      deserializeJson(doc, rsp);
+      JsonObject obj = doc.as<JsonObject>();
+      String state = obj["state"];
+      /* blink the led*/
+      ledcWrite(1,10);
+      delay(10);
+      ledcWrite(1,0);
+      return state;
+  }else{
+    /* if respone is bad, return http_code */
+    /* blink the led*/
+    ledcWrite(3,10);
+    delay(10);
+    ledcWrite(3,0);
+    return String(http_code);
+  }
+}
+
+/* get data from sever */
+String server_gather_http(String which){
+  /* create JSON formate*/
+  StaticJsonDocument<100> doc;
+  doc["mode"] = serialized("gather");
+  doc["which"] = serialized(which);
+  String output;
+  /* serialize */
+  serializeJson(doc, output);
+  /* send POST request */
+  int http_code = http.POST(output);
+  /* handle the server response*/
+  if(http_code == 200){
+      /* if respone is normal, return respone as string */
+      /* get respons json */
+      String rsp = http.getString();
+      DynamicJsonDocument doc(1024);
+      /* json deserialize */
+      deserializeJson(doc, rsp);
+      JsonObject obj = doc.as<JsonObject>();
+      String state = obj["state"];
+      String response = obj["response"];
+      /* blink the led*/
+      ledcWrite(1,10);
+      delay(10);
+      ledcWrite(1,0);
+      return response;
+  }else{
+    /* if respone is bad, return http_code */
+    /* blink the led*/
+    ledcWrite(3,10);
+    delay(10);
+    ledcWrite(3,0);
+    return String(http_code);
+  }
 }
 
 
