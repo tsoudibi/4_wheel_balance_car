@@ -20,7 +20,7 @@ int map_x = 0;
 int map_y = 0;
 int DAC_R = 0;
 int DAC_L = 0;
-
+int flag_load = 0;
 /*[HTTP]debug*/
 unsigned long int time_now;
 
@@ -42,10 +42,12 @@ void PID_function(void * parameter)
     /* mass center at map from arduino */
     map_x = get_serial_data(3);
     map_y = get_serial_data(4);
+    /* flag from arduino*/
+    flag_load = get_serial_data(7);
     /* make one motor reverse */
     digitalWrite(rev_pin, LOW);
     /* PID control and get result DAC command */
-    PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R);
+    PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, flag_load);
     DAC_L = get_PID_result('l');
     DAC_R = get_PID_result('r');
     
