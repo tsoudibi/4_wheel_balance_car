@@ -25,7 +25,7 @@ void camera_control(){
   /*update_data_all();*/
 
   /* get HZ command from sever */
-  String HZ_string = http_GET("cam_HZ");
+  String HZ_string = server_gather_http("cam_HZ");
   if (HZ_string == "-1" || HZ_string == "-11"){
     cam_HZ_L = cam_HZ_L_backup;
     cam_HZ_R = cam_HZ_R_backup;

@@ -20,9 +20,7 @@ int map_x = 0;
 int map_y = 0;
 int DAC_R = 0;
 int DAC_L = 0;
-
-/*[HTTP]debug*/
-unsigned long int time_now;
+int flag_load = 0;
 
 /*get control mode*/
 int control_mode = 0;
@@ -44,8 +42,10 @@ void PID_function(void * parameter)
     map_y = get_serial_data(4);
     /* make one motor reverse */
     digitalWrite(rev_pin, LOW);
+    /* flag from arduino*/
+    flag_load = get_serial_data(7);
     /* PID control and get result DAC command */
-    PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R);
+    PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, flag_load);
     DAC_L = get_PID_result('l');
     DAC_R = get_PID_result('r');
     
@@ -67,9 +67,6 @@ void setup() {
 
   /* wifi connection set */
   WIFI_INIT();
-
-  /* establish connect with server */
-  connect_server_PSOT();
   
   /* PID set */
   PID_setup();
@@ -93,10 +90,13 @@ void loop() {
   /* from server, get control mode */
   String response = server_gather_http("control_mode");
   if (response == "button") {
+    Serial.println("[ http] GET CONTOL MODE : button");
     control_mode = 1;
   } else if (response == "sensor") {
+    Serial.println("[ http] GET CONTOL MODE : sensor");
     control_mode = 2;
   } else if (response == "camera") {
+    Serial.println("[ http] GET CONTOL MODE : camera");
     control_mode = 3;
   } else if (response == "-11" ) {
     /* error: timeout, HTTPC_ERROR_CONNECTION_REFUSED
@@ -136,7 +136,7 @@ void loop() {
     if (Response.toInt() == -11) {
       Serial.println("[ERROR] server timeout when POST data in mode 1 ");
     } else {
-      String msg = "[ http] post:" + Response + " ,used time:" + (millis() - time_now);
+      String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
       Serial.println(msg);
     }
   }
@@ -146,7 +146,7 @@ void loop() {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:(" + String(map_x) + ", " + String(map_y) + ") speed:(" + String(Command_L) + ", " + String(Command_R) + ") ");
-    String msg = "[ http] post:" + Response + " ,used time:" + (millis() - time_now);
+    String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
     Serial.println(msg+"flag = "+String(get_serial_data(7)));
   }
   if (control_mode == 3) {
@@ -155,7 +155,7 @@ void loop() {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:(" + String(map_x) + ", " + String(map_y) + ") speed:(" + String(Command_L) + ", " + String(Command_R) + ") ");
-    String msg = "[ http] post:" + Response + " ,used time:" + (millis() - time_now);
+    String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
     Serial.println(msg);
   }
 }

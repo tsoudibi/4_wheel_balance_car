@@ -29,9 +29,9 @@ class status:
         self.queue_sensor_x = []
         self.queue_sensor_y = []
 
-        self.esp32_post_t1 = 0
-        self.esp32_post_t2 = 0
-        self.esp32_post_dt = 0
+        self.esp32_update_t1 = 0
+        self.esp32_update_t2 = 0
+        self.esp32_update_dt = 0
 
         self.control_L = 0
         self.control_R = 0
@@ -71,7 +71,7 @@ def button():
             'control_L': 'Getting...',
             'control_R': 'Getting...',
             'SSID': 'Getting...',
-            'esp32_post_dt': '000'
+            'esp32_update_dt': '000'
             }
 
     return render_template("index.html", data=data)
@@ -90,7 +90,7 @@ def sensor():
             'control_R': 'Getting...',
             'SSID': 'Getting...',
             'stopBtn': 'STOP',
-            'esp32_post_dt': '000'
+            'esp32_update_dt': '000'
             }
 
     return render_template('sensor_plot.html', data=data)
@@ -109,7 +109,7 @@ def camera():
             'control_R': 'Getting...',
             'SSID': 'Getting...',
             'stopBtn': 'START',
-            'esp32_post_dt': '000'
+            'esp32_update_dt': '000'
             }
 
     return render_template('camera.html', data=data)
@@ -130,91 +130,55 @@ def esp_log_btn(method, argu="None"):
         esp_log_string = esp_log_string + logs + '\n'
 
 
-@app.route("/esp32", methods=['GET', 'POST'])
+@app.route("/esp32", methods=['GET'])
 def esp32():
     # return wanted data to esp32
     if request.method == "GET":
-        which = request.args.get('which')
-        if which == 'movement':
-            if car_stat.new == 1:
-                car_stat.new = 0
-                esp_log_btn("get ", car_stat.movement)
-                print('esp32 GET movement: ' + str(car_stat.movement))
-                return car_stat.movement
-            return "None"
-        elif which == 'control_mode':
-            print('esp32 GET control_mode: ' + str(car_stat.control_mode))
-            return str(car_stat.control_mode)
-        elif which == 'RPM':
-            return str(car_stat.RPM_L) + "," + str(car_stat.RPM_R)
-        elif which == 'sensor':
-            return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
-        elif which == 'new':
-            return str(car_stat.new)
-        elif which == 'cam_position' :
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth)
-        elif which == 'cam_HZ':
-            print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
-            return str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
-        # upate SSID on server
-        SSID = request.args.get('SSID')
-        if SSID is not None:
-            car_stat.SSID = SSID
-            print('esp32 GET SSID: ' + car_stat.SSID)
-            return car_stat.SSID
-
-    # get data from esp32
-    if request.method == "POST":
-
-        # record esp32 post time interval
-        if car_stat.esp32_post_t2 == 0:
-            car_stat.esp32_post_t1 = time.time_ns()
-        else:
-            car_stat.esp32_post_t2 = time.time_ns()  # ns
-            car_stat.esp32_post_dt = (car_stat.esp32_post_t2 - car_stat.esp32_post_t1) * 1000  # ms
-
-        # get esp32 data
-        data = request.get_json()
-        print('esp32 POST: ' + str(data))
-        if data["mode"] == "update":
-            car_stat.control_L = data["control"][0]
-            car_stat.control_R = data["control"][1]
-            car_stat.RPM_L = data["RPM"][0]
-            car_stat.RPM_R = data["RPM"][1]
-            car_stat.sensor_x = data["sensor"][0]
-            car_stat.sensor_y = data["sensor"][1]
+        mode = request.args.get('mode')
+        if mode == 'update':
+            # update time
+            if car_stat.esp32_update_t2 == 0:
+                car_stat.esp32_update_t1 = time.time_ns()
+            else:
+                car_stat.esp32_update_t2 = time.time_ns()  # ns
+                car_stat.esp32_update_dt = (car_stat.esp32_update_t2 - car_stat.esp32_update_t1) * 1000  # ms
+            car_stat.control_L = float(request.args.get('controlL'))
+            car_stat.control_R = float(request.args.get('controlR'))
+            car_stat.RPM_L = float(request.args.get('speedL'))
+            car_stat.RPM_R = float(request.args.get('speedR'))
+            car_stat.sensor_x = float(request.args.get('sensor_x'))
+            car_stat.sensor_y = float(request.args.get('sensor_y'))
             # save sensor coordinate into queue 
             newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
-            # return JSON to esp32, make sure data transfer success
-            return jsonify({"state": "ok"})
-        elif data["mode"] == "gather":
-            if data["which"] == "movement":
+            # loging 
+            print('esp32 update finished! ' )
+            return 'finished'
+        elif mode == 'gather':
+            which = request.args.get('which')
+            if which == 'movement':
                 if car_stat.new == 1:
                     car_stat.new = 0
                     esp_log_btn("get ", car_stat.movement)
                     print('esp32 GET movement: ' + str(car_stat.movement))
-                    return jsonify({"state": "ok", "response":str(car_stat.movement)})
-                return jsonify({"state": "ok", "response":"None"})
+                    return car_stat.movement
+                return "None"
             elif which == 'control_mode':
                 print('esp32 GET control_mode: ' + str(car_stat.control_mode))
-                return jsonify({"state": "ok", "response":str(car_stat.control_mode)})
+                return str(car_stat.control_mode)
             elif which == 'cam_HZ':
                 print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
-                return jsonify({"state": "ok", "response":"[" + str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R) + "]"})
-        else :
-            # out of expection
-            car_stat.control_L = data["control"][0]
-            car_stat.control_R = data["control"][1]
-            car_stat.RPM_L = data["RPM"][0]
-            car_stat.RPM_R = data["RPM"][1]
-            car_stat.sensor_x = data["sensor"][0]
-            car_stat.sensor_y = data["sensor"][1]
-            # save sensor coordinate into queue 
-            newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
-            # return JSON to esp32, make sure data transfer success
-            print("esp post request in wrong mode")
-            return jsonify({"state": "ok"})
+                return str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
+        elif mode == 'SSID':
+        # upate SSID on server
+            SSID = request.args.get('SSID')
+            if SSID is not None:
+                car_stat.SSID = SSID
+                print('esp32 GET SSID: ' + car_stat.SSID)
+                return car_stat.SSID
+        else:
+            return "wrong mode in get request!"
 
+    
 
 
 @app.route("/button_mode_button_click", methods=['GET', 'POST'])
@@ -373,7 +337,7 @@ def newStatus():
             'control_R': car_stat.control_R,
             'SSID': car_stat.SSID,
             'status': esp_log_string,
-            'esp32_post_dt': car_stat.esp32_post_dt,
+            'esp32_update_dt': car_stat.esp32_update_dt,
             'direction': 'x: ' + str(car_stat.queue_sensor_x) + ' , y: ' + str(car_stat.queue_sensor_y)
             }
 

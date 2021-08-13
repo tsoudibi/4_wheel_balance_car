@@ -37,7 +37,7 @@
                 <td id="control_R">{{ data.control_R }}</td>
             </tr>
             <tr>
-                <td id="esp32_post" colspan="2"><span>esp32 POST: </span><span id="esp32_post_dt" >{{ data.esp32_post_dt }}</span><span> ms</span></td>
+                <td id="esp32_post" colspan="2"><span>esp32 update: </span><span id="esp32_update_dt" >{{ data.esp32_update_dt }}</span><span> ms</span></td>
             </tr>
             <tr>
                 <td>WiFi</td>
@@ -69,12 +69,12 @@
 <!--load jQuery-->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
-  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+    url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
 
 <script type=text/javascript>
 setInterval(function() {
     getDynamicData()
-}, 10); // refreshing frequency (ms)
+}, 300); // refreshing frequency (ms)
 var config = {
     displayModeBar: true
 }; // 工具列不顯示
@@ -106,7 +106,7 @@ function getDynamicData() {
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);
             $("#status").html(data.status);
-            $("#esp32_post_dt").text(data.esp32_post_dt);
+            $("#esp32_update_dt").html(data.esp32_update_dt);
         }
     });
     $.ajax({

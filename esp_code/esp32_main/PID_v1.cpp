@@ -25,10 +25,10 @@ PID::PID(double* Input, double* Output, double* Setpoint,
     mySetpoint = Setpoint;
     inAuto = false;
 
-    PID::SetOutputLimits(0, 255);				//default output limit corresponds to
-												//the arduino pwm limits
+    PID::SetOutputLimits(0, 255);        //default output limit corresponds to
+                        //the arduino pwm limits
 
-    SampleTime = 100;							//default Controller Sample Time is 0.1 seconds
+    SampleTime = 100;             //default Controller Sample Time is 0.1 seconds
 
     PID::SetControllerDirection(ControllerDirection);
     PID::SetTunings(Kp, Ki, Kd, POn);
@@ -75,21 +75,21 @@ bool PID::Compute()
       else if(outputSum < outMin) outputSum= outMin;
 
       /*Add Proportional on Error, if P_ON_E is specified*/
-	   double output;
+     double output;
       if(pOnE) output = kp * error;
       else output = 0;
 
       /*Compute Rest of PID Output*/
       output += outputSum - kd * dInput;
 
-	    if(output > outMax) output = outMax;
+      if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
-	    *myOutput = output;
+      *myOutput = output;
 
       /*Remember some variables for next time*/
       lastInput = input;
       lastTime = now;
-	    return true;
+      return true;
    }
    else return false;
 }
@@ -159,11 +159,11 @@ void PID::SetOutputLimits(double Min, double Max)
 
    if(inAuto)
    {
-	   if(*myOutput > outMax) *myOutput = outMax;
-	   else if(*myOutput < outMin) *myOutput = outMin;
+     if(*myOutput > outMax) *myOutput = outMax;
+     else if(*myOutput < outMin) *myOutput = outMin;
 
-	   if(outputSum > outMax) outputSum= outMax;
-	   else if(outputSum < outMin) outputSum= outMin;
+     if(outputSum > outMax) outputSum= outMax;
+     else if(outputSum < outMin) outputSum= outMin;
    }
 }
 
@@ -183,7 +183,7 @@ void PID::SetMode(int Mode)
 }
 
 /* Initialize()****************************************************************
- *	does all the things that need to happen to ensure a bumpless transfer
+ *  does all the things that need to happen to ensure a bumpless transfer
  *  from manual to automatic mode.
  ******************************************************************************/
 void PID::Initialize()
@@ -204,7 +204,7 @@ void PID::SetControllerDirection(int Direction)
 {
    if(inAuto && Direction !=controllerDirection)
    {
-	    kp = (0 - kp);
+      kp = (0 - kp);
       ki = (0 - ki);
       kd = (0 - kd);
    }

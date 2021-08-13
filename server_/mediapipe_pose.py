@@ -98,6 +98,7 @@ def mediapipe_pose(debug_mode = False):
                 _, image = cap.read()
             elif mode == 'ipcam':
                 image = cap.getframe()
+                image = cv2.flip(image,1)
             else:
                 print("mode error, please check parameter 'mode'")
                 break

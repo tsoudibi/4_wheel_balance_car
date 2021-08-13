@@ -37,7 +37,7 @@
                 <td id="control_R">{{ data.control_R }}</td>
             </tr>
             <tr>
-                <td id="esp32_post" colspan="2"><span>esp32 POST: </span><span id="esp32_post_dt" >{{ data.esp32_post_dt }}</span><span> ms</span></td>
+                <td id="esp32_post" colspan="2"><span>esp32 update: </span><span id="esp32_update_dt" >{{ data.esp32_update_dt }}</span><span> ms</span></td>
             </tr>
             <tr>
                 <td>WiFi</td>
@@ -124,7 +124,7 @@ function getDynamicData() {
             $("#control_R").html(data.control_R);
             $("#wifi").html(data.SSID);
             $("#status").html(data.status);
-            $("#esp32_post_dt").html(data.esp32_post_dt);
+            $("#esp32_update_dt").html(data.esp32_update_dt);
         }
     });
     $.ajax({
