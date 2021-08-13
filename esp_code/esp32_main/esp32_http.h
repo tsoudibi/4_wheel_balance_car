@@ -19,7 +19,7 @@ const String SERVER_IP = "http://140.116.78.219:5010" ;
 
 #define led_pin_tx 12
 #define led_pin_rx 27
-#define led_pin_err 35
+#define led_pin_err 34
 
 /* create client object*/
 HTTPClient http;

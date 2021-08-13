@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>馬桶車:Dinner Mode</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dinner.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<p class="result none" ></p>
+
+    <div class="wrap">
+        <ul class="turntable">
+            <li id="num1"> <div class="title">大醬</div> </li>
+            <li id="num2"> <div class="title">好煮義</div> </li>
+            <li id="num3"> <div class="title">元味屋</div> </li>
+            <li id="num4"> <div class="title">小茂屋</div> </li>
+            <li id="num5"> <div class="title">喝飲料</div> </li>
+            <li id="num6"> <div class="title">711</div> </li>
+            <li id="num7"> <div class="title">麥當勞</div> </li>
+            <li id="num8"> <div class="title">肯德基</div> </li>
+            <li id="num9"> <div class="title">肉肉控</div> </li>
+            <li id="num10"> <div class="title">鹹酥雞</div> </li>
+            <li id="num11"> <div class="title">成大館</div> </li>
+            <li id="num12"> <div class="title">便當</div> </li>
+        </ul>
+        <div class="pointerDisk">
+            <span class="triangleUp"></span>
+            <p class="internal">
+               GO!
+            </p>
+        </div>
+    </div>
+
+<script  src="../static/js/dinner.js?v=1" defer></script>
+</body>
+</html>
