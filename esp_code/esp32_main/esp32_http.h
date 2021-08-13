@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 
 
-#define TIMEOUT 170
+#define TIMEOUT 200
 
 const char* ssid_1 = "DB_TOTOLink_25";
 const char* password_1 =  "DBDBDBDBB";
@@ -15,7 +15,7 @@ const char* password_2 =  "12345678";
 const char* ssid_3 = "DBDB";
 const char* password_3 =  "DBDBDBDBB";
 
-const String SERVER_IP = "http://140.116.78.219:5005" ;
+const String SERVER_IP = "http://140.116.78.219:5010" ;
 
 #define led_pin_tx 12
 #define led_pin_rx 27
@@ -28,6 +28,19 @@ HTTPClient http;
 const int freq = 5000;
 const int resolution = 8;
 
+
+/*[HTTP]debug*/
+unsigned long int time_now;
+
+/* blink the led*/
+
+void led_blink(int lednum){
+  ledcWrite(lednum,10);
+  delay(10);
+  ledcWrite(lednum,0);
+}
+
+
 void WIFI_INIT(){
   /* set led mode*/
   ledcSetup(1, freq, resolution);
@@ -39,7 +52,7 @@ void WIFI_INIT(){
   ledcAttachPin(led_pin_err, 3);
   /* give 60 seconds to connect WIFI, else faild*/
   int i = 60;
-  WiFi.begin(ssid_2, password_2);
+  WiFi.begin(ssid_1, password_1);
   while (WiFi.status() != WL_CONNECTED && i) {
     delay(1000); i--;
     Serial.println("[Wi-Fi] Connecting to WiFi...");
@@ -49,7 +62,7 @@ void WIFI_INIT(){
   }else{
     Serial.println("[Wi-Fi] Connection successed.");
     /* first get request, begin and add header*/
-    String HTTP = "/esp32?SSID=";
+    String HTTP = "/esp32?mode=SSID,SSID=";
     HTTP = SERVER_IP + HTTP + WiFi.SSID();
     http.begin(HTTP);
     http.addHeader("Content-Type", "text/plain");  
@@ -75,9 +88,52 @@ void WIFI_INIT(){
   }
 }  
 
-String http_GET(char* which){
+/* 
+ * only use get request and don't disconnect with server 
+ * which call "http persistence" 
+ * 
+ * control = analog control signal to motor
+ * speed = encoder RMP to esp32
+ * sensor = mass center from arduino to esp32 */
+ 
+/* send data to sever */
+String server_update_http(int controlL, int controlR, int speedL = 0, int speedR = 0, int sensor_x = 0, int sensor_y = 0){
   /* connect and add header */
-  String HTTP="/esp32?which=";
+  String HTTP="/esp32?mode=update";
+  HTTP = SERVER_IP + HTTP + 
+    "&controlL=" + String(controlL) +
+    "&controlR=" + String(controlR) +
+    "&speedL=" + String(speedL) +
+    "&speedR=" + String(speedR) +
+    "&sensor_x=" + String(sensor_x) +
+    "&sensor_y=" + String(sensor_y) ;
+  http.begin(HTTP);
+  http.addHeader("Content-Type", "text/plain"); 
+  /* set client request timeout*/
+  http.setTimeout(TIMEOUT);
+  http.setConnectTimeout(TIMEOUT);
+  /* sent GET request */ 
+  int httpCode = http.GET(); //Send the request
+  /* handle the server response*/
+  if (httpCode > 0) { //Check the returning code
+    /* if respone is normal, return respone as string */
+    String payload = http.getString();   //Get the request response payload
+    /* blink the led(rx)*/
+    led_blink(2);
+    return payload;
+  }else{
+    /* if respone is bad, return httpCode as String */
+    /* blink the led(error)*/
+    led_blink(3);
+    return String(httpCode); 
+  }
+  http.end();
+}
+
+/* get data from sever */
+String server_gather_http(char* which){
+  /* connect and add header */
+  String HTTP="/esp32?mode=gather&which=";
   HTTP = SERVER_IP + HTTP + which;
   http.begin(HTTP);
   http.addHeader("Content-Type", "text/plain"); 
@@ -91,159 +147,15 @@ String http_GET(char* which){
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
     /* blink the led(rx)*/
-    ledcWrite(2,10);
-    delay(10);
-    ledcWrite(2,0);
+    led_blink(2);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */
     /* blink the led(error)*/
-    ledcWrite(3,10);
-    delay(10);
-    ledcWrite(3,0);
+    led_blink(3);
     return String(httpCode); 
   }
   http.end();
-}
-
-
-/* control = analog control signal to motor
- * speed = encoder RMP to esp32
- * sensor = mass center from arduino to esp32 */
-
-String http_POST(int controlL, int controlR,int speedL=0, int speedR=0, int sensor_x=0, int sensor_y=0){  
-  /* create JSON formate*/
-  StaticJsonDocument<200> doc;
-  doc["control"] = serialized("["+String(controlL)+","+String(controlR)+"]");
-  doc["RPM"] = serialized("["+String(speedL)+","+String(speedR)+"]");
-  doc["sensor"] = serialized("["+String(sensor_x)+","+String(sensor_y)+"]");
-  String output;
-  /* serialize */
-  serializeJson(doc, output);
-  /* connect and add header */
-  String HTTP="/esp32";
-  HTTP = SERVER_IP + HTTP ;
-  http.begin(HTTP);
-  http.addHeader("Content-Type","application/json");
-  /* set client request timeout*/
-  http.setTimeout(TIMEOUT);
-  http.setConnectTimeout(TIMEOUT);
-  /* send POST request */
-  int http_code = http.POST(output);
-  /* handle the server response*/
-  if(http_code == 200){
-      /* if respone is normal, return respone as string */
-      /* get respons json */
-      String rsp = http.getString();
-      DynamicJsonDocument doc(1024);
-      /* json deserialize */
-      deserializeJson(doc, rsp);
-      JsonObject obj = doc.as<JsonObject>();
-      String state = obj["state"];
-      /* blink the led(tx)*/
-      ledcWrite(1,10);
-      delay(10);
-      ledcWrite(1,0);
-      return state;
-  }else{
-    /* if respone is bad, return http_code */
-    /* blink the led(error)*/
-    ledcWrite(3,10);
-    delay(10);
-    ledcWrite(3,0);
-    return String(http_code);
-  }
-  http.end();
-}
-
-/* testing section 
- * only use post request and don't disconnect with server 
- * which call "http persistence" */
-
-void connect_server_PSOT(){
-  /* connect and add header */
-  String HTTP="/esp32";
-  HTTP = SERVER_IP + HTTP ;
-  http.begin(HTTP);
-  http.addHeader("Content-Type","application/json");
-  /* set client request timeout*/
-  http.setTimeout(TIMEOUT);
-  http.setConnectTimeout(TIMEOUT);
-}
-
-/* send data to sever */
-String server_update_http(int controlL, int controlR, int speedL = 0, int speedR = 0, int sensor_x = 0, int sensor_y = 0){
-  /* create JSON formate*/
-  StaticJsonDocument<200> doc;
-  doc["mode"] = serialized("update");
-  doc["control"] = serialized("["+String(controlL)+","+String(controlR)+"]");
-  doc["RPM"] = serialized("["+String(speedL)+","+String(speedR)+"]");
-  doc["sensor"] = serialized("["+String(sensor_x)+","+String(sensor_y)+"]");
-  String output;
-  /* serialize */
-  serializeJson(doc, output);
-  /* send POST request */
-  int http_code = http.POST(output);
-  /* handle the server response*/
-  if(http_code == 200){
-      /* if respone is normal, return respone as string */
-      /* get respons json */
-      String rsp = http.getString();
-      DynamicJsonDocument doc(100);
-      /* json deserialize */
-      deserializeJson(doc, rsp);
-      JsonObject obj = doc.as<JsonObject>();
-      String state = obj["state"];
-      /* blink the led(tx)*/
-      ledcWrite(1,10);
-      delay(10);
-      ledcWrite(1,0);
-      return state;
-  }else{
-    /* if respone is bad, return http_code */
-    /* blink the led(error)*/
-    ledcWrite(3,10);
-    delay(10);
-    ledcWrite(3,0);
-    return String(http_code);
-  }
-}
-
-/* get data from sever */
-String server_gather_http(String which){
-  /* create JSON formate*/
-  StaticJsonDocument<100> doc;
-  doc["mode"] = serialized("gather");
-  doc["which"] = serialized(which);
-  String output;
-  /* serialize */
-  serializeJson(doc, output);
-  /* send POST request */
-  int http_code = http.POST(output);
-  /* handle the server response*/
-  if(http_code == 200){
-      /* if respone is normal, return respone as string */
-      /* get respons json */
-      String rsp = http.getString();
-      DynamicJsonDocument doc(100);
-      /* json deserialize */
-      deserializeJson(doc, rsp);
-      JsonObject obj = doc.as<JsonObject>();
-      String state = obj["state"];
-      String response = obj["response"];
-      /* blink the led(rx)*/
-      ledcWrite(2,10);
-      delay(10);
-      ledcWrite(2,0);
-      return response;
-  }else{
-    /* if respone is bad, return http_code */
-    /* blink the led(error)*/
-    ledcWrite(3,10);
-    delay(10);
-    ledcWrite(3,0);
-    return String(http_code);
-  }
 }
 
 
