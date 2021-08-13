@@ -80,7 +80,6 @@ h3{
 }
 
 #camera_img{
-    width:70%;
     margin-right:10px;
     float:left;
 }
@@ -117,7 +116,7 @@ h3{
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04AA6D;
+    background: #48cae4;
     cursor: pointer;
 }
 
@@ -139,7 +138,7 @@ button{
   border:0;
   width:30%;
   height:60px;
-  margin-bottom:0.4rem;
+  margin:0.4rem;
   background-color:#3D5A80;
   color:#fff;
   border-radius:10px;
@@ -155,9 +154,7 @@ button:hover{
 }
 
 #stop_btn{
-    float:left;
 }
 
-#HZ_restart_btn{
-    float:left;
+#HZ_reset_btn{
 }
