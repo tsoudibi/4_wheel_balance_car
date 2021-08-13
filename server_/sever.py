@@ -120,7 +120,7 @@ def esp_log_btn(method, argu="None"):
     # record time
     now_time = time.localtime(time.time())
     esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
-                        ' esp ' + method + argu)
+                         ' esp ' + method + argu)
     # set the lenght of queue to 5
     if len(esp_log_queue) > 5:
         esp_log_queue.pop(0)
@@ -139,10 +139,8 @@ def esp32():
             if car_stat.new == 1:
                 car_stat.new = 0
                 esp_log_btn("get ", car_stat.movement)
-                print('esp32 GET movement: ' + str(car_stat.movement))
             return car_stat.movement
         elif which == 'control_mode':
-            print('esp32 GET control_mode: ' + str(car_stat.control_mode))
             return str(car_stat.control_mode)
         elif which == 'RPM':
             return str(car_stat.RPM_L) + "," + str(car_stat.RPM_R)
@@ -150,16 +148,13 @@ def esp32():
             return str(car_stat.sensor_x) + "," + str(car_stat.sensor_y)
         elif which == 'new':
             return str(car_stat.new)
-        elif which == 'cam_position' :
-            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth)
-        elif which == 'cam_HZ':
-            print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
-            return str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
+        elif which == 'cam':
+            return str(car_stat.cam_x) + "," + str(car_stat.cam_depth) + "," + str(car_stat.cam_HZ_L) + "," + str(
+                car_stat.cam_HZ_R)
         # upate SSID on server
         SSID = request.args.get('SSID')
         if SSID is not None:
             car_stat.SSID = SSID
-            print('esp32 GET SSID: ' + car_stat.SSID)
             return car_stat.SSID
 
     # get data from esp32
@@ -174,7 +169,7 @@ def esp32():
 
         # get esp32 data
         data = request.get_json()
-        print('esp32 POST: ' + str(data))
+        print(data)
         car_stat.control_L = data["control"][0]
         car_stat.control_R = data["control"][1]
         car_stat.RPM_L = data["RPM"][0]
@@ -192,27 +187,27 @@ def direction_instructions():
     if request.method == "GET":
         btn = request.args.get('a')
         if btn == 'forward':
-            print('btn_mode :forward')
+            print('forward')
             car_stat.new = 1
             car_stat.movement = "forward"
         elif btn == 'left':
-            print('btn_mode :left')
+            print('left')
             car_stat.new = 1
             car_stat.movement = "left"
         elif btn == 'right':
-            print('btn_mode :right')
+            print('right')
             car_stat.new = 1
             car_stat.movement = "right"
         elif btn == 'stop':
-            print('btn_mode :stop')
+            print('stop')
             car_stat.new = 1
             car_stat.movement = "stop"
         elif btn == 'backward':
-            print('btn_mode :backward')
+            print('backward')
             car_stat.new = 1
             car_stat.movement = "backward"
         else:
-            print('btn_mode :btn error')
+            print('btn error')
 
     return "nothing"
 
@@ -220,7 +215,7 @@ def direction_instructions():
 @app.route('/sensor_mode_button_click')
 def plot_trigger():
     btn = request.args.get('btn')
-    print('sensor_btn: ' + btn)
+    print(btn)
     if btn == 'STOP':
         data = {'stopBtn': 'CONTINUE'}
         return data
@@ -260,7 +255,7 @@ def camera_plot():
         return data
     elif camera_btn_mode == 'START':  # when "START"  clicked
         # start the camera along with thread
-        mp_p.camera_start(device='ipcam')
+        mp_p.camera_start(device='webcam')
         t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log
@@ -381,6 +376,10 @@ def create_RPM_plot_real():
 
 
 def create_plot_real():
+    R_low = 300  # turning right lower bound
+    L_low = -300  # turning left lower bound
+    F_low = 300  # going forward lower bound
+    B_low = -200  # going backward lower bound
     # Create a trace
     data = [go.Scatter(
         x=[-1000, -1000, 1000, 1000, -1000],
@@ -389,26 +388,26 @@ def create_plot_real():
         marker=dict(color='rgba(142, 202, 230, 0.5)'),
         fill='toself')
         , go.Scatter(
-            x=[600, 600, 1000, 1000, 600],
+            x=[R_low, R_low, 1000, 1000, R_low],
             y=[-800, 800, 800, -800, -800],
             mode='markers',
             marker=dict(color='rgba(142, 202, 230, 0.5)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[300, 800, 800, 300, 300],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[F_low, 800, 800, F_low, F_low],
             mode='markers',
             marker=dict(color='rgba(33, 158, 168, 0.1)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[-200, -800, -800, -200, -200],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[B_low, -800, -800, B_low, B_low],
             mode='markers',
             marker=dict(color='rgba(33, 158, 168, 0.1)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[-200, 300, 300, -200, -200],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[B_low, F_low, F_low, B_low, B_low],
             mode='markers',
             marker=dict(color='rgba(2, 48, 71, 0.1)'),
             fill='toself')
@@ -434,8 +433,4 @@ def newQueue(queue_x, queue_y, new_x, new_y):
 
 
 if __name__ == "__main__":
-    # run production server on flask
-    # reference: https://stackoverflow.com/questions/38982807/are-a-wsgi-server-and-http-server-required-to-serve-a-flask-app/38982989#38982989
-    from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
-    #app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True)
