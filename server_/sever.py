@@ -411,6 +411,10 @@ def create_RPM_plot_real():
 
 
 def create_plot_real():
+    R_low = 300  # turning right lower bound
+    L_low = -300  # turning left lower bound
+    F_low = 300  # going forward lower bound
+    B_low = -200  # going backward lower bound
     # Create a trace
     data = [go.Scatter(
         x=[-1000, -1000, 1000, 1000, -1000],
@@ -419,26 +423,26 @@ def create_plot_real():
         marker=dict(color='rgba(142, 202, 230, 0.5)'),
         fill='toself')
         , go.Scatter(
-            x=[600, 600, 1000, 1000, 600],
+            x=[R_low, R_low, 1000, 1000, R_low],
             y=[-800, 800, 800, -800, -800],
             mode='markers',
             marker=dict(color='rgba(142, 202, 230, 0.5)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[300, 800, 800, 300, 300],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[F_low, 800, 800, F_low, F_low],
             mode='markers',
             marker=dict(color='rgba(33, 158, 168, 0.1)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[-200, -800, -800, -200, -200],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[B_low, -800, -800, B_low, B_low],
             mode='markers',
             marker=dict(color='rgba(33, 158, 168, 0.1)'),
             fill='toself')
         , go.Scatter(
-            x=[-600, -600, 600, 600, -600],
-            y=[-200, 300, 300, -200, -200],
+            x=[L_low, L_low, R_low, R_low, L_low],
+            y=[B_low, F_low, F_low, B_low, B_low],
             mode='markers',
             marker=dict(color='rgba(2, 48, 71, 0.1)'),
             fill='toself')
