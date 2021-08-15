@@ -15,7 +15,7 @@ const char* password_2 =  "12345678";
 const char* ssid_3 = "DBDB";
 const char* password_3 =  "DBDBDBDBB";
 
-const String SERVER_IP = "http://140.116.78.219:5010" ;
+const String SERVER_IP = "http://140.116.78.219:5005" ;
 
 #define led_pin_tx 12
 #define led_pin_rx 27
@@ -52,7 +52,7 @@ void WIFI_INIT(){
   ledcAttachPin(led_pin_err, 3);
   /* give 60 seconds to connect WIFI, else faild*/
   int i = 60;
-  WiFi.begin(ssid_1, password_1);
+  WiFi.begin(ssid_2, password_2);
   while (WiFi.status() != WL_CONNECTED && i) {
     delay(1000); i--;
     Serial.println("[Wi-Fi] Connecting to WiFi...");

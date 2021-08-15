@@ -132,7 +132,7 @@ void SpeedOutput(int map_X,int map_Y)
       time_count = millis();
     }
   }
-  
+  /*
   //avoid negative speed
   if(speed_l < 0)
     speed_l = 0;
@@ -144,7 +144,7 @@ void SpeedOutput(int map_X,int map_Y)
     speed_l = 10;
   if(speed_r >10)
     speed_r = 10;
-
+  */
   //transport data to esp32    
   Serial.println(String(map_X - map_x_ori)+","+String(map_Y - map_y_ori)+","+String(speed_l)+","+String(speed_r)+","+String(flag));
 }

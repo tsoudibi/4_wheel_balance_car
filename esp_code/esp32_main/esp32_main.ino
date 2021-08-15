@@ -44,6 +44,15 @@ void PID_function(void * parameter)
     digitalWrite(rev_pin, LOW);
     /* flag from arduino*/
     flag_load = get_serial_data(7);
+    /*set limit for max or min*/
+    if (Command_L > 10)
+      Command_L = 10;
+    if (Command_R > 10)
+      Command_R = 10;
+    if (Command_L < 0)
+      Command_L = 0;
+    if (Command_R < 0)
+      Command_R = 0;   
     /* PID control and get result DAC command */
     PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, flag_load);
     DAC_L = get_PID_result('l');
