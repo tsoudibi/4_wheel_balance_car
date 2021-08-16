@@ -65,6 +65,8 @@ average_x = 0
 cap = None
 mode = None
 
+# detection flag 
+IS_HUMAN = None
 
 def camera_start(device='webcam'):
     global cap, width, height, mode
@@ -86,7 +88,7 @@ def camera_start(device='webcam'):
 
 def mediapipe_pose(debug_mode = False):
     global queue, cap, mode, time1, time2, fps, depth, x_center, y_center
-    global depth_normalized, position_queue, average_depth, average_x, image2server
+    global depth_normalized, position_queue, average_depth, average_x, image2server, IS_HUMAN
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
@@ -148,7 +150,12 @@ def mediapipe_pose(debug_mode = False):
                 # draw cneter point of body
                 cv2.circle(image, (round((x_center + 0.5) * img_width), round((y_center + 0.5) * img_height)),
                            (y_max - y_min) // 30, (224, 220, 164), -1)
+                # mark that there is human
+                IS_HUMAN = True
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
+            else :
+                # if there are no person 
+                IS_HUMAN = False
             time2 = time.time()
             fps = 1 / (time2 - time1)
             # print fps (10, 40) , body height (normalized) (img_width - 150, 40), x_center (img_width - 150, 80)
@@ -203,32 +210,37 @@ HZ_R = 0
 X_THRESHOLD = 0.1
 DEPTH_FIX = 1
 DEPTH_THRESHOLD = 0.15
-DEPTH_BREAKPOINT = 0.1
+DEPTH_BREAKPOINT = 0.4
 
+def is_under_max():
+    return HZ_L < 10 and HZ_R < 10
+
+def is_above_min():
+    return HZ_L > 0 and HZ_R > 0 
 
 def caculate_HZ():
-    global average_depth, average_x, HZ_L, HZ_R
+    global average_depth, average_x, HZ_L, HZ_R, IS_HUMAN
     # x range from -0.5 to 0.5
-    if average_x > X_THRESHOLD:
+    if average_x > X_THRESHOLD and is_under_max() and IS_HUMAN:
         # body in right
         HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.08
-    elif average_x < X_THRESHOLD * -1:
+    elif average_x < X_THRESHOLD * -1 and is_under_max() and IS_HUMAN:
         # body in left
         HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.08
     # depth range from 0~1.6 (soft range)
-    if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and HZ_L < 10 and HZ_R < 10:
+    if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and is_under_max() and IS_HUMAN:
         # too far, speed up
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
-    elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD and HZ_L > 0 and HZ_R > 0:
+    elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD and is_above_min() and IS_HUMAN:
         # too close, slow down
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
-    # set break if too close 
-    if average_depth <= DEPTH_BREAKPOINT :
+    # set break if too close or there is no human
+    if average_depth <= DEPTH_BREAKPOINT or not IS_HUMAN:
         HZ_L = 0
         HZ_R = 0
-    
+    print(IS_HUMAN)
 
 
 def draw_top_view(image):
@@ -264,9 +276,10 @@ def draw_top_view(image):
     alpha = 0.6
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
-    global HZ_L, HZ_R
+    global HZ_L, HZ_R, IS_HUMAN
     cv2.putText(image, str(round(HZ_L,1)), (base_x + 18 , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
     cv2.putText(image, str(round(HZ_R,1)), (base_x + 18 + round(base_w/2) , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(image, str(IS_HUMAN), (base_x + 18 + round(base_w/4 + 10) , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
     
     return image
 
@@ -317,5 +330,5 @@ def draw_pose(image, landmark_list, connections):
         for landmark_px in idx_to_coordinates.values():
             cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
-#camera_start(device='webcam')
-#mediapipe_pose(True)
+camera_start(device='webcam')
+mediapipe_pose(True)

@@ -40,6 +40,7 @@ class status:
         self.cam_depth = None
         self.cam_HZ_L = None
         self.cam_HZ_R = None
+        self.is_human = False
 
         self.SSID = 'NAN'
 
@@ -322,6 +323,7 @@ def CAM_newIMG():
         car_stat.cam_x = mp_p.average_x
         car_stat.cam_HZ_L = mp_p.HZ_L
         car_stat.cam_HZ_R = mp_p.HZ_R
+        car_stat.is_human = mp_p.IS_HUMAN
 
         # convert numpy array to PIL Image
         img = Image.fromarray(mp_p.image2server.astype('uint8'))
