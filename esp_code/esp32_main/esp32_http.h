@@ -19,7 +19,7 @@ const String SERVER_IP = "http://140.116.78.219:5005" ;
 
 #define led_pin_tx 12
 #define led_pin_rx 27
-#define led_pin_err 34
+#define led_pin_err 13
 
 /* create client object*/
 HTTPClient http;
@@ -35,7 +35,7 @@ unsigned long int time_now;
 /* blink the led*/
 
 void led_blink(int lednum){
-  ledcWrite(lednum,10);
+  ledcWrite(lednum,20);
   delay(10);
   ledcWrite(lednum,0);
 }
@@ -119,7 +119,7 @@ String server_update_http(int controlL, int controlR, int speedL = 0, int speedR
     /* if respone is normal, return respone as string */
     String payload = http.getString();   //Get the request response payload
     /* blink the led(rx)*/
-    led_blink(2);
+    led_blink(1);
     return payload;
   }else{
     /* if respone is bad, return httpCode as String */

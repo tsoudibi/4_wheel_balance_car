@@ -21,8 +21,8 @@ double Output_r_fin;
 double kp_l_load = 3,ki_l_load = 1,kd_l_load = 0;
 double kp_r_load = 3,ki_r_load = 1.3,kd_r_load = 0;
 /*for not load*/
-double kp_l_Nload = 0.2,ki_l_Nload = 1,kd_l_Nload = 0;
-double kp_r_Nload = 0.2,ki_r_Nload = 1.2,kd_r_Nload = 0;
+double kp_l_Nload = 0.4,ki_l_Nload = 1,kd_l_Nload = 0;
+double kp_r_Nload = 0.4,ki_r_Nload = 1.2,kd_r_Nload = 0;
 /*others*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
@@ -54,10 +54,10 @@ void PIDcontrol_left(int flag_left)
   Output_l = output_l;
   setpoint_l = command_HZ_l;
   /* compute */
-  if(flag_left == 0){//no load
+  if(flag_left == 0){         //no load
     mypid_left_Nload.Compute();
   }
-  else if(flag_left == 1){//has load
+  else if(flag_left == 1){    //has load
     mypid_left_load.Compute();
   }
   /* convert output from HZ to DAC*/
@@ -71,10 +71,10 @@ void PIDcontrol_right(int flag_right)
   Output_r = output_r;
   setpoint_r = command_HZ_r;
   /* compute */
-  if(flag_right == 0){//no load
+  if(flag_right == 0){        //no load
     mypid_right_Nload.Compute();
   }
-  else if(flag_right == 1){//has load
+  else if(flag_right == 1){   //has load
     mypid_right_load.Compute();
   }
   /* convert output from HZ to DAC*/

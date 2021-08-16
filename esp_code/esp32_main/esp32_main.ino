@@ -44,6 +44,12 @@ void PID_function(void * parameter)
     digitalWrite(rev_pin, LOW);
     /* flag from arduino*/
     flag_load = get_serial_data(7);
+
+    if(flag_load != 1 || flag_load != 0)
+    {
+      //led_blink(3);
+      flag_load = 0;
+    }
     /*set limit for max or min*/
     if (Command_L > 10)
       Command_L = 10;
@@ -142,7 +148,7 @@ void loop() {
   time_now = millis();
   if (control_mode == 1) {
     String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
-    if (Response.toInt() == -11) {
+    if (Response.toInt() == -11 || Response.toInt() == -1) {
       Serial.println("[ERROR] server timeout when POST data in mode 1 ");
     } else {
       String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
@@ -151,7 +157,7 @@ void loop() {
   }
   if (control_mode == 2) {
     String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
-    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED) {
+    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED || Response.toInt() == -1) {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:(" + String(map_x) + ", " + String(map_y) + ") speed:(" + String(Command_L) + ", " + String(Command_R) + ") ");
@@ -160,11 +166,12 @@ void loop() {
   }
   if (control_mode == 3) {
     String Response = server_update_http(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, map_x, map_y);
-    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED) {
+    if (Response.toInt() == HTTPC_ERROR_CONNECTION_REFUSED || Response.toInt() == -1) {
       Serial.println("[ERROR] server timeout when POST data in mode 2 ");
     }
     Serial.println("[sensr] map:(" + String(map_x) + ", " + String(map_y) + ") speed:(" + String(Command_L) + ", " + String(Command_R) + ") ");
     String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
     Serial.println(msg);
   }
+  Serial.println(flag_load);
 }

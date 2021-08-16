@@ -201,8 +201,8 @@ def mediapipe_pose(debug_mode = False):
 HZ_L = 0
 HZ_R = 0
 X_THRESHOLD = 0.1
-DEPTH_FIX = 0.8
-DEPTH_THRESHOLD = 0.2
+DEPTH_FIX = 1
+DEPTH_THRESHOLD = 0.15
 DEPTH_BREAKPOINT = 0.1
 
 
@@ -211,15 +211,15 @@ def caculate_HZ():
     # x range from -0.5 to 0.5
     if average_x > X_THRESHOLD:
         # body in right
-        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.05
+        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.1
     elif average_x < X_THRESHOLD * -1:
         # body in left
-        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.05
+        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.1
     # depth range from 0~1.6 (soft range)
-    if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3:
+    if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and HZ_L < 10 and HZ_R < 10:
         # too far, speed up
-        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.5
-        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.5
+        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
+        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
     elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD:
         # too close, slow down
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 1
@@ -228,6 +228,7 @@ def caculate_HZ():
     if average_depth <= DEPTH_BREAKPOINT :
         HZ_L = 0
         HZ_R = 0
+    
 
 
 def draw_top_view(image):
