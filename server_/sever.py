@@ -60,7 +60,25 @@ def dinner():
     return render_template("dinner.html", data=data)
 
 
-@app.route("/")
+@app.route('/', methods=['GET', 'POST'])
+def watcher():
+
+    # 狀態初始化
+    data = {'RPM_L': 'Getting...',
+            'RPM_R': 'Getting...',
+            'status_L': 'Getting...',
+            'status_R': 'Getting...',
+            'control_L': 'Getting...',
+            'control_R': 'Getting...',
+            'SSID': 'Getting...',
+            'stopBtn': 'START',
+            'esp32_update_dt': '000'
+            }
+
+    return render_template('visitor.html', data=data)
+
+
+@app.route("/button")
 def button():
     car_stat.control_mode = "button"
 
@@ -177,8 +195,6 @@ def esp32():
                 return car_stat.SSID
         else:
             return "wrong mode in get request!"
-
-    
 
 
 @app.route("/button_mode_button_click", methods=['GET', 'POST'])
