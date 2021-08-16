@@ -45,11 +45,11 @@ void PID_function(void * parameter)
     /* flag from arduino*/
     flag_load = get_serial_data(7);
 
-    if(flag_load != 1 || flag_load != 0)
+    /*if(flag_load != 1 || flag_load != 0)
     {
       //led_blink(3);
       flag_load = 0;
-    }
+    }*/
     /*set limit for max or min*/
     if (Command_L > 10)
       Command_L = 10;

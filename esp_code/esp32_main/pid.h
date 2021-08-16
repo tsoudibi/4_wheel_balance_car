@@ -18,8 +18,8 @@ double Output_l_fin;
 double Output_r_fin;
 /*PID parameter set*/
 /*for load*/
-double kp_l_load = 3,ki_l_load = 1,kd_l_load = 0;
-double kp_r_load = 3,ki_r_load = 1.3,kd_r_load = 0;
+double kp_l_load = 6,ki_l_load = 1.2,kd_l_load = 0;
+double kp_r_load = 6,ki_r_load = 1.3,kd_r_load = 0;
 /*for not load*/
 double kp_l_Nload = 0.4,ki_l_Nload = 1,kd_l_Nload = 0;
 double kp_r_Nload = 0.4,ki_r_Nload = 1.2,kd_r_Nload = 0;

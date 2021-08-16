@@ -82,11 +82,11 @@ void ResetCoordinate(int map_X,int map_Y)
   {
     if(abs(queue_map_X.peek() - map_X) > 10 && abs(queue_map_Y.peek()- map_Y) > 10)
     {
+    flag = 1;
     //Serial.println("reset");
     delay(3000);
     map_x_ori = map_X;
     map_y_ori = map_Y;
-    flag = 1;
     }
   }
   //whether come back to initialzation or not
