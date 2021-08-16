@@ -211,19 +211,19 @@ def caculate_HZ():
     # x range from -0.5 to 0.5
     if average_x > X_THRESHOLD:
         # body in right
-        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.1
+        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.08
     elif average_x < X_THRESHOLD * -1:
         # body in left
-        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.1
+        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.08
     # depth range from 0~1.6 (soft range)
     if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and HZ_L < 10 and HZ_R < 10:
         # too far, speed up
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
-    elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD:
+    elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD and HZ_L > 0 and HZ_R > 0:
         # too close, slow down
-        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 1
-        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 1
+        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
+        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
     # set break if too close 
     if average_depth <= DEPTH_BREAKPOINT :
         HZ_L = 0
