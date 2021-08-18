@@ -239,6 +239,11 @@ def caculate_HZ():
         # too close, slow down
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
+    # if x is in block, set both command HZ same
+    if average_x < X_THRESHOLD and average_x > X_THRESHOLD * -1 :
+        same_HZ = round((HZ_L + HZ_R) / 2 )
+        HZ_L = same_HZ
+        HZ_R = same_HZ
     # set break if too close or there is no human
     if average_depth <= DEPTH_BREAKPOINT or not IS_HUMAN:
         HZ_L = 0
