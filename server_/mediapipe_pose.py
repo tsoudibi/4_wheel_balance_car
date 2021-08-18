@@ -36,7 +36,7 @@ class ipcamCapture:
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_address = '10.1.1.6:8080'
+ip_address = '192.168.137.144:8080/'
 ip_camera_url = 'http://admin:admin@' + ip_address + '/video'
 
 # set image size of camera, smaller will run faster
@@ -207,7 +207,7 @@ def mediapipe_pose(debug_mode = False):
 
 HZ_L = 0
 HZ_R = 0
-X_THRESHOLD = 0.1
+X_THRESHOLD = 0.08
 DEPTH_FIX = 1
 DEPTH_THRESHOLD = 0.15
 DEPTH_BREAKPOINT = 0.4
@@ -230,6 +230,9 @@ def caculate_HZ():
     # depth range from 0~1.6 (soft range)
     if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and is_under_max() and IS_HUMAN:
         # too far, speed up
+        if HZ_L < 1 and HZ_R < 1 :
+            HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
+            HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
     elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD and is_above_min() and IS_HUMAN:
@@ -240,7 +243,7 @@ def caculate_HZ():
     if average_depth <= DEPTH_BREAKPOINT or not IS_HUMAN:
         HZ_L = 0
         HZ_R = 0
-    print(IS_HUMAN)
+    
 
 
 def draw_top_view(image):
@@ -330,5 +333,5 @@ def draw_pose(image, landmark_list, connections):
         for landmark_px in idx_to_coordinates.values():
             cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
-camera_start(device='webcam')
-mediapipe_pose(True)
+#camera_start(device='webcam')
+#mediapipe_pose(True)

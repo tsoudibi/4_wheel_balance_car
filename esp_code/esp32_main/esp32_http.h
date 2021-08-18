@@ -15,7 +15,7 @@ const char* password_2 =  "12345678";
 const char* ssid_3 = "DBDB";
 const char* password_3 =  "DBDBDBDBB";
 
-const String SERVER_IP = "http://140.116.78.219:5005" ;
+const String SERVER_IP = "http://140.116.78.219:5007" ;
 
 #define led_pin_tx 12
 #define led_pin_rx 27

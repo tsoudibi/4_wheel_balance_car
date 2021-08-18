@@ -21,8 +21,8 @@ double Output_r_fin;
 double kp_l_load = 6,ki_l_load = 1.2,kd_l_load = 0;
 double kp_r_load = 6,ki_r_load = 1.3,kd_r_load = 0;
 /*for not load*/
-double kp_l_Nload = 0.4,ki_l_Nload = 1,kd_l_Nload = 0;
-double kp_r_Nload = 0.4,ki_r_Nload = 1.2,kd_r_Nload = 0;
+double kp_l_Nload = 0.2,ki_l_Nload = 1,kd_l_Nload = 0;
+double kp_r_Nload = 0.2,ki_r_Nload = 1.3,kd_r_Nload = 0;
 /*others*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
