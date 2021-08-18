@@ -10,9 +10,9 @@
 <h2>模式切換</h2>
 <div class="mode">
     <CENTER>
-        <a href="{{url_for('button')}}"><input type="button" name="mode_1" value="button"></a>
-        <a href="{{url_for('sensor')}}"><input type="button" name="mode_2" value="sensor"></a>
-        <a href="{{url_for('camera')}}"><input type="button" name="mode_3" value="camera"></a><BR>
+        <a href="{{url_for('button')}}" onclick = "if (! confirm('Page will turn to Button Mode.Continue?')) { return false; }"><input type="button" name="mode_1" value="button"></a>
+        <a href="{{url_for('sensor')}}" onclick = "if (! confirm('Page will turn to Sensor Mode.Continue?')) { return false; }"><input type="button" name="mode_2" value="sensor"></a>
+        <a href="{{url_for('camera')}}" onclick = "if (! confirm('Page will turn to Camera Mode.Continue?')) { return false; }"><input type="button" name="mode_3" value="camera"></a><BR>
     </CENTER>
 </div>
 <h2>狀態顯示</h2>
