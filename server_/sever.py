@@ -62,7 +62,7 @@ def dinner():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def watcher():
+def visitor():
 
     # 狀態初始化
     data = {'RPM_L': 'Getting...',
