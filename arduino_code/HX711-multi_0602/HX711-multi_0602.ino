@@ -19,7 +19,8 @@ byte DOUTS[4] = {DOUT1, DOUT2, DOUT3, DOUT4};
 long int results[CHANNEL_COUNT];
 HX711MULTI scales(CHANNEL_COUNT, DOUTS, CLK);
 unsigned long tareStartTime = millis();
-
+/*total weight*/
+int w_total = 0;
 //mapping define
 int map_Y = 0;
 int map_X = 0;
