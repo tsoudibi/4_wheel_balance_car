@@ -43,7 +43,7 @@ void PID_function(void * parameter)
     /* make one motor reverse */
     digitalWrite(rev_pin, LOW);
     /* flag from arduino*/
-    flag_load = get_serial_data(7);
+    flag_load = 0;
 
     /*if(flag_load != 1 || flag_load != 0)
     {
@@ -51,10 +51,10 @@ void PID_function(void * parameter)
       flag_load = 0;
     }*/
     /*set limit for max or min*/
-    if (Command_L > 10)
-      Command_L = 10;
-    if (Command_R > 10)
-      Command_R = 10;
+    if (Command_L > 15)
+      Command_L = 15;
+    if (Command_R > 15)
+      Command_R = 15;
     if (Command_L < 0)
       Command_L = 0;
     if (Command_R < 0)
@@ -173,5 +173,5 @@ void loop() {
     String msg = "[ http] update:" + Response + " ,used time:" + (millis() - time_now);
     Serial.println(msg);
   }
-  Serial.println(flag_load);
+
 }

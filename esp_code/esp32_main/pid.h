@@ -20,9 +20,13 @@ double Output_r_fin;
 /*for load*/
 double kp_l_load = 6,ki_l_load = 1.2,kd_l_load = 0;
 double kp_r_load = 6,ki_r_load = 1.3,kd_r_load = 0;
-/*for not load*/
-double kp_l_Nload = 0.2,ki_l_Nload = 1,kd_l_Nload = 0;
-double kp_r_Nload = 0.2,ki_r_Nload = 1.3,kd_r_Nload = 0;
+/*f or not load*/
+/*first one*/
+/*double kp_l_Nload = 0.437,ki_l_Nload = 0.27,kd_l_Nload = 0;
+double kp_r_Nload = 0.405,ki_r_Nload = 0.23,kd_r_Nload = 0;*/
+/*next one*/
+double kp_l_Nload = 1.4,ki_l_Nload = 0.9,kd_l_Nload = 0;
+double kp_r_Nload = 1.3,ki_r_Nload = 0.85,kd_r_Nload = 0;
 /*others*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
@@ -61,9 +65,9 @@ void PIDcontrol_left(int flag_left)
     mypid_left_load.Compute();
   }
   /* convert output from HZ to DAC*/
-  Output_l_fin =  Output_l*0.7058+96.148;
+  //Output_l_fin =  Output_l*0.7058+96.148;
+  Output_l_fin =  Output_l*0.70581637+96.0889897;
 }
-
 /* caculate PID right */
 void PIDcontrol_right(int flag_right)
 {
@@ -78,8 +82,13 @@ void PIDcontrol_right(int flag_right)
     mypid_right_load.Compute();
   }
   /* convert output from HZ to DAC*/
-  Output_r_fin =  Output_r*0.7539+96.166;
+  //Output_r_fin =  Output_r*0.7539+96.166;
+  Output_r_fin =  Output_r*0.73926222+94.241;
 }
+/*
+ * HZ = 1.4114DAC-135.62 left
+ * HZ = 1.3527DAC-127.48 right
+ */
 
 /* for other function, get the result (DAC)*/
 int get_PID_result(char which){
@@ -98,6 +107,6 @@ void PID(int command_hz_L,int command_hz_R,int encoder_hz_L,int encoder_hz_R,int
   command_HZ_r = command_hz_R;
   Encoding_HZ_r = encoder_hz_R;
   PIDcontrol_right(flag);
-  //Serial.println(String(command_hz_L)+","+String(command_hz_R)+","+String(command_HZ_l)+","+String(command_HZ_r));
+  Serial.println(String(Output_l_fin)+","+String(Output_r_fin)+","+String(command_HZ_l)+","+String(command_HZ_r));
 }
 #endif

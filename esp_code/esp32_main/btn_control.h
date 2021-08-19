@@ -22,16 +22,16 @@ void btn_control(int HZ_L_btn,int HZ_R_btn){
 
   /* with different movement, make different adjust, change the command*/
   if (mov == "forward"){
-    HZ_L = HZ_L_btn + 1;
-    HZ_R = HZ_R_btn + 1;
+    HZ_L = HZ_L_btn + 3;
+    HZ_R = HZ_R_btn + 3;
     Serial.println("[click] forward"+String(HZ_L)+String(HZ_R));
   }else if (mov == "left"){
-    HZ_L = HZ_L_btn - 1;
-    HZ_R = HZ_R_btn + 1;          
+    HZ_L = HZ_L_btn - 3;
+    HZ_R = HZ_R_btn + 3;          
     Serial.println("[click] left");
   }else if (mov =="right"){
-    HZ_L = HZ_L_btn + 1;
-    HZ_R = HZ_R_btn - 1;
+    HZ_L = HZ_L_btn + 3;
+    HZ_R = HZ_R_btn - 3;
     Serial.println("[click] right");
   }else if (mov == "stop"){
     HZ_L = 0;
