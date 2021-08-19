@@ -36,7 +36,7 @@ class ipcamCapture:
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_address = '192.168.137.144:8080/'
+ip_address = '192.168.137.158:8080/'
 ip_camera_url = 'http://admin:admin@' + ip_address + '/video'
 
 # set image size of camera, smaller will run faster
@@ -157,7 +157,8 @@ def mediapipe_pose(debug_mode = False):
                 # if there are no person 
                 IS_HUMAN = False
             time2 = time.time()
-            fps = 1 / (time2 - time1)
+            if (time1 != time2):
+                fps = 1 / (time2 - time1)
             # print fps (10, 40) , body height (normalized) (img_width - 150, 40), x_center (img_width - 150, 80)
             cv2.rectangle(image, (5, 10), (90, 50), (0, 0, 0), -1)
             cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
@@ -213,7 +214,7 @@ DEPTH_THRESHOLD = 0.15
 DEPTH_BREAKPOINT = 0.4
 
 def is_under_max():
-    return HZ_L < 10 and HZ_R < 10
+    return HZ_L < 15 and HZ_R < 15
 
 def is_above_min():
     return HZ_L > 0 and HZ_R > 0 
@@ -221,27 +222,33 @@ def is_above_min():
 def caculate_HZ():
     global average_depth, average_x, HZ_L, HZ_R, IS_HUMAN
     # x range from -0.5 to 0.5
-    if average_x > X_THRESHOLD and is_under_max() and IS_HUMAN:
+    if average_x > X_THRESHOLD and is_under_max() and is_above_min() and IS_HUMAN:
         # body in right
-        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.08
-    elif average_x < X_THRESHOLD * -1 and is_under_max() and IS_HUMAN:
+        HZ_L = HZ_L - (average_x - X_THRESHOLD) * 0.2
+        HZ_R = HZ_R - (average_x - X_THRESHOLD) * 0.2
+
+        HZ_L = HZ_L + (average_x - X_THRESHOLD) * 0.25
+    elif average_x < X_THRESHOLD * -1 and is_under_max() and is_above_min() and IS_HUMAN:
         # body in left
-        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.08
+        HZ_L = HZ_L - (-1 * average_x - X_THRESHOLD) * 0.2
+        HZ_R = HZ_R - (-1 * average_x - X_THRESHOLD) * 0.2
+
+        HZ_R = HZ_R + (-1 * average_x - X_THRESHOLD) * 0.25
     # depth range from 0~1.6 (soft range)
     if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and is_under_max() and IS_HUMAN:
         # too far, speed up
-        if HZ_L < 1 and HZ_R < 1 :
-            HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
-            HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
-        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
-        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.01
+        if HZ_L < 3 and HZ_R < 3 :
+            HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
+            HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
+        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.015
+        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.015
     elif average_depth < DEPTH_FIX - DEPTH_THRESHOLD and is_above_min() and IS_HUMAN:
         # too close, slow down
-        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
-        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.1
+        HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
+        HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
     # if x is in block, set both command HZ same
     if average_x < X_THRESHOLD and average_x > X_THRESHOLD * -1 :
-        same_HZ = round((HZ_L + HZ_R) / 2 )
+        same_HZ = (HZ_L + HZ_R) / 2 
         HZ_L = same_HZ
         HZ_R = same_HZ
     # set break if too close or there is no human

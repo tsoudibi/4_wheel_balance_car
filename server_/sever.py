@@ -9,6 +9,7 @@ import plotly as py
 import plotly.graph_objs as go
 from flask import Flask, render_template, request, jsonify, send_file
 import mediapipe_pose as mp_p
+import threading
 import thread
 
 app = Flask(__name__)
@@ -265,6 +266,9 @@ def camera_plot():
         # stop the thread
         global t
         t.kill()
+        t.join()
+        if not t.isAlive():
+            print('thread killed')
         # record esp_log
         esp_log_cam('camera stop')
         data = {'stopBtn': 'CONTINUE'}
@@ -325,7 +329,7 @@ def CAM_newIMG():
         car_stat.cam_HZ_R = mp_p.HZ_R
         car_stat.is_human = mp_p.IS_HUMAN
 
-        # convert numpy array to PIL Image
+        # convert numpy array to PIL Image 
         img = Image.fromarray(mp_p.image2server.astype('uint8'))
 
         # create file-object in memory
