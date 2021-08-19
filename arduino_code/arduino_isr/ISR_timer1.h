@@ -66,7 +66,7 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine
     
  
    // Serial.println("-------");
-   while(time_1 - queue.peek()>1000){
+   while(time_1 - queue.peek()>1500){
     queue.pop();
    }
     first_vol_l = next_vol_l ;
@@ -78,23 +78,23 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine
   {
     time_2 = millis();
     queue2.push(time_2);
-    while(time_2 - queue2.peek()>3000){
+    while(time_2 - queue2.peek()>1500){
       queue2.pop();
     }
     first_vol_r = next_vol_r;
     
   }
 
-  if(timer_watchdog - queue.peek()>2000)
+  if(timer_watchdog - queue.peek()>2500)
   {
     queue.pop();
   }
-  if(timer_watchdog - queue2.peek()>2000)
+  if(timer_watchdog - queue2.peek()>2500)
   {
     queue2.pop();
   }
-  HZ_r = ((queue2.count()/2*1.0019)-1.0984)/3;
-  HZ_l = ((queue.count()/2*1.0019)-1.0984)/3;
+  HZ_r = ((queue2.count()/2*1.0019)-1.0984)/1.5;
+  HZ_l = ((queue.count()/2*1.0019)-1.0984)/1.5;
   //避免出現負數//
   if(HZ_r < 0)
   {
