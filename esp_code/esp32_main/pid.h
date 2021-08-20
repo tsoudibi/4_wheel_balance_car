@@ -24,9 +24,12 @@ double kp_r_load = 6,ki_r_load = 1.3,kd_r_load = 0;
 /*first one*/
 /*double kp_l_Nload = 0.437,ki_l_Nload = 0.27,kd_l_Nload = 0;
 double kp_r_Nload = 0.405,ki_r_Nload = 0.23,kd_r_Nload = 0;*/
-/*next one*/
-double kp_l_Nload = 1.4,ki_l_Nload = 0.9,kd_l_Nload = 0;
-double kp_r_Nload = 1.3,ki_r_Nload = 0.85,kd_r_Nload = 0;
+/*next one for camara(震盪嚴重，追很快)*/
+/*double kp_l_Nload = 1.4,ki_l_Nload = 0.9,kd_l_Nload = 0;
+double kp_r_Nload = 1.3,ki_r_Nload = 0.85,kd_r_Nload = 0;*/
+/*third one*/
+double kp_l_Nload = 1.1,ki_l_Nload = 0.9,kd_l_Nload = 0;
+double kp_r_Nload = 0.93,ki_r_Nload = 0.85,kd_r_Nload = 0;
 /*others*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;

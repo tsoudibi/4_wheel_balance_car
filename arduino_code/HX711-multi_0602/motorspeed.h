@@ -58,8 +58,6 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     }
     FlagtoDetectchange = 1;
   }
-  /*to let speed change smooth*/
-  delay(1000);
 }
 
 /*save location in queue*/
@@ -75,12 +73,12 @@ void LocationtoQueue(int map_X,int map_Y)
 }
 
 /*reset coordinate first time*/
-void ResetCoordinate(int map_X,int map_Y)
+void ResetCoordinate(int map_X,int map_Y,int W_total)
 { 
   //reset
   if(flag == 0)
   {
-    if(abs(queue_map_X.peek() - map_X) > 10 && abs(queue_map_Y.peek()- map_Y) > 10)
+    if(W_total > 150)//total weight is bigger than 150
     {
     flag = 1;
     //Serial.println("reset");
@@ -92,12 +90,12 @@ void ResetCoordinate(int map_X,int map_Y)
   //whether come back to initialzation or not
   if(flag == 1)
   {
-    if(abs(queue_map_X.peek() == 0) && abs(queue_map_Y.peek() == 0))
+    if(W_total < 150)
     {
       count++;
       
       //stop reset
-      if(abs(map_X) > 100 || abs(map_Y) > 100)
+      if(W_total > 150)
         count = 0;
         
       //reset successfully and stop
@@ -110,7 +108,7 @@ void ResetCoordinate(int map_X,int map_Y)
 }
 
 /*speed output*/
-void SpeedOutput(int map_X,int map_Y)
+void SpeedOutput(int map_X,int map_Y,int W_total;)
 {
   LocationtoQueue(map_X,map_Y);
   ResetCoordinate(map_X,map_Y);
@@ -126,7 +124,7 @@ void SpeedOutput(int map_X,int map_Y)
   if (flag == 1)
   { 
   /*set time to smooth the speed change*/
-    if(millis()- time_count > 500)
+    while(millis()- time_count > 500)
     {
       speed_control(map_x_ori,map_y_ori,map_X,map_Y);
       time_count = millis();
