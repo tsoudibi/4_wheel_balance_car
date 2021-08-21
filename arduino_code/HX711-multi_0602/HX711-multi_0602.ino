@@ -36,10 +36,10 @@ void loop() {
   int acc;
   int test_time;
   sendRawData(); //this is for sending raw data, for where everything else is done in processing
-
-  //speedOutput
+  /*Reset HX711 by judging the weight is bigger or not*/
+  ResetCoordinate(map_X,map_Y,w_total)
+  /*speedOutput*/
   SpeedOutput(map_X,map_Y);
-
   //on serial data (any data) re-tare
   if (Serial.available()>0) {
     while (Serial.available()) {
@@ -54,18 +54,22 @@ void weight(int i) {
     case 0:
       map_Y = map_Y - results[i]*1.3;
       map_X = map_X - results[i]*1.3;
+      w_total = w_total + results[i];
     break;
     case 1:
       map_Y = map_Y - results[i]*1.53;
       map_X = map_X + results[i]*1.3;
+      w_total = w_total + results[i];
     break;
     case 2:
       map_Y = map_Y + results[i];
       map_X = map_X + results[i];
+      w_total = w_total + results[i];
     break;
     case 3:
       map_Y = map_Y + results[i]*1.1818;
       map_X = map_X - results[i]*1.153;
+      w_total = w_total + results[i];
     break;
 
   }

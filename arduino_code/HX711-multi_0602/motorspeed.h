@@ -61,7 +61,7 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
 }
 
 /*save location in queue*/
-void LocationtoQueue(int map_X,int map_Y)
+/*void LocationtoQueue(int map_X,int map_Y)
 {
   queue_map_X.push(map_X);
   queue_map_Y.push(map_Y);
@@ -70,15 +70,15 @@ void LocationtoQueue(int map_X,int map_Y)
   	queue_map_X.pop();
   if(queue_map_Y.count()>=10)
   	queue_map_Y.pop();
-}
+}*/
 
 /*reset coordinate first time*/
-void ResetCoordinate(int map_X,int map_Y,int W_total)
+void ResetCoordinate(int map_X,int map_Y,int Weight)
 { 
   //reset
   if(flag == 0)
   {
-    if(W_total > 150)//total weight is bigger than 150
+    if(Weight > 150)//total weight is bigger than 150
     {
     flag = 1;
     //Serial.println("reset");
@@ -90,30 +90,30 @@ void ResetCoordinate(int map_X,int map_Y,int W_total)
   //whether come back to initialzation or not
   if(flag == 1)
   {
-    if(W_total < 150)
+    if(Weight < 150)
     {
       count++;
       
       //stop reset
-      if(W_total > 150)
+      if(Weight > 150)
         count = 0;
         
       //reset successfully and stop
-      if (count == 2)
+      if (count == 5)
         flag = 0;
         map_x_ori = 0;
         map_y_ori = 0;
     }
   }  
 }
-
-/*speed output*/
-void SpeedOutput(int map_X,int map_Y,int W_total;)
+/*void Reset_HX711(int map_X,int map_Y,int Weight_total)
 {
-  LocationtoQueue(map_X,map_Y);
-  ResetCoordinate(map_X,map_Y);
-
-  
+  //LocationtoQueue(map_X,map_Y);
+  ResetCoordinate(map_X,map_Y,Weight);
+}*/
+/*speed output*/
+void SpeedOutput(int map_X,int map_Y)
+{
   //靜止
   if (flag == 0)
   {
@@ -126,6 +126,7 @@ void SpeedOutput(int map_X,int map_Y,int W_total;)
   /*set time to smooth the speed change*/
     while(millis()- time_count > 500)
     {
+      /*speed control */
       speed_control(map_x_ori,map_y_ori,map_X,map_Y);
       time_count = millis();
     }
