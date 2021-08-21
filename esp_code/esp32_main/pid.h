@@ -30,6 +30,9 @@ double kp_r_Nload = 1.3,ki_r_Nload = 0.85,kd_r_Nload = 0;*/
 /*third one*/
 double kp_l_Nload = 1.1,ki_l_Nload = 0.9,kd_l_Nload = 0;
 double kp_r_Nload = 0.93,ki_r_Nload = 0.85,kd_r_Nload = 0;
+/*this pid data will use when the car start to move*/
+double kp_l_start = 1.1,ki_l_start = 0.9,kd_l_start = 0;
+double kp_r_start = 0.93,ki_r_start = 0.85,kd_r_start = 0;
 /*others*/
 double input_l ,output_l, setpoint_l;
 double input_r ,output_r, setpoint_r;
@@ -41,8 +44,11 @@ PID mypid_right_load(&input_r, &output_r, &setpoint_r, kp_r_load, ki_r_load, kd_
 /* not has load*/
 PID mypid_left_Nload(&input_l, &output_l, &setpoint_l, kp_l_Nload, ki_l_Nload, kd_l_Nload, DIRECT); 
 PID mypid_right_Nload(&input_r, &output_r, &setpoint_r, kp_r_Nload, ki_r_Nload, kd_r_Nload, DIRECT);
- 
-/* set up */
+/* car start to move*/
+PID mypid_left_start(&input_l, &output_l, &setpoint_l, kp_l_start, ki_l_start, kd_l_start, DIRECT); 
+PID mypid_right_start(&input_r, &output_r, &setpoint_r, kp_r_start, ki_r_start, kd_r_start, DIRECT);
+
+/*PID set up */
 void PID_setup()
 {
    /*load*/
@@ -52,6 +58,10 @@ void PID_setup()
    /*no load*/
    mypid_right_Nload.SetMode(AUTOMATIC);
    mypid_left_Nload.SetMode(AUTOMATIC);
+
+   /*start to nove*/
+   mypid_left_start.SetMode(AUTOMATIC);
+   mypid_right_start.SetMode(AUTOMATIC);
 }
 
 /* caculate PID left */
@@ -61,11 +71,19 @@ void PIDcontrol_left(int flag_left)
   Output_l = output_l;
   setpoint_l = command_HZ_l;
   /* compute */
-  if(flag_left == 0){         //no load
-    mypid_left_Nload.Compute();
+  if(input_l != 0)
+  {
+    if(flag_left == 0){         //no load
+      mypid_left_Nload.Compute();
+    }
+    else if(flag_left == 1){    //has load
+      mypid_left_load.Compute();
+    }
   }
-  else if(flag_left == 1){    //has load
-    mypid_left_load.Compute();
+  /*car start to move*/
+  if(input_l == 0)
+  {
+    mypid_left_start.Compute();
   }
   /* convert output from HZ to DAC*/
   //Output_l_fin =  Output_l*0.7058+96.148;
@@ -78,12 +96,20 @@ void PIDcontrol_right(int flag_right)
   Output_r = output_r;
   setpoint_r = command_HZ_r;
   /* compute */
-  if(flag_right == 0){        //no load
-    mypid_right_Nload.Compute();
+  if(input_r != 0)
+  {
+    if(flag_right == 0){        //no load
+      mypid_right_Nload.Compute();
+    }
+    else if(flag_right == 1){   //has load
+      mypid_right_load.Compute();
+    }
   }
-  else if(flag_right == 1){   //has load
-    mypid_right_load.Compute();
-  }
+  /*car start to move*/
+  if(input_l == 0)
+  {
+    mypid_right_start.Compute();
+  }  
   /* convert output from HZ to DAC*/
   //Output_r_fin =  Output_r*0.7539+96.166;
   Output_r_fin =  Output_r*0.73926222+94.241;
