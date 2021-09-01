@@ -21,6 +21,12 @@ int map_x_ori,map_y_ori;
 int speed_l = 0;
 int speed_r = 0;
 
+/*set weight*/
+int weight_esp32 = 0;
+void get_weight(int weight)
+{
+  weight_esp32 = weight;
+}
 /*speed control by HX711*/
 void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   
@@ -73,12 +79,12 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
 }*/
 
 /*reset coordinate first time*/
-void ResetCoordinate(int map_X,int map_Y,int Weight)
+void ResetCoordinate(int map_X,int map_Y)
 { 
   //reset
   if(flag == 0)
   {
-    if(Weight > 150)//total weight is bigger than 150
+    if(weight_esp32 > 300)//total weight is bigger than 150
     {
     flag = 1;
     //Serial.println("reset");
@@ -90,19 +96,20 @@ void ResetCoordinate(int map_X,int map_Y,int Weight)
   //whether come back to initialzation or not
   if(flag == 1)
   {
-    if(Weight < 150)
+    if(weight_esp32 < 300)
     {
-      count++;
-      
-      //stop reset
-      if(Weight > 150)
+      flag = 0;
+      map_x_ori = 0;
+      map_y_ori = 0;
+      /*//stop reset
+      if(weight_esp32 > 600)
         count = 0;
         
       //reset successfully and stop
       if (count == 5)
         flag = 0;
         map_x_ori = 0;
-        map_y_ori = 0;
+        map_y_ori = 0;*/
     }
   }  
 }
@@ -114,6 +121,7 @@ void ResetCoordinate(int map_X,int map_Y,int Weight)
 /*speed output*/
 void SpeedOutput(int map_X,int map_Y)
 {
+  ResetCoordinate(map_X,map_Y);
   //靜止
   if (flag == 0)
   {
@@ -129,6 +137,7 @@ void SpeedOutput(int map_X,int map_Y)
       /*speed control */
       speed_control(map_x_ori,map_y_ori,map_X,map_Y);
       time_count = millis();
+      ResetCoordinate(map_X,map_Y);
     }
   }
   /*
@@ -145,6 +154,6 @@ void SpeedOutput(int map_X,int map_Y)
     speed_r = 10;
   */
   //transport data to esp32    
-  Serial.println(String(map_X - map_x_ori)+","+String(map_Y - map_y_ori)+","+String(speed_l)+","+String(speed_r)+","+String(flag));
+  Serial.println(String(map_X - map_x_ori)+","+String(map_Y - map_y_ori)+","+String(speed_l)+","+String(speed_r)+","+String(flag)+","+String(weight_esp32));
 }
 #endif

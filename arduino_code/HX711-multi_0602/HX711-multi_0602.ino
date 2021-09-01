@@ -37,7 +37,8 @@ void loop() {
   int test_time;
   sendRawData(); //this is for sending raw data, for where everything else is done in processing
   /*Reset HX711 by judging the weight is bigger or not*/
-  ResetCoordinate(map_X,map_Y,w_total)
+  get_weight(w_total);
+  //Serial.println(w_total); 
   /*speedOutput*/
   SpeedOutput(map_X,map_Y);
   //on serial data (any data) re-tare
@@ -46,7 +47,6 @@ void loop() {
     }
     tare();
   }
-  
   reset_XY();
 }
 void weight(int i) {
@@ -54,24 +54,23 @@ void weight(int i) {
     case 0:
       map_Y = map_Y - results[i]*1.3;
       map_X = map_X - results[i]*1.3;
-      w_total = w_total + results[i];
+      w_total = w_total - results[i];
     break;
     case 1:
       map_Y = map_Y - results[i]*1.53;
       map_X = map_X + results[i]*1.3;
-      w_total = w_total + results[i];
+      w_total = w_total - results[i];
     break;
     case 2:
       map_Y = map_Y + results[i];
       map_X = map_X + results[i];
-      w_total = w_total + results[i];
+      w_total = w_total - results[i];
     break;
     case 3:
       map_Y = map_Y + results[i]*1.1818;
       map_X = map_X - results[i]*1.153;
-      w_total = w_total + results[i];
+      w_total = w_total - results[i];
     break;
-
   }
   /*to avoid the error*/
   if(abs(map_X)<30)
@@ -85,6 +84,7 @@ void weight(int i) {
 void reset_XY() {
   map_Y = 0;
   map_X = 0;
+  w_total = 0;
 }
 void sendRawData() {
   scales.read(results);
@@ -97,7 +97,6 @@ void sendRawData() {
      results[i] = 0;
     if(results[i] < -10000)
      results[i] = -10000;
-
     weight(i);
     delay(10);
   }  
