@@ -98,9 +98,12 @@ void ResetCoordinate(int map_X,int map_Y)
   {
     if(weight_esp32 < 300)
     {
+      /*set all parameters to 0*/
       flag = 0;
       map_x_ori = 0;
       map_y_ori = 0;
+      speed_l = 0;
+      speed_r = 0;
       /*//stop reset
       if(weight_esp32 > 600)
         count = 0;

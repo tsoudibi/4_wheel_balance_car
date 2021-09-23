@@ -20,7 +20,7 @@ int map_x = 0;
 int map_y = 0;
 int DAC_R = 0;
 int DAC_L = 0;
-int flag_load = 0;
+int flag_load;
 
 /*get control mode*/
 int control_mode = 0;
@@ -43,8 +43,8 @@ void PID_function(void * parameter)
     /* make one motor reverse */
     digitalWrite(rev_pin, LOW);
     /* flag from arduino*/
-    flag_load = 0;
-
+    flag_load = get_serial_data(7);
+    Serial.println(get_serial_data(7));
     /*if(flag_load != 1 || flag_load != 0)
     {
       //led_blink(3);

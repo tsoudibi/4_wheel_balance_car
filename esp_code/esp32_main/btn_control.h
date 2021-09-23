@@ -26,12 +26,12 @@ void btn_control(int HZ_L_btn,int HZ_R_btn){
     HZ_R = HZ_R_btn + 3;
     Serial.println("[click] forward"+String(HZ_L)+String(HZ_R));
   }else if (mov == "left"){
-    HZ_L = HZ_L_btn - 3;
-    HZ_R = HZ_R_btn + 3;          
+    HZ_L = HZ_L_btn - 2;
+    HZ_R = HZ_R_btn + 2;          
     Serial.println("[click] left");
   }else if (mov =="right"){
-    HZ_L = HZ_L_btn + 3;
-    HZ_R = HZ_R_btn - 3;
+    HZ_L = HZ_L_btn + 2;
+    HZ_R = HZ_R_btn - 2;
     Serial.println("[click] right");
   }else if (mov == "stop"){
     HZ_L = 0;

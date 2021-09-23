@@ -86,7 +86,7 @@ void split_sensor(){
   char *arr_2;
   arr_2 = strtok(store_string_2, ",");
   int j = 0;
-  int value_2[5];
+  int value_2[6];
   while (arr_2 != NULL)
   {
     value_2[++j] = atoi(arr_2); 
