@@ -48,6 +48,12 @@
         </table>
     </CENTER>
 </div>
+<h2>影像辨識</h2>
+<div id="camera_img">
+    <CENTER>
+        <img id="img" src="/static/img/img_default.jpeg" alt="影像辨識圖片"/>
+    </CENTER>
+</div>
 </body>
 </html>
 
@@ -102,5 +108,21 @@ function getDynamicData() {
         } // new plot
     });
 }
+
+function getDynamicIMG() {
+    $.ajax({
+        url: '/CAM_newIMG',
+        Type: 'GET',
+        contentType: "image/jpeg",
+        complete: function(data) { // complete只要請求完成，無論返回成功還是失敗
+            // upload new img
+            //dt = new Date();
+            //$('img').attr('src',+"?"+new Date());
+            $('img').attr('src', '/CAM_newIMG');
+        }
+    });
+}
+
+getDynamicIMG()
 
 </script>

@@ -64,7 +64,6 @@ def dinner():
 
 @app.route('/', methods=['GET', 'POST'])
 def visitor():
-
     # 狀態初始化
     data = {'RPM_L': 'Getting...',
             'RPM_R': 'Getting...',
@@ -140,7 +139,7 @@ def esp_log_btn(method, argu="None"):
     # record time
     now_time = time.localtime(time.time())
     esp_log_queue.append('[' + str(now_time.tm_hour) + ":" + str(now_time.tm_min) + ":" + str(now_time.tm_sec) + ']' +
-                        ' esp ' + method + argu)
+                         ' esp ' + method + argu)
     # set the lenght of queue to 5
     if len(esp_log_queue) > 5:
         esp_log_queue.pop(0)
@@ -171,7 +170,7 @@ def esp32():
             # save sensor coordinate into queue 
             newQueue(car_stat.queue_sensor_x, car_stat.queue_sensor_y, int(car_stat.sensor_x), int(car_stat.sensor_y))
             # loging 
-            print('esp32 update finished! ' )
+            print('esp32 update finished! ')
             return 'finished'
         elif mode == 'gather':
             which = request.args.get('which')
@@ -189,7 +188,7 @@ def esp32():
                 print('esp32 GET cam_HZ: ' + str(car_stat.cam_HZ_L) + ", " + str(car_stat.cam_HZ_R))
                 return str(car_stat.cam_HZ_L) + "," + str(car_stat.cam_HZ_R)
         elif mode == 'SSID':
-        # upate SSID on server
+            # update SSID on server
             SSID = request.args.get('SSID')
             if SSID is not None:
                 car_stat.SSID = SSID
@@ -264,18 +263,15 @@ def camera_plot():
     print(camera_btn_mode)
     if camera_btn_mode == 'STOP':  # when "STOP" clicked
         # stop the thread
-        global t
-        t.kill()
-        t.join()
-        if not t.isAlive():
-            print('thread killed')
+        mp_p.media_stop = True
         # record esp_log
         esp_log_cam('camera stop')
         data = {'stopBtn': 'CONTINUE'}
         return data
     elif camera_btn_mode == 'START':  # when "START"  clicked
         # start the camera along with thread
-        mp_p.camera_start(device='ipcam')
+        mp_p.camera_start(device='webcam')
+        mp_p.media_stop = False
         t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log
@@ -284,6 +280,7 @@ def camera_plot():
         return data
     else:  # when "CONTINUE" clicked
         # start the thread
+        mp_p.media_stop = False
         t = thread.thread_with_trace(target=mp_p.mediapipe_pose)
         t.start()
         # record esp_log
@@ -457,5 +454,6 @@ if __name__ == "__main__":
     # run production server on flask
     # reference: https://stackoverflow.com/questions/38982807/are-a-wsgi-server-and-http-server-required-to-serve-a-flask-app/38982989#38982989
     from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
-    #app.run(host='0.0.0.0', debug=True)
+
+    #serve(app, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', debug=True)
