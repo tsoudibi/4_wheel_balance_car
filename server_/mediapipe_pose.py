@@ -68,6 +68,10 @@ mode = None
 # detection flag 
 IS_HUMAN = None
 
+# if stop to get MediaPipe img
+media_stop = True
+
+
 def camera_start(device='webcam'):
     global cap, width, height, mode
     mode = device
@@ -86,13 +90,13 @@ def camera_start(device='webcam'):
         print("mode error, please check parameter 'mode'")
 
 
-def mediapipe_pose(debug_mode = False):
+def mediapipe_pose(debug_mode=False):
     global queue, cap, mode, time1, time2, fps, depth, x_center, y_center
     global depth_normalized, position_queue, average_depth, average_x, image2server, IS_HUMAN
     with mp_pose.Pose(
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5) as pose:
-        while True:
+        while media_stop is False:
             # start timer
             time1 = time.time()
             # Read the frame
@@ -100,7 +104,7 @@ def mediapipe_pose(debug_mode = False):
                 _, image = cap.read()
             elif mode == 'ipcam':
                 image = cap.getframe()
-                image = cv2.flip(image,1)
+                image = cv2.flip(image, 1)
             else:
                 print("mode error, please check parameter 'mode'")
                 break
@@ -153,19 +157,21 @@ def mediapipe_pose(debug_mode = False):
                 # mark that there is human
                 IS_HUMAN = True
                 # https://stackoverflow.com/questions/66876906/create-a-rectangle-around-all-the-points-returned-from-mediapipe-hand-landmark-d
-            else :
+            else:
                 # if there are no person 
                 IS_HUMAN = False
             time2 = time.time()
-            if (time1 != time2):
+            if time1 is not time2:
                 fps = 1 / (time2 - time1)
             # print fps (10, 40) , body height (normalized) (img_width - 150, 40), x_center (img_width - 150, 80)
             cv2.rectangle(image, (5, 10), (90, 50), (0, 0, 0), -1)
-            cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+                        cv2.LINE_AA)
             cv2.rectangle(image, (img_width - 155, 10), (img_width - 55, 90), (0, 0, 0), -1)
             cv2.putText(image, str(round(depth_normalized, 2)), (img_width - 150, 40), cv2.FONT_HERSHEY_SIMPLEX, 1,
                         (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),
+            cv2.putText(image, str(round(x_center, 2)), (img_width - 150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                        (255, 255, 255),
                         2, cv2.LINE_AA)
 
             # save position in queue (size = 10)
@@ -173,7 +179,7 @@ def mediapipe_pose(debug_mode = False):
             if len(position_queue) > 10:
                 position_queue.pop(0)
 
-            # caculate average value in the queue
+            # calculate average value in the queue
             average_depth = 0
             average_x = 0
             for positions in position_queue:
@@ -182,7 +188,7 @@ def mediapipe_pose(debug_mode = False):
             average_depth = average_depth / 10
             average_x = average_x / 10
 
-            # caculate HZ for esp32 motor control
+            # calculate HZ for esp32 motor control
             caculate_HZ()
 
             # draw top view
@@ -213,11 +219,14 @@ DEPTH_FIX = 1
 DEPTH_THRESHOLD = 0.15
 DEPTH_BREAKPOINT = 0.4
 
+
 def is_under_max():
     return HZ_L < 15 and HZ_R < 15
 
+
 def is_above_min():
-    return HZ_L > 0 and HZ_R > 0 
+    return HZ_L > 0 and HZ_R > 0
+
 
 def caculate_HZ():
     global average_depth, average_x, HZ_L, HZ_R, IS_HUMAN
@@ -237,7 +246,7 @@ def caculate_HZ():
     # depth range from 0~1.6 (soft range)
     if average_depth > DEPTH_FIX + DEPTH_THRESHOLD and average_depth < 3 and is_under_max() and IS_HUMAN:
         # too far, speed up
-        if HZ_L < 3 and HZ_R < 3 :
+        if HZ_L < 3 and HZ_R < 3:
             HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
             HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.015
@@ -247,41 +256,44 @@ def caculate_HZ():
         HZ_L = HZ_L + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
         HZ_R = HZ_R + (average_depth - DEPTH_FIX + DEPTH_THRESHOLD) * 0.3
     # if x is in block, set both command HZ same
-    if average_x < X_THRESHOLD and average_x > X_THRESHOLD * -1 :
-        same_HZ = (HZ_L + HZ_R) / 2 
+    if average_x < X_THRESHOLD and average_x > X_THRESHOLD * -1:
+        same_HZ = (HZ_L + HZ_R) / 2
         HZ_L = same_HZ
         HZ_R = same_HZ
     # set break if too close or there is no human
     if average_depth <= DEPTH_BREAKPOINT or not IS_HUMAN:
         HZ_L = 0
         HZ_R = 0
-    
 
 
 def draw_top_view(image):
     global average_depth, average_x
     img_height, img_width, img_channel = image.shape
     # define base 
-    base_x, base_y, base_w, base_h = round(img_width * 0.7), round(img_height * 0.55), 250 , 250
+    base_x, base_y, base_w, base_h = round(img_width * 0.7), round(img_height * 0.55), 250, 250
     overlay = image.copy()
     # draw base
-    cv2.rectangle(overlay, (base_x, base_y), (base_x+base_w, base_y+base_h), (255, 255, 255), -1)
+    cv2.rectangle(overlay, (base_x, base_y), (base_x + base_w, base_y + base_h), (255, 255, 255), -1)
     # draw threshold line
-    center = (base_x + round(base_w/2), base_y + round(base_h/2))
+    center = (base_x + round(base_w / 2), base_y + round(base_h / 2))
     threshold_height = (DEPTH_THRESHOLD * 2) / (DEPTH_FIX * 2) * base_h
     threshold_width = X_THRESHOLD * 2 * base_w
-    point1 = (center[0] - round(threshold_width/2), center[1] - round(threshold_height/2))
-    point2 = (center[0] + round(threshold_width/2), center[1] + round(threshold_height/2))
+    point1 = (center[0] - round(threshold_width / 2), center[1] - round(threshold_height / 2))
+    point2 = (center[0] + round(threshold_width / 2), center[1] + round(threshold_height / 2))
     cv2.rectangle(overlay, point1, point2, (141, 152, 235), -1)
-    cv2.rectangle(overlay, point1, point2, (141, 98, 235),  2)
+    cv2.rectangle(overlay, point1, point2, (141, 98, 235), 2)
     # draw break line
-    cv2.line(overlay, (base_x , base_y + base_h - round((DEPTH_BREAKPOINT) / (DEPTH_FIX * 2) * base_h)), (base_x+base_w, base_y + base_h - round((DEPTH_BREAKPOINT) / (DEPTH_FIX * 2) * base_h)), (141, 98, 235), 2)
+    cv2.line(overlay, (base_x, base_y + base_h - round((DEPTH_BREAKPOINT) / (DEPTH_FIX * 2) * base_h)),
+             (base_x + base_w, base_y + base_h - round((DEPTH_BREAKPOINT) / (DEPTH_FIX * 2) * base_h)), (141, 98, 235),
+             2)
     # draw axises
-    cv2.line(overlay, (base_x , base_y + round(base_h/2)), (base_x+base_w, base_y + round(base_h/2)), (100, 0, 0), 2)
-    cv2.line(overlay, (base_x + round(base_w/2), base_y ), (base_x + round(base_w/2), base_y + base_h), (100, 0, 0), 2)
+    cv2.line(overlay, (base_x, base_y + round(base_h / 2)), (base_x + base_w, base_y + round(base_h / 2)), (100, 0, 0),
+             2)
+    cv2.line(overlay, (base_x + round(base_w / 2), base_y), (base_x + round(base_w / 2), base_y + base_h), (100, 0, 0),
+             2)
     # draw camera 
-    cv2.circle(overlay, (base_x + round(base_w/2), base_y + base_h), 10, (255, 126, 79), -1)
-    cv2.circle(overlay, (base_x + round(base_w/2), base_y + base_h), 10, (255, 49, 79), 2)
+    cv2.circle(overlay, (base_x + round(base_w / 2), base_y + base_h), 10, (255, 126, 79), -1)
+    cv2.circle(overlay, (base_x + round(base_w / 2), base_y + base_h), 10, (255, 49, 79), 2)
     # draw body 
     depth_mapped = average_depth / (DEPTH_FIX * 2) * base_h
     x_mapped = (average_x + 0.5) * base_w
@@ -292,10 +304,13 @@ def draw_top_view(image):
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
     global HZ_L, HZ_R, IS_HUMAN
-    cv2.putText(image, str(round(HZ_L,1)), (base_x + 18 , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, str(round(HZ_R,1)), (base_x + 18 + round(base_w/2) , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, str(IS_HUMAN), (base_x + 18 + round(base_w/4 + 10) , base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1, cv2.LINE_AA)
-    
+    cv2.putText(image, str(round(HZ_L, 1)), (base_x + 18, base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1,
+                cv2.LINE_AA)
+    cv2.putText(image, str(round(HZ_R, 1)), (base_x + 18 + round(base_w / 2), base_y + 30), cv2.FONT_HERSHEY_DUPLEX,
+                0.7, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(image, str(IS_HUMAN), (base_x + 18 + round(base_w / 4 + 10), base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7,
+                (0, 0, 0), 1, cv2.LINE_AA)
+
     return image
 
 
@@ -314,9 +329,9 @@ def draw_pose(image, landmark_list, connections):
     for idx, landmark in enumerate(landmark_list.landmark):
         # filtering not seen landmarks
         if ((landmark.HasField('visibility') and
-            landmark.visibility < VISIBILITY_THRESHOLD) or
+             landmark.visibility < VISIBILITY_THRESHOLD) or
                 (landmark.HasField('presence') and
-                landmark.presence < PRESENCE_THRESHOLD)):
+                 landmark.presence < PRESENCE_THRESHOLD)):
             continue
         landmark_px = round(landmark.x * image_cols), round(landmark.y * image_rows)
         if landmark_px:
@@ -345,5 +360,5 @@ def draw_pose(image, landmark_list, connections):
         for landmark_px in idx_to_coordinates.values():
             cv2.circle(image, landmark_px, 5, (93, 73, 237), -1)
 
-#camera_start(device='webcam')
-#mediapipe_pose(True)
+# camera_start(device='webcam')
+# mediapipe_pose(True)
