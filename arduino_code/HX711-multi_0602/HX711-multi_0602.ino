@@ -55,21 +55,25 @@ void weight(int i) {
       map_Y = map_Y - results[i]*1.3;
       map_X = map_X - results[i]*1.3;
       w_total = w_total - results[i];
+      //Serial.println(results[i]);
     break;
     case 1:
       map_Y = map_Y - results[i]*1.53;
       map_X = map_X + results[i]*1.3;
       w_total = w_total - results[i];
+      //Serial.println(results[i]);
     break;
     case 2:
       map_Y = map_Y + results[i];
       map_X = map_X + results[i];
       w_total = w_total - results[i];
+      //Serial.println(results[i]);
     break;
     case 3:
       map_Y = map_Y + results[i]*1.1818;
       map_X = map_X - results[i]*1.153;
       w_total = w_total - results[i];
+      //Serial.println(results[i]);
     break;
   }
   /*to avoid the error*/

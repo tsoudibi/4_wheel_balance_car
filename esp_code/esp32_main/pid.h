@@ -21,15 +21,15 @@ double Output_r_fin;
 double kp_l_load = 6,ki_l_load = 1.2,kd_l_load = 0;
 double kp_r_load = 6,ki_r_load = 1.3,kd_r_load = 0;
 /*f or not load*/
-/*first one*/
-/*double kp_l_Nload = 0.437,ki_l_Nload = 0.27,kd_l_Nload = 0;
-double kp_r_Nload = 0.405,ki_r_Nload = 0.23,kd_r_Nload = 0;*/
+/*first one(btn)*/
+/*double kp_l_Nload = 1.3,ki_l_Nload = 0.9,kd_l_Nload = 0;
+double kp_r_Nload = 1.43,ki_r_Nload = 0.85,kd_r_Nload = 0;*/
 /*next one for camara(震盪嚴重，追很快)*/
 /*double kp_l_Nload = 1.4,ki_l_Nload = 0.9,kd_l_Nload = 0;
 double kp_r_Nload = 1.3,ki_r_Nload = 0.85,kd_r_Nload = 0;*/
-/*third one*/
-double kp_l_Nload = 1.1,ki_l_Nload = 0.9,kd_l_Nload = 0;
-double kp_r_Nload = 0.93,ki_r_Nload = 0.85,kd_r_Nload = 0;
+/*third one(camara)*/
+double kp_l_Nload = 1.5,ki_l_Nload = 0.9,kd_l_Nload = 0;
+double kp_r_Nload = 1.43,ki_r_Nload = 0.85,kd_r_Nload = 0;
 /*this pid data will use when the car start to move*/
 double kp_l_start = 1.1,ki_l_start = 0.9,kd_l_start = 0;
 double kp_r_start = 0.93,ki_r_start = 0.85,kd_r_start = 0;
@@ -71,20 +71,12 @@ void PIDcontrol_left(int flag_left)
   Output_l = output_l;
   setpoint_l = command_HZ_l;
   /* compute */
-  if(input_l != 0)
-  {
-    if(flag_left == 0){         //no load
+  if(flag_left == 0){         //no load
       mypid_left_Nload.Compute();
     }
-    else if(flag_left == 1){    //has load
+  else if(flag_left == 1){    //has load
       mypid_left_load.Compute();
     }
-  }
-  /*car start to move*/
-  if(input_l == 0)
-  {
-    mypid_left_start.Compute();
-  }
   /* convert output from HZ to DAC*/
   //Output_l_fin =  Output_l*0.7058+96.148;
   Output_l_fin =  Output_l*0.70581637+96.0889897;
@@ -96,20 +88,12 @@ void PIDcontrol_right(int flag_right)
   Output_r = output_r;
   setpoint_r = command_HZ_r;
   /* compute */
-  if(input_r != 0)
-  {
-    if(flag_right == 0){        //no load
+  if(flag_right == 0){        //no load
       mypid_right_Nload.Compute();
     }
-    else if(flag_right == 1){   //has load
+  else if(flag_right == 1){   //has load
       mypid_right_load.Compute();
-    }
-  }
-  /*car start to move*/
-  if(input_l == 0)
-  {
-    mypid_right_start.Compute();
-  }  
+    } 
   /* convert output from HZ to DAC*/
   //Output_r_fin =  Output_r*0.7539+96.166;
   Output_r_fin =  Output_r*0.73926222+94.241;
