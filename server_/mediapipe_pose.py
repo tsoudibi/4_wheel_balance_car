@@ -28,15 +28,18 @@ class ipcamCapture:
 
     # get image from ipcamera
     def queryframe(self):
+
         while (not self.isstop):
+            time1= time.time()
             self.status, self.Frame = self.capture.read()
+            self.time_dis = time.time() - time1
 
         self.capture.release()
 
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-ip_address = '192.168.137.158:8080/'
+ip_address = '192.168.137.68:8080/'
 ip_camera_url = 'http://admin:admin@' + ip_address + '/video'
 
 # set image size of camera, smaller will run faster
@@ -66,32 +69,36 @@ cap = None
 mode = None
 
 # detection flag 
-IS_HUMAN = None
+IS_HUMAN = False
 
 # if stop to get MediaPipe img
 media_stop = True
 
+# backup image
+backup_image = None
 
 def camera_start(device='webcam'):
-    global cap, width, height, mode
+    global cap, width, height, mode, backup_image
     mode = device
     if mode == 'webcam':
         print("webcam start")
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        _, backup_image = cap.read()
     elif mode == 'ipcam':
         print("ipcam start")
         cap = ipcamCapture(ip_camera_url)
         cap.start()
         time.sleep(1)
         print("cam init finish")
+        backup_image = cap.getframe()
     else:
         print("mode error, please check parameter 'mode'")
 
 
 def mediapipe_pose(debug_mode=False):
-    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center
+    global queue, cap, mode, time1, time2, fps, depth, x_center, y_center, backup_image
     global depth_normalized, position_queue, average_depth, average_x, image2server, IS_HUMAN
     with mp_pose.Pose(
             min_detection_confidence=0.5,
@@ -100,14 +107,22 @@ def mediapipe_pose(debug_mode=False):
             # start timer
             time1 = time.time()
             # Read the frame
+            
             if mode == 'webcam':
                 _, image = cap.read()
             elif mode == 'ipcam':
                 image = cap.getframe()
+                if cap.time_dis >= 0.1 or cap.status == False:
+                    image = backup_image
+                else:
+                    backup_image = image
                 image = cv2.flip(image, 1)
+
             else:
                 print("mode error, please check parameter 'mode'")
                 break
+            
+            
             img_height, img_width, img_channel = image.shape
             # Flip the image horizontally for a later selfie-view display, and convert
             # the BGR image to RGB.
@@ -161,8 +176,8 @@ def mediapipe_pose(debug_mode=False):
                 # if there are no person 
                 IS_HUMAN = False
             time2 = time.time()
-            if time1 is not time2:
-                fps = 1 / (time2 - time1)
+            if time1 - time2 is not 0:
+                fps = 1 / (time2 - time1 + 0.0000001)
             # print fps (10, 40) , body height (normalized) (img_width - 150, 40), x_center (img_width - 150, 80)
             cv2.rectangle(image, (5, 10), (90, 50), (0, 0, 0), -1)
             cv2.putText(image, str(round(fps, 2)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
@@ -264,6 +279,7 @@ def caculate_HZ():
     if average_depth <= DEPTH_BREAKPOINT or not IS_HUMAN:
         HZ_L = 0
         HZ_R = 0
+        #print("no human")
 
 
 def draw_top_view(image):
@@ -308,8 +324,8 @@ def draw_top_view(image):
                 cv2.LINE_AA)
     cv2.putText(image, str(round(HZ_R, 1)), (base_x + 18 + round(base_w / 2), base_y + 30), cv2.FONT_HERSHEY_DUPLEX,
                 0.7, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, str(IS_HUMAN), (base_x + 18 + round(base_w / 4 + 10), base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7,
-                (0, 0, 0), 1, cv2.LINE_AA)
+    #cv2.putText(image, str(IS_HUMAN), (base_x + 18 + round(base_w / 4 + 10), base_y + 30), cv2.FONT_HERSHEY_DUPLEX, 0.7,
+                #(0, 0, 0), 1, cv2.LINE_AA)
 
     return image
 
@@ -329,9 +345,9 @@ def draw_pose(image, landmark_list, connections):
     for idx, landmark in enumerate(landmark_list.landmark):
         # filtering not seen landmarks
         if ((landmark.HasField('visibility') and
-             landmark.visibility < VISIBILITY_THRESHOLD) or
+            landmark.visibility < VISIBILITY_THRESHOLD) or
                 (landmark.HasField('presence') and
-                 landmark.presence < PRESENCE_THRESHOLD)):
+                landmark.presence < PRESENCE_THRESHOLD)):
             continue
         landmark_px = round(landmark.x * image_cols), round(landmark.y * image_rows)
         if landmark_px:
