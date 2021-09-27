@@ -107,12 +107,15 @@ void loop() {
   if (response == "button") {
     Serial.println("[ http] GET CONTOL MODE : button");
     control_mode = 1;
+    Get_Control_Mode(control_mode);
   } else if (response == "sensor") {
     Serial.println("[ http] GET CONTOL MODE : sensor");
     control_mode = 2;
+    Get_Control_Mode(control_mode);
   } else if (response == "camera") {
     Serial.println("[ http] GET CONTOL MODE : camera");
     control_mode = 3;
+    Get_Control_Mode(control_mode);
   } else if (response == "-11" ) {
     /* error: timeout, HTTPC_ERROR_CONNECTION_REFUSED
        https://github.com/espressif/arduino-esp32/issues/1433#issuecomment-475875579 */

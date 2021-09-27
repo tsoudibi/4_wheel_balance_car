@@ -6,7 +6,7 @@
 #include "arduino_connect.h"
 #include "pid.h"
 
-#define threshold 20
+#define threshold 30
 
 /* save the HZ of motor should be */
 /*The smallest speed is 7*/

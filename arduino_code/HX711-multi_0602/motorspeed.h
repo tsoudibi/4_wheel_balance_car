@@ -31,21 +31,36 @@ void get_weight(int weight)
 void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   
   int FlagtoDetectchange = 0;
-
+  int speed_l_temp;
+  int speed_r_temp;
   //left
-  if (map_X - map_x_ori > 300 && FlagtoDetectchange == 0)
+  if (map_X - map_x_ori > 200 && FlagtoDetectchange == 0)
   {
     speed_l++;
     speed_r--;
+    speed_l_temp = speed_l;
+    speed_r_temp = speed_r;
     FlagtoDetectchange = 1;
+    if(speed_l - speed_r >= 5)
+    {
+      speed_l = speed_l_temp;
+      speed_r = speed_r_temp;
+    }
   }
   
   //right
-  if(map_X - map_x_ori < -300 && FlagtoDetectchange == 0)
+  if(map_X - map_x_ori < -200 && FlagtoDetectchange == 0)
   {
     speed_l--;
     speed_r++;
+    speed_l_temp = speed_l;
+    speed_r_temp = speed_r;
     FlagtoDetectchange = 1;
+    if(speed_l - speed_r <= 5)
+    {
+      speed_l = speed_l_temp;
+      speed_r = speed_r_temp;
+    }
   }
   
   if (-300 < map_X - map_x_ori < 300 && FlagtoDetectchange == 0) 
@@ -59,11 +74,15 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     //slow
     if(map_Y - map_y_ori < -200)
     {
-      speed_r--;
-      speed_l = speed_r;
+       speed_r = 0;
+       speed_l = 0;
     }
     FlagtoDetectchange = 1;
   }
+  if(speed_r < 0)
+    speed_r = 0;
+  if(speed_l < 0)
+    speed_l = 0;
 }
 
 /*save location in queue*/
@@ -135,7 +154,7 @@ void SpeedOutput(int map_X,int map_Y)
   if (flag == 1)
   { 
   /*set time to smooth the speed change*/
-    while(millis()- time_count > 500)
+    while(millis()- time_count > 1000)
     {
       /*speed control */
       speed_control(map_x_ori,map_y_ori,map_X,map_Y);
@@ -148,14 +167,14 @@ void SpeedOutput(int map_X,int map_Y)
   if(speed_l < 0)
     speed_l = 0;
   if(speed_r < 0)
-    speed_r = 0;
+    speed_r = 0;*/
 
   //limit max speed
   if(speed_l > 10)
     speed_l = 10;
   if(speed_r >10)
     speed_r = 10;
-  */
+  
   //transport data to esp32    
   Serial.println(String(map_X - map_x_ori)+","+String(map_Y - map_y_ori)+","+String(speed_l)+","+String(speed_r)+","+String(flag)+","+String(weight_esp32));
 }

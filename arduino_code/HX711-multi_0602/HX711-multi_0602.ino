@@ -53,7 +53,7 @@ void weight(int i) {
   switch(i) {
     case 0:
       map_Y = map_Y - results[i]*1.3;
-      map_X = map_X - results[i]*1.3;
+      map_X = map_X - results[i]*1.15;
       w_total = w_total - results[i];
       //Serial.println(results[i]);
     break;
