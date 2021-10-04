@@ -20,8 +20,8 @@ double Output_r_fin;
 int Control_mode;
 /*PID parameter set*/
 /*for load*/
-double kp_l_load = 4,ki_l_load = 1.2,kd_l_load = 0;
-double kp_r_load = 4,ki_r_load = 1,kd_r_load = 0;
+double kp_l_load = 3,ki_l_load = 1.4,kd_l_load = 0;
+double kp_r_load = 2.5,ki_r_load = 1.2,kd_r_load = 0;
 /*f or not load*/
 /*first one(btn)*/
 double kp_l_Nload_btn = 1.3,ki_l_Nload_btn = 0.9,kd_l_Nload_btn = 0;

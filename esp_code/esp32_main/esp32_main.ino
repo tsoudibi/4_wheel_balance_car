@@ -58,7 +58,7 @@ void PID_function(void * parameter)
     if (Command_L < 0)
       Command_L = 0;
     if (Command_R < 0)
-      Command_R = 0;   
+      Command_R = 0;    
     /* PID control and get result DAC command */
     PID(Command_L, Command_R, ISR_HZ_L, ISR_HZ_R, flag_load);
     DAC_L = get_PID_result('l');

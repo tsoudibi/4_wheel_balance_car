@@ -33,34 +33,31 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
   int FlagtoDetectchange = 0;
   int speed_l_temp;
   int speed_r_temp;
-  //left
+  //right
   if (map_X - map_x_ori > 200 && FlagtoDetectchange == 0)
   {
     speed_l++;
     speed_r--;
-    speed_l_temp = speed_l;
-    speed_r_temp = speed_r;
     FlagtoDetectchange = 1;
-    if(speed_l - speed_r >= 5)
+    if(speed_l < speed_r )
     {
-      speed_l = speed_l_temp;
-      speed_r = speed_r_temp;
+      speed_l = (speed_l + speed_r) / 2;
+      speed_r = speed_l;
     }
   }
   
-  //right
+  //left
   if(map_X - map_x_ori < -200 && FlagtoDetectchange == 0)
   {
     speed_l--;
     speed_r++;
-    speed_l_temp = speed_l;
-    speed_r_temp = speed_r;
     FlagtoDetectchange = 1;
-    if(speed_l - speed_r <= 5)
+    if(speed_l > speed_r )
     {
-      speed_l = speed_l_temp;
-      speed_r = speed_r_temp;
+      speed_l = (speed_r + speed_l) / 2 ;
+      speed_r = speed_l;
     }
+      
   }
   
   if (-300 < map_X - map_x_ori < 300 && FlagtoDetectchange == 0) 
@@ -68,8 +65,20 @@ void speed_control(int map_x_ori,int map_y_ori,int map_X, int map_Y){
     //forward
     if(map_Y - map_y_ori > 300)
     {
+      if(speed_l > speed_r )
+      {
+        speed_l = (speed_r + speed_l) / 2 ;
+        speed_r = speed_l;
+      }
+     if(speed_l < speed_r )
+      {
+        speed_l = (speed_l + speed_r) / 2;
+        speed_r = speed_l;
+      }
+      else {
       speed_r++;
       speed_l = speed_r;
+      }  
     }
     //slow
     if(map_Y - map_y_ori < -200)
